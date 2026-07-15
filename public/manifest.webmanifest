@@ -1,0 +1,16 @@
+{
+  "name": "SafeMind Scam Protection",
+  "short_name": "SafeMind",
+  "description": "Check suspicious messages, links, phone numbers, and email addresses.",
+  "id": "/",
+  "start_url": "/src/pages/onboarding.html?source=homescreen",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#08090b",
+  "orientation": "portrait-primary",
+  "icons": [
+    {"src":"/icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"/icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}

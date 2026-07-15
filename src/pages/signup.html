@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>SafeMind Signup</title>
+	<link rel="icon" href="/favicon.ico" sizes="any">
+	<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+	<link rel="manifest" href="/manifest.webmanifest">
+	<meta name="theme-color" content="#050505">
+	<script>(()=>{let t="";try{t=localStorage.getItem("safemind-theme")||""}catch{}if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t})()</script>
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-title" content="SafeMind">
+	<link rel="stylesheet" href="../css/auth.css">
+	<link rel="stylesheet" href="../css/theme.css">
+</head>
+<body class="auth-page" data-auth-page="signup">
+	<main class="auth-shell">
+		<section class="auth-copy">
+			<a href="main.html" class="auth-brand" data-logo-link>
+				<img src="/assets/safemind-logo.png" alt="SafeMind logo">
+				<span>SafeMind</span>
+			</a>
+
+			<p class="auth-kicker">Start securing your inbox</p>
+			<h1>Create your account</h1>
+			<p>Set up SafeMind to save scam reports, track protection activity and launch into the dashboard.</p>
+		</section>
+
+		<section class="auth-card">
+			<h2>Sign up</h2>
+			<p class="subcopy">Create a new workspace with email, Google or Microsoft.</p>
+
+			<form class="auth-form" data-auth-form novalidate>
+				<label for="newEmail">Email</label>
+				<input id="newEmail" name="email" type="email" inputmode="email" autocomplete="email" maxlength="254" placeholder="you@example.com" required>
+
+				<label for="newPassword">Password</label>
+				<input id="newPassword" name="new-password" type="password" autocomplete="new-password" minlength="12" maxlength="128" placeholder="At least 12 characters" required aria-describedby="passwordGuidance">
+				<p id="passwordGuidance" class="field-guidance">Use 12 or more characters with upper and lowercase letters, a number, and a symbol.</p>
+
+				<button type="submit" class="auth-button">Create account</button>
+
+				<div class="auth-divider">or continue with</div>
+
+				<div class="auth-social">
+					<button type="button" class="auth-social-button google" data-provider="google">Continue with Google</button>
+					<button type="button" class="auth-social-button microsoft" data-provider="azure">Continue with Microsoft</button>
+				</div>
+
+				<p class="auth-footer">Already have an account? <a href="login.html">Login</a></p>
+				<p class="auth-message" data-auth-message role="status" aria-live="polite"></p>
+			</form>
+		</section>
+	</main>
+
+	<script type="module" src="../js/auth.js"></script>
+</body>
+</html>

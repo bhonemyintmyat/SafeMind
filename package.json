@@ -1,0 +1,22 @@
+{
+	"name": "safemind",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "node scripts/dev.mjs",
+		"dev:web": "vite",
+		"nlp": "python3 -u -m nlp_service.app",
+		"nlp:fastapi": "python3 -u -m uvicorn nlp_service.fastapi_app:app --host 127.0.0.1 --port 5050",
+		"test:nlp": "python3 -m unittest discover -s tests -v",
+		"test:extension": "node scripts/validate-extension.mjs",
+		"build": "vite build",
+		"build:all": "npm run build -- --emptyOutDir && npm run test:extension",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"@supabase/supabase-js": "^2.49.1"
+	},
+	"devDependencies": {
+		"vite": "^5.4.0"
+	}
+}

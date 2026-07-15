@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+<fontconfig>
+  <dir>/System/Library/Fonts</dir>
+  <dir>/System/Library/Fonts/Supplemental</dir>
+  <dir>/Library/Fonts</dir>
+  <dir>/Users/kaungkhantko/Library/Fonts</dir>
+  <dir>/Volumes/KXANT'S/Web/safemind 2/public</dir>
+  <cachedir>/tmp/safemind-fontconfig-cache</cachedir>
+</fontconfig>

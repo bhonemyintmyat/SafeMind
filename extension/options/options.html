@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SafeMind Extension Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main>
+    <a class="brand" href="https://safemind.app/" target="_blank" rel="noopener noreferrer">
+      <img src="../assets/icon.jpg" alt="">
+      <span>SafeMind</span>
+    </a>
+
+    <section>
+      <p class="eyebrow">EXTENSION SETTINGS</p>
+      <h1>Connect your SafeMind website.</h1>
+      <p class="copy">Set the root address of your deployed SafeMind website. HTTPS is required except for local development.</p>
+
+      <form id="settingsForm">
+        <label for="webAppUrl">SafeMind website address</label>
+        <input id="webAppUrl" name="webAppUrl" type="url" inputmode="url" placeholder="https://safemind.app/" required>
+        <button type="submit">Save website address</button>
+        <p id="status" role="status" aria-live="polite"></p>
+      </form>
+
+      <aside>
+        <strong>Privacy by default</strong>
+        <p>This extension does not read open tabs, page content, browsing history, passwords, or form data. It stores only the website address configured above.</p>
+      </aside>
+    </section>
+  </main>
+  <script src="options.js"></script>
+</body>
+</html>

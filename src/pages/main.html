@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeMind</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#050505">
+    <script>(()=>{let t="";try{t=localStorage.getItem("safemind-theme")||""}catch{}if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t})()</script>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="SafeMind">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/theme.css">
+</head>
+<body class="landing-page" data-page="main">
+    <header class="navbar">
+        <a href="main.html" class="brand" data-logo-link>
+            <img src="/assets/redlogo.png" alt="SafeMind logo">
+            <span>SafeMind</span>
+        </a>
+
+        <button class="mobile-menu-button" type="button" aria-expanded="false" aria-controls="mainNavigation" aria-label="Open navigation">
+            <span></span><span></span><span></span>
+        </button>
+
+        <nav id="mainNavigation">
+            <a href="#features">Features</a>
+            <a href="#demo">Demo</a>
+            <a href="#verified-contacts">Contacts</a>
+            <a href="#trust">Trust</a>
+            <a href="#contact">Contact us</a>
+            <a href="#faq">FAQ</a>
+            <div class="mobile-nav-actions">
+                <button class="language-toggle" type="button" data-language-toggle aria-label="Switch language">မြန်မာ</button>
+                <a href="login.html">Login</a>
+            </div>
+        </nav>
+
+        <div class="nav-actions">
+            <button class="language-toggle" type="button" data-language-toggle aria-label="Switch language">မြန်မာ</button>
+            <a href="login.html">Login</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero reveal" id="home" data-hero>
+            <div class="hero-content">
+                <p class="tag">AI Powered Security</p>
+                <h1><span id="typingHeading" aria-hidden="true"></span><span class="sr-only">Your AI Shield Against Scams</span></h1>
+                <p class="description">
+                    Analyze suspicious phone numbers, messages and links before they become a threat.
+                </p>
+
+                <div class="hero-buttons">
+                    <a class="primary-btn" href="signup.html">Start Protecting</a>
+                    <a class="secondary-btn" href="#demo">Try Demo</a>
+                </div>
+
+                <ul class="hero-features">
+                    <li>Phone intelligence</li>
+                    <li>Message analysis</li>
+                    <li>Link inspection</li>
+                </ul>
+            </div>
+
+        </section>
+
+        <section class="demo-section reveal" id="demo">
+            <div class="section-heading">
+                <p>Interactive Demo</p>
+                <h2>Test a suspicious input instantly</h2>
+                <span>Check phone numbers, messages, links, and email addresses against the SafeMind directory.</span>
+            </div>
+
+            <div class="demo-layout">
+                <div class="demo-input-card">
+                    <div class="demo-tabs" role="tablist" aria-label="Demo modes">
+                        <button type="button" class="demo-tab is-active" data-demo-mode="phone" aria-pressed="true">Phone Number</button>
+                        <button type="button" class="demo-tab" data-demo-mode="message" aria-pressed="false">Message</button>
+                        <button type="button" class="demo-tab" data-demo-mode="link" aria-pressed="false">Link</button>
+                        <button type="button" class="demo-tab" data-demo-mode="email" aria-pressed="false">Email</button>
+                    </div>
+
+                    <label id="demoLabel" for="demoInput">Phone number</label>
+                    <textarea id="demoInput" rows="5" minlength="3" maxlength="10000" spellcheck="false" placeholder="+1 555 010 2000"></textarea>
+                    <p class="demo-hint" id="demoHint">Paste a number that looks suspicious or unfamiliar.</p>
+
+                    <div class="demo-actions">
+                        <button type="button" class="primary-btn" id="demoAnalyze">Analyze Demo</button>
+                        <button type="button" class="secondary-btn" data-demo-example="scam">Scam example</button>
+                        <button type="button" class="secondary-btn" data-demo-example="safe">Not scam</button>
+                        <button type="button" class="secondary-btn" data-demo-example="unknown">Not in database</button>
+                    </div>
+                </div>
+
+                <div class="demo-result-card">
+                    <div class="demo-loading-bar" data-demo-loading></div>
+                    <p class="demo-result-label">Result</p>
+                    <div class="result-pill" id="demoRisk">Risk: LOW</div>
+                    <h3 id="demoConfidence">Confidence: 0%</h3>
+                    <p id="demoCategory">Category: Awaiting input</p>
+                    <p id="demoReason">Choose a checker and enter a value.</p>
+                    <ul id="demoSignals"></ul>
+                    <a class="primary-btn demo-report-link" id="demoReport" href="login.html" hidden>Report to admin</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="verified-section reveal" id="verified-contacts">
+            <div class="section-heading">
+                <p>Verified reporting contacts</p>
+                <h2>Official phishing-report email addresses</h2>
+                <span>These are organization-published abuse contacts, not general customer-support inboxes.</span>
+            </div>
+            <div class="verified-grid" id="verifiedEmailList" aria-live="polite"></div>
+        </section>
+
+        <section class="features-section reveal" id="features">
+            <div class="section-heading">
+                <p>Features</p>
+                <h2>Minimal UI. Serious protection.</h2>
+                <span>Designed to stay calm, fast and readable while surfacing only the details users need.</span>
+            </div>
+
+            <div class="cards">
+                <article class="card">
+                    <h3>Phone Scans</h3>
+                    <p>Check unfamiliar numbers against a shared scam directory and your own report history.</p>
+                </article>
+
+                <article class="card">
+                    <h3>Message Analysis</h3>
+                    <p>Detect pressure tactics, fake support language and urgent social engineering patterns.</p>
+                </article>
+
+                <article class="card">
+                    <h3>Link Safety</h3>
+                    <p>Inspect suspicious domains, impersonation paths and phishing markers before clicking.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="how-section reveal" id="how-it-works">
+            <div class="section-heading">
+                <p>How It Works</p>
+                <h2>From check to action in three steps</h2>
+                <span>SafeMind keeps the product flow focused so users can move quickly from suspicion to clarity.</span>
+            </div>
+
+            <div class="how-grid">
+                <article class="how-card">
+                    <strong>1</strong>
+                    <h3>Paste or scan</h3>
+                    <p>Add a phone number, message or URL to inspect it.</p>
+                </article>
+
+                <article class="how-card">
+                    <strong>2</strong>
+                    <h3>Analyze instantly</h3>
+                    <p>SafeMind classifies signals, confidence and category in real time.</p>
+                </article>
+
+                <article class="how-card">
+                    <strong>3</strong>
+                    <h3>Protect your account</h3>
+                    <p>Save trusted or suspicious numbers to your security dashboard.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="trust-section reveal" id="trust">
+            <div class="section-heading">
+                <p>Trust Statistics</p>
+                <h2>Numbers that show the system working</h2>
+                <span>These metrics summarize how SafeMind is helping users stay ahead of scams.</span>
+            </div>
+
+            <div class="trust-grid">
+                <article class="trust-card">
+                    <strong data-counter="120000" data-suffix="+">0</strong>
+                    <span>Scans processed</span>
+                </article>
+
+                <article class="trust-card">
+                    <strong data-counter="99" data-suffix=".9%">0</strong>
+                    <span>Average uptime</span>
+                </article>
+
+                <article class="trust-card">
+                    <strong data-counter="3" data-suffix=".1s">0</strong>
+                    <span>Average response</span>
+                </article>
+
+                <article class="trust-card">
+                    <strong data-counter="24" data-suffix="/7">0</strong>
+                    <span>Protection available</span>
+                </article>
+            </div>
+        </section>
+
+        <section class="built-by-strip reveal" aria-label="Built by SafeMind">
+            <p>Built by</p>
+            <div class="logo-marquee">
+                <div class="logo-marquee-track" aria-hidden="true">
+                    <div class="logo-marquee-group">
+                        <img src="/assets/SM.png" alt=""><img src="/assets/SM.png" alt=""><img src="/assets/SM.png" alt=""><img src="/assets/SM.png" alt=""><img src="/assets/SM.png" alt=""><img src="/assets/SM.png" alt=""><img src="/assets/SM.png" alt=""><img src="/assets/SM.png" alt="">
+                    </div>
+                    <div class="logo-marquee-group">
+                        <img src="/assets/SM.png" alt=""><img src="/assets/SM.png" alt=""><img src="/assets/SM.png" alt=""><img src="/assets/SM.png" alt=""><img src="/assets/SM.png" alt=""><img src="/assets/SM.png" alt=""><img src="/assets/SM.png" alt=""><img src="/assets/SM.png" alt="">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="contact-section reveal" id="contact">
+            <div class="section-heading">
+                <p>Contact us</p>
+                <h2>Need help staying safe?</h2>
+                <span>Questions, feedback, or a scam you are unsure about? Get in touch with the SafeMind team.</span>
+            </div>
+            <div class="contact-card">
+                <div><strong>Email SafeMind</strong><span>We will help point you in the right direction.</span></div>
+                <a class="primary-btn" href="mailto:support@safemind.app">support@safemind.app</a>
+            </div>
+        </section>
+
+        <section class="faq-section reveal" id="faq">
+            <div class="section-heading">
+                <p>FAQ</p>
+                <h2>Common questions, answered quickly</h2>
+                <span>Keep users oriented without turning the landing page into a wall of text.</span>
+            </div>
+
+            <div class="faq-list">
+                <article class="faq-item">
+                    <button type="button" class="faq-question" data-faq-button aria-expanded="false">Does SafeMind store my scans?</button>
+                    <div class="faq-answer">
+                        <p>Saved numbers and reports are stored in Supabase so authenticated users can review their history.</p>
+                    </div>
+                </article>
+
+                <article class="faq-item">
+                    <button type="button" class="faq-question" data-faq-button aria-expanded="false">Do I need an account to use the demo?</button>
+                    <div class="faq-answer">
+                        <p>No. The interactive demo runs locally in the browser so visitors can try the product before signing in.</p>
+                    </div>
+                </article>
+
+                <article class="faq-item">
+                    <button type="button" class="faq-question" data-faq-button aria-expanded="false">What happens after login?</button>
+                    <div class="faq-answer">
+                        <p>Authenticated users land on the dashboard, where they can review stats and open the dedicated scam checker.</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div>
+            <a href="main.html" class="brand footer-brand" data-logo-link>
+                <img src="/assets/redlogo.png" alt="SafeMind logo">
+                <span>SafeMind</span>
+            </a>
+            <p>Professional scam detection for modern teams and individuals.</p>
+        </div>
+        <p>© 2026 SafeMind</p>
+    </footer>
+
+    <script type="module" src="../js/main.js"></script>
+    <script type="module" src="../js/pwa.js"></script>
+</body>
+</html>

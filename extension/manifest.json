@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "SafeMind Scam Protection",
+  "short_name": "SafeMind",
+  "version": "1.0.0",
+  "description": "Open SafeMind to inspect suspicious messages, links, phone numbers, and email files.",
+  "homepage_url": "https://safemind.app/",
+  "icons": {
+    "48": "assets/icon.jpg",
+    "96": "assets/icon.jpg",
+    "128": "assets/icon.jpg"
+  },
+  "action": {
+    "default_title": "Open SafeMind",
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "48": "assets/icon.jpg",
+      "96": "assets/icon.jpg"
+    }
+  },
+  "permissions": [
+    "storage"
+  ],
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": true
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "safemind@safemind.app",
+      "strict_min_version": "128.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    },
+    "gecko_android": {}
+  }
+}

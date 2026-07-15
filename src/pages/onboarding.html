@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Welcome to SafeMind</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#08090b">
+    <script>(()=>{let t="";try{t=localStorage.getItem("safemind-theme")||""}catch{}if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t})()</script>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="SafeMind">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="../css/onboarding.css">
+    <link rel="stylesheet" href="../css/theme.css">
+</head>
+<body>
+    <main class="onboarding-shell">
+        <header class="app-header">
+            <img src="/assets/Untitled_Artwork.jpg" alt="SafeMind">
+            <span>SafeMind</span>
+        </header>
+
+        <section class="onboarding-content">
+            <div class="shield-mark" aria-hidden="true">
+                <img src="/assets/redlogo.png" alt="">
+            </div>
+            <p class="eyebrow">Scam protection in your pocket</p>
+            <h1>Check before you trust.</h1>
+            <p class="intro">Scan suspicious messages, links, phone numbers, and email addresses before you respond.</p>
+
+            <div class="onboarding-features">
+                <article><span>01</span><div><strong>Scan instantly</strong><p>Look for common scam signals in seconds.</p></div></article>
+                <article><span>02</span><div><strong>Check verified records</strong><p>Compare details with the SafeMind directory.</p></div></article>
+                <article><span>03</span><div><strong>Report unknown threats</strong><p>Send uncertain cases for administrator review.</p></div></article>
+            </div>
+        </section>
+
+        <footer class="onboarding-action">
+            <a href="main.html" id="getStarted">Get Started</a>
+            <p>Stay alert. Never share passwords or verification codes.</p>
+        </footer>
+    </main>
+    <script type="module" src="../js/static-language.js"></script>
+    <script type="module" src="../js/pwa.js"></script>
+</body>
+</html>

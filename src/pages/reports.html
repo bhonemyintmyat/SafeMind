@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeMind Reports</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#050505">
+    <script>(()=>{let t="";try{t=localStorage.getItem("safemind-theme")||""}catch{}if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t})()</script>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="SafeMind">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body class="dashboard-page" data-page="reports">
+    <div class="dashboard-shell">
+        <aside class="dashboard-sidebar">
+            <a class="dashboard-brand" href="dashboard.html"><img src="/assets/redlogo.png" alt=""><span>SafeMind</span></a>
+            <nav class="dashboard-nav" aria-label="Primary navigation">
+                <a class="nav-link" href="dashboard.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1Z"/></svg><span>Overview</span></a>
+                <a class="nav-link" href="scam-checker.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4M11 8v6M8 11h6"/></svg><span>Scanner</span></a>
+                <a class="nav-link is-active" href="reports.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4m0 1h11l-2 4 2 4H5"/></svg><span>Reports</span></a>
+                <a class="nav-link" href="education.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H11v17H7.5A3.5 3.5 0 0 0 4 22Zm16 0A3.5 3.5 0 0 0 16.5 2H13v17h3.5A3.5 3.5 0 0 1 20 22Z"/></svg><span>Education</span></a>
+            </nav>
+            <button class="mobile-nav-more" type="button" aria-expanded="false" aria-controls="dashboardUtilities" aria-label="More options"><span></span><span></span><span></span></button>
+            <div class="dashboard-utilities" id="dashboardUtilities">
+                <button class="sidebar-control language-toggle" type="button" data-language-toggle>မြန်မာ</button>
+                <button class="sidebar-control logout-control" type="button" data-logout><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5m5-4 4-4-4-4m4 4H9"/></svg><span>Logout</span></button>
+            </div>
+        </aside>
+        <div class="dashboard-main">
+            <header class="dashboard-header"><div><p>Reports</p><h1>Request a manual review</h1></div><a class="profile-link" href="profile.html"><span class="avatar" data-avatar>SM</span><span><b class="username">User</b><small>Edit profile</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a></header>
+            <main class="dashboard-content narrow-content">
+                <section class="content-card">
+                    <div class="section-title"><div><p>Manual review</p><h2>Send suspicious content</h2><span>An administrator will review the content you submit.</span></div></div>
+                    <form class="dashboard-form" id="reportForm">
+                        <label for="reportType">Report type</label>
+                        <select id="reportType" required><option value="message">Message</option><option value="link">Website link</option><option value="phone">Phone number</option><option value="email">Email address</option><option value="other">Other</option></select>
+                        <label for="reportContent">Suspicious content</label>
+                        <textarea id="reportContent" rows="7" minlength="3" maxlength="5000" required></textarea>
+                        <label for="reportNotes">Context</label>
+                        <textarea id="reportNotes" rows="4" maxlength="2000" placeholder="Where did you receive it?"></textarea>
+                        <fieldset class="report-screenshot-field">
+                            <legend>Screenshot (optional)</legend>
+                            <p class="report-upload-help">Add one PNG, JPEG, or WebP image up to 5 MB. Do not include passwords, verification codes, or payment details.</p>
+                            <input class="report-file-input" id="reportScreenshot" type="file" accept="image/png,image/jpeg,image/webp" aria-describedby="reportScreenshotHelp reportScreenshotStatus">
+                            <div class="report-screenshot-preview" id="reportScreenshotPreview" hidden>
+                                <img id="reportScreenshotImage" alt="Selected screenshot preview">
+                                <div class="report-screenshot-details">
+                                    <strong id="reportScreenshotName"></strong>
+                                    <span id="reportScreenshotSize"></span>
+                                </div>
+                                <button class="report-remove-screenshot" id="reportScreenshotRemove" type="button">Remove screenshot</button>
+                            </div>
+                            <p class="report-file-status" id="reportScreenshotStatus" role="status" aria-live="polite"></p>
+                            <span class="sr-only" id="reportScreenshotHelp">Accepted image formats: PNG, JPEG, and WebP. Maximum size: 5 MB.</span>
+                        </fieldset>
+                        <button class="primary-button" type="submit" id="reportSubmit">Send report</button>
+                        <p class="form-status" id="reportStatus" role="status" aria-live="polite"></p>
+                    </form>
+                </section>
+            </main>
+        </div>
+    </div>
+    <script type="module" src="../js/dashboard.js"></script>
+</body>
+</html>

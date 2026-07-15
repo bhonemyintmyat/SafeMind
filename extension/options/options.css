@@ -1,0 +1,149 @@
+:root {
+  color-scheme: dark;
+  --bg: #08090b;
+  --surface: #111318;
+  --border: #2b3038;
+  --text: #f7f8fa;
+  --muted: #ffffff;
+  --accent: #e52b42;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 32px 20px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Avenir Next", Avenir, "Helvetica Neue", sans-serif;
+  font-synthesis: none;
+  font-weight: 400;
+}
+
+main {
+  width: min(720px, 100%);
+  margin: 0 auto;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.brand img {
+  width: 44px;
+  height: 44px;
+  border-radius: 9px;
+  object-fit: cover;
+}
+
+section {
+  margin-top: 32px;
+  padding: clamp(26px, 5vw, 46px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
+  border-radius: 14px;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.28);
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: #ff8493;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(32px, 6vw, 50px);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.045em;
+}
+
+.copy {
+  max-width: 580px;
+  margin: 16px 0 28px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+form {
+  display: grid;
+  gap: 11px;
+}
+
+label {
+  color: #c9ced5;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+input,
+button {
+  min-height: 48px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font: inherit;
+}
+
+input {
+  color: var(--text);
+  background: #171a20;
+  border: 1px solid #363c45;
+}
+
+button {
+  width: fit-content;
+  color: #fff;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+input:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #ff7384;
+  outline-offset: 3px;
+}
+
+#status {
+  min-height: 20px;
+  margin: 0;
+  color: #8bd8aa;
+  font-size: 12px;
+}
+
+#status[data-error="true"] {
+  color: #ff8997;
+}
+
+aside {
+  margin-top: 28px;
+  padding: 18px;
+  background: #0d0f12;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+
+aside strong {
+  font-weight: 600;
+}
+
+aside p {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}

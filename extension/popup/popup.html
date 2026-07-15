@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SafeMind</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main class="popup-shell">
+    <header class="brand-row">
+      <img src="../assets/icon.jpg" alt="">
+      <div>
+        <p>SafeMind</p>
+        <span>Scam protection</span>
+      </div>
+      <span class="status-dot" aria-label="Ready"></span>
+    </header>
+
+    <section class="intro" aria-labelledby="popupTitle">
+      <p class="eyebrow">CHECK BEFORE YOU TRUST</p>
+      <h1 id="popupTitle">Inspect suspicious content safely.</h1>
+      <p>Open the full SafeMind scanner without giving this extension access to the pages you visit.</p>
+    </section>
+
+    <div class="actions">
+      <button type="button" class="primary" id="openScanner">Open scanner</button>
+      <button type="button" id="openWebsite">Open website</button>
+    </div>
+
+    <footer>
+      <span id="siteStatus">Checking website address…</span>
+      <button type="button" class="settings" id="openSettings">Settings</button>
+    </footer>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>

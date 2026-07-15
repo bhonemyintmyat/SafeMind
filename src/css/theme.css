@@ -1,0 +1,1314 @@
+/* SafeMind's shared visual system: solid surfaces, restrained depth, red signal color. */
+:root {
+  --bg: #08090b;
+  --surface: #111318;
+  --surface-2: #171a20;
+  --border: #2b3038;
+  --text: #f7f8fa;
+  --muted: #ffffff;
+  --accent: #e52b42;
+  --accent-strong: #c91f35;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow-panel: 0 18px 48px rgba(0, 0, 0, 0.28);
+}
+
+body:not(.splash) {
+  background: #08090b;
+  color: var(--text);
+  font-family: "Avenir Next", Avenir, "Helvetica Neue", sans-serif;
+  font-synthesis: none;
+  font-weight: 400;
+}
+
+body:not(.splash) * {
+  font-synthesis: none;
+  font-weight: 400 !important;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+strong,
+b,
+button,
+label,
+.brand,
+.dashboard-logo,
+.checker-header-brand,
+.primary-btn,
+.secondary-btn,
+.nav-btn,
+.primary-link,
+.secondary-link {
+  font-weight: 600 !important;
+}
+
+.tag,
+.eyebrow,
+.auth-kicker,
+.welcome,
+.result-kicker,
+.demo-result-label,
+.education-category,
+.section-heading > p {
+  font-weight: 600 !important;
+}
+
+html[lang="my"] body,
+html[lang="my"] body * {
+  font-synthesis: none;
+  font-weight: 400 !important;
+}
+
+html[lang="my"] h1,
+html[lang="my"] h2,
+html[lang="my"] h3,
+html[lang="my"] h4,
+html[lang="my"] h5,
+html[lang="my"] h6,
+html[lang="my"] strong,
+html[lang="my"] b,
+html[lang="my"] button,
+html[lang="my"] label,
+html[lang="my"] .brand,
+html[lang="my"] .dashboard-logo,
+html[lang="my"] .checker-header-brand,
+html[lang="my"] .primary-btn,
+html[lang="my"] .secondary-btn,
+html[lang="my"] .nav-btn,
+html[lang="my"] .primary-link,
+html[lang="my"] .secondary-link {
+  font-weight: 500 !important;
+}
+
+html[lang="my"] .tag,
+html[lang="my"] .eyebrow,
+html[lang="my"] .auth-kicker,
+html[lang="my"] .welcome,
+html[lang="my"] .result-kicker,
+html[lang="my"] .demo-result-label,
+html[lang="my"] .education-category,
+html[lang="my"] .section-heading > p {
+  font-weight: 500 !important;
+}
+
+button,
+.primary-btn,
+.secondary-btn,
+.nav-btn,
+.primary-link,
+.secondary-link {
+  border-radius: var(--radius-sm);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid #ff7384;
+  outline-offset: 3px;
+}
+
+.navbar,
+.dashboard-topbar,
+.checker-header {
+  background: #0b0d10 !important;
+  border-bottom-color: #242930 !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.24);
+  backdrop-filter: none !important;
+}
+
+.glass-card,
+.dashboard-card,
+.checker-card,
+.checker-hero,
+.auth-copy,
+.auth-card,
+.demo-input-card,
+.demo-result-card,
+.how-card,
+.trust-card,
+.contact-card,
+.verified-card,
+.floating-card {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow-panel) !important;
+  backdrop-filter: none !important;
+}
+
+.navbar,
+.dashboard-topbar,
+.checker-header,
+.auth-copy,
+.auth-card,
+.dashboard-card,
+.checker-card,
+.checker-hero,
+.demo-input-card,
+.demo-result-card,
+.how-card,
+.trust-card,
+.contact-card,
+.verified-card,
+.floating-card,
+.onboarding-features article {
+  -webkit-backdrop-filter: none !important;
+}
+
+.primary-btn,
+.nav-btn,
+.primary-link,
+.auth-button,
+.onboarding-action a,
+.report-form button,
+.education-form button,
+.primary-action {
+  background: var(--accent) !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+.primary-btn:hover,
+.nav-btn:hover,
+.primary-link:hover,
+.auth-button:hover,
+.onboarding-action a:hover,
+.report-form button:hover,
+.education-form button:hover,
+.primary-action:hover {
+  background: var(--accent-strong) !important;
+  box-shadow: none !important;
+}
+
+/* Landing page */
+body.landing-page::before {
+  background-position: center;
+  background-size: min(72vw, 920px);
+  opacity: 0.5;
+}
+
+.navbar {
+  min-height: 76px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.brand img,
+.dashboard-logo img,
+.checker-header-brand img {
+  filter: none;
+}
+
+.hero {
+  min-height: min(760px, calc(100vh - 76px));
+}
+
+.hero h1,
+.section-heading h2,
+.hero-copy h1,
+.checker-hero h2,
+.auth-copy h1,
+.onboarding-content h1 {
+  letter-spacing: -0.045em;
+}
+
+.demo-section,
+.features-section,
+.trust-section,
+.faq-section,
+.contact-section,
+#features {
+  background: #08090b !important;
+}
+
+.verified-section,
+.how-section,
+.about-section {
+  background: #0d0f12 !important;
+}
+
+.card {
+  color: var(--text) !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-top: 3px solid var(--accent) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: none !important;
+}
+
+.card p {
+  color: var(--muted) !important;
+}
+
+.checker-mode-tabs {
+  background: #0b0d10 !important;
+  border: 1px solid var(--border) !important;
+}
+
+.demo-tab.is-active,
+.checker-mode-tabs button.is-active {
+  background: #242830 !important;
+  color: #fff !important;
+  box-shadow: inset 0 -2px 0 var(--accent) !important;
+}
+
+/* Account and onboarding pages */
+.auth-page,
+.onboarding-shell {
+  background: #08090b !important;
+}
+
+.auth-copy,
+.auth-card {
+  border-radius: var(--radius-lg) !important;
+}
+
+.auth-copy {
+  border-top: 3px solid var(--accent) !important;
+}
+
+.auth-copy::before {
+  opacity: 0.07;
+}
+
+.auth-form input,
+.report-form input,
+.report-form textarea,
+.report-form select,
+.education-form input,
+.education-form textarea,
+.checker-panel input,
+.checker-panel textarea,
+.demo-input-card textarea {
+  background: #15181d !important;
+  border-color: #343a43 !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+.auth-social-button {
+  border-radius: var(--radius-sm);
+  box-shadow: none;
+}
+
+.onboarding-features article {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: none !important;
+}
+
+.shield-mark {
+  background: var(--surface-2) !important;
+  border-color: var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+.onboarding-action {
+  background: #08090b !important;
+  border-top: 1px solid var(--border);
+}
+
+.onboarding-action a {
+  border-radius: var(--radius-sm) !important;
+}
+
+/* Dashboard and scanner */
+.dashboard-hero,
+.checker-hero {
+  border-top: 3px solid var(--accent) !important;
+}
+
+.progress-panel,
+.quick-stats article,
+.safety-grid article,
+.list-columns article,
+.activity-list,
+.activity-row,
+.education-form {
+  background: #111318 !important;
+  border-color: var(--border) !important;
+  backdrop-filter: none !important;
+}
+
+.progress-panel,
+.quick-stats article,
+.safety-grid article,
+.list-columns article,
+.activity-list,
+.education-form {
+  border-radius: var(--radius-md) !important;
+}
+
+.quick-stats article,
+.safety-grid article,
+.activity-row {
+  box-shadow: none !important;
+}
+
+.filter-button,
+.education-view-actions button,
+.checker-mini-actions button,
+.checker-save-row button,
+.checker-actions-row button {
+  background: #1a1e24 !important;
+  border: 1px solid #343a43 !important;
+  color: #e8ebef !important;
+  box-shadow: none !important;
+}
+
+.filter-button.is-active {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: #fff !important;
+}
+
+/* Education note shelf */
+.education-card {
+  overflow: hidden;
+}
+
+.education-view-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin: -62px 0 24px auto;
+}
+
+.education-view-actions[hidden] {
+  display: none !important;
+}
+
+.education-view-actions button {
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.education-feed {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 20px !important;
+  padding: 24px 24px 30px;
+  background: #0b0d10;
+  border: 1px solid var(--border);
+  border-bottom: 5px solid #20242a;
+  border-radius: var(--radius-md);
+}
+
+.education-feed > .empty-education {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 34px 20px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.education-item {
+  position: relative;
+  min-width: 0;
+  padding: 0 !important;
+  overflow: hidden;
+  color: var(--text) !important;
+  background: #15181d !important;
+  border: 1px solid #30353d !important;
+  border-left: 4px solid var(--accent) !important;
+  border-radius: 4px 10px 10px 4px !important;
+  box-shadow: 0 6px 0 #090b0e, 0 14px 28px rgba(0, 0, 0, 0.24) !important;
+  transform: none !important;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.education-item:hover {
+  border-color: #454c57 !important;
+  border-left-color: var(--accent) !important;
+  transform: none !important;
+}
+
+.education-item.is-expanded {
+  grid-column: 1 / -1;
+  border-color: #3b424c !important;
+  border-left-color: var(--accent) !important;
+  box-shadow: 0 6px 0 #090b0e, 0 18px 38px rgba(0, 0, 0, 0.3) !important;
+}
+
+.education-note-header {
+  min-height: 122px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px;
+  background: #15181d;
+}
+
+.education-note-heading {
+  min-width: 0;
+}
+
+.education-item .education-category {
+  width: fit-content;
+  margin: 0 0 10px;
+  padding: 4px 7px;
+  color: #ff8b99 !important;
+  background: #2b151a !important;
+  border: 1px solid #5a2931 !important;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.education-item h3 {
+  margin: 0;
+  color: var(--text);
+  font-family: inherit;
+  font-size: clamp(19px, 2vw, 24px);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.education-toggle {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  color: #fff;
+  background: #20242a;
+  border: 1px solid #3a4049;
+  border-radius: 6px;
+  box-shadow: none;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.education-toggle:hover {
+  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: none;
+}
+
+.education-toggle b {
+  position: relative;
+  width: 12px;
+  height: 12px;
+}
+
+.education-toggle b::before,
+.education-toggle b::after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 1px;
+  width: 10px;
+  height: 2px;
+  background: currentColor;
+}
+
+.education-toggle b::after {
+  transform: rotate(90deg);
+  transition: transform 180ms ease;
+}
+
+.education-toggle[aria-expanded="true"] b::after {
+  transform: rotate(0);
+}
+
+.education-note-body {
+  padding: 0 22px 22px;
+  background: #111419;
+  border-top: 1px solid #292e35;
+}
+
+.education-note-body[hidden] {
+  display: none !important;
+}
+
+.education-item .education-body {
+  margin: 0;
+  padding-top: 20px;
+  color: #c4cad2 !important;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.education-item .education-date {
+  margin: 20px 0 0;
+  color: #7f8792 !important;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .education-view-actions {
+    justify-content: flex-start;
+    margin: -8px 0 20px;
+  }
+
+  .education-feed {
+    grid-template-columns: 1fr;
+    padding: 18px 16px 24px;
+  }
+
+  .education-item.is-expanded {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .education-note-header {
+    min-height: 0;
+    flex-direction: column;
+  }
+
+  .education-toggle {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .education-view-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Readability and button contrast in both color modes. */
+body:not(.splash) { font-size: 17px; }
+
+body:not(.splash) button,
+body:not(.splash) .primary-btn,
+body:not(.splash) .secondary-btn,
+body:not(.splash) .nav-btn,
+body:not(.splash) .primary-link,
+body:not(.splash) .secondary-link {
+  min-height: 44px;
+  color: var(--text);
+  font-size: 15px !important;
+  line-height: 1.35;
+}
+
+body:not(.splash) button:disabled { opacity: .72; }
+
+body:not(.splash) .primary-btn,
+body:not(.splash) .nav-btn,
+body:not(.splash) .primary-link,
+body:not(.splash) .auth-button,
+body:not(.splash) .onboarding-action a,
+body:not(.splash) .report-form button,
+body:not(.splash) .education-form button,
+body:not(.splash) .primary-action {
+  color: #FFFFFF !important;
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
+body:not(.splash) .secondary-btn,
+body:not(.splash) .secondary-link,
+body:not(.splash) .auth-social-button,
+body:not(.splash) .checker-mini-actions button:not(.primary-action),
+body:not(.splash) .checker-save-row button,
+body:not(.splash) .checker-actions-row button,
+body:not(.splash) .result-actions button {
+  color: var(--text) !important;
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+}
+
+body.scam-checker-page .checker-header-actions a,
+body.scam-checker-page .checker-header-actions button,
+body.scam-checker-page .checker-mode-tabs button,
+body.scam-checker-page .checker-mini-actions button,
+body.scam-checker-page .checker-save-row button,
+body.scam-checker-page .result-actions button {
+  font-size: 15px !important;
+  line-height: 1.4;
+}
+
+body.scam-checker-page .checker-section-heading p,
+body.scam-checker-page .scan-safety-note,
+body.scam-checker-page .email-upload-hint,
+body.scam-checker-page .model-note,
+body.scam-checker-page .analysis-disclaimer,
+body.scam-checker-page .result-action-status {
+  font-size: 14px !important;
+  line-height: 1.7;
+}
+
+body.scam-checker-page .checker-panel input,
+body.scam-checker-page .checker-panel textarea,
+body.scam-checker-page .checker-result p,
+body.scam-checker-page .checker-result li,
+body.scam-checker-page .list-columns li span {
+  color: var(--text) !important;
+  font-size: 16px !important;
+}
+
+body.scam-checker-page .list-columns li strong { color: var(--text) !important; font-size: 14px !important; }
+
+html[data-theme="light"] body:not(.splash) .secondary-btn,
+html[data-theme="light"] body:not(.splash) .secondary-link,
+html[data-theme="light"] body:not(.splash) .auth-social-button,
+html[data-theme="light"] body:not(.splash) .checker-mini-actions button:not(.primary-action),
+html[data-theme="light"] body:not(.splash) .checker-save-row button,
+html[data-theme="light"] body:not(.splash) .result-actions button {
+  color: #212121 !important;
+  background: #FFFFFF !important;
+  border-color: #D1D5DB !important;
+}
+
+/* Light mode palette */
+html[data-theme="light"] {
+  color-scheme: light;
+  --bg: #F7F8FA;
+  --surface: #FFFFFF;
+  --surface-2: #F7F8FA;
+  --border: #E5E7EB;
+  --text: #212121;
+  --muted: #4B5563;
+  --accent: #D32F2F;
+  --accent-strong: #B71C1C;
+  --shadow-panel: 0 14px 36px rgba(33, 33, 33, 0.10);
+}
+
+html[data-theme="light"],
+html[data-theme="light"] body:not(.splash),
+html[data-theme="light"] body.landing-page,
+html[data-theme="light"] .auth-page,
+html[data-theme="light"] .onboarding-shell,
+html[data-theme="light"] .demo-section,
+html[data-theme="light"] .features-section,
+html[data-theme="light"] .trust-section,
+html[data-theme="light"] .faq-section,
+html[data-theme="light"] .contact-section,
+html[data-theme="light"] #features {
+  background: #F7F8FA !important;
+  color: #212121;
+}
+
+html[data-theme="light"] .verified-section,
+html[data-theme="light"] .how-section,
+html[data-theme="light"] .about-section,
+html[data-theme="light"] .built-by-strip {
+  background: #F7F8FA !important;
+  border-color: #E5E7EB !important;
+}
+
+html[data-theme="light"] .navbar,
+html[data-theme="light"] .dashboard-topbar,
+html[data-theme="light"] .checker-header,
+html[data-theme="light"] .onboarding-action {
+  background: #FFFFFF !important;
+  border-color: #E5E7EB !important;
+  box-shadow: 0 8px 24px rgba(33, 33, 33, 0.08);
+}
+
+html[data-theme="light"] .glass-card,
+html[data-theme="light"] .dashboard-card,
+html[data-theme="light"] .checker-card,
+html[data-theme="light"] .checker-hero,
+html[data-theme="light"] .auth-copy,
+html[data-theme="light"] .auth-card,
+html[data-theme="light"] .demo-input-card,
+html[data-theme="light"] .demo-result-card,
+html[data-theme="light"] .how-card,
+html[data-theme="light"] .trust-card,
+html[data-theme="light"] .contact-card,
+html[data-theme="light"] .verified-card,
+html[data-theme="light"] .floating-card,
+html[data-theme="light"] .card,
+html[data-theme="light"] .onboarding-features article,
+html[data-theme="light"] .progress-panel,
+html[data-theme="light"] .quick-stats article,
+html[data-theme="light"] .safety-grid article,
+html[data-theme="light"] .list-columns article,
+html[data-theme="light"] .activity-list,
+html[data-theme="light"] .activity-row,
+html[data-theme="light"] .education-form {
+  background: #FFFFFF !important;
+  border-color: #E5E7EB !important;
+  color: #212121 !important;
+}
+
+html[data-theme="light"] .checker-mode-tabs,
+html[data-theme="light"] .education-feed {
+  background: #F7F8FA !important;
+  border-color: #E5E7EB !important;
+}
+
+/* Replace dark-only landing surfaces so light-theme text keeps its contrast. */
+html[data-theme="light"] .hero-features li,
+html[data-theme="light"] .demo-tab {
+  background: #FFFFFF !important;
+  border-color: #D1D5DB !important;
+  color: var(--muted) !important;
+}
+
+html[data-theme="light"] .scanner {
+  background: linear-gradient(180deg, #FFFFFF, #F7F8FA) !important;
+  border-color: #D1D5DB !important;
+  color: var(--text) !important;
+  box-shadow: 0 24px 64px rgba(33, 33, 33, 0.12) !important;
+}
+
+html[data-theme="light"] .scanner-core {
+  border-color: #E5E7EB !important;
+  background:
+    radial-gradient(circle at center, rgba(211, 47, 47, 0.16), transparent 55%),
+    #FFFFFF !important;
+}
+
+html[data-theme="light"] .scanner .risk span {
+  color: var(--text) !important;
+}
+
+html[data-theme="light"] .result-pill {
+  color: #7F1D1D !important;
+  background: #FEE2E2 !important;
+}
+
+html[data-theme="light"] .result-pill[data-risk="medium"] {
+  color: #7C2D12 !important;
+  background: #FFEDD5 !important;
+}
+
+html[data-theme="light"] .result-pill[data-risk="low"] {
+  color: #166534 !important;
+  background: #DCFCE7 !important;
+}
+
+html[data-theme="light"] .site-footer,
+html[data-theme="light"] footer {
+  background: #F7F8FA !important;
+  border-color: #E5E7EB !important;
+  color: var(--text) !important;
+}
+
+html[data-theme="light"] .navbar > nav > a:hover {
+  background: #F3F4F6 !important;
+}
+
+html[data-theme="light"] .demo-tab.is-active,
+html[data-theme="light"] .checker-mode-tabs button.is-active {
+  background: #FFFFFF !important;
+  color: #212121 !important;
+}
+
+html[data-theme="light"] .auth-form input,
+html[data-theme="light"] .report-form input,
+html[data-theme="light"] .report-form textarea,
+html[data-theme="light"] .report-form select,
+html[data-theme="light"] .education-form input,
+html[data-theme="light"] .education-form textarea,
+html[data-theme="light"] .checker-panel input,
+html[data-theme="light"] .checker-panel textarea,
+html[data-theme="light"] .demo-input-card textarea {
+  background: #FFFFFF !important;
+  border-color: #E5E7EB !important;
+  color: #212121 !important;
+}
+
+html[data-theme="light"] .secondary-btn,
+html[data-theme="light"] .auth-social-button,
+html[data-theme="light"] .filter-button,
+html[data-theme="light"] .education-view-actions button,
+html[data-theme="light"] .checker-mini-actions button,
+html[data-theme="light"] .checker-save-row button,
+html[data-theme="light"] .checker-actions-row button,
+html[data-theme="light"] .language-toggle,
+html[data-theme="light"] .mobile-menu-button {
+  background: #FFFFFF !important;
+  border-color: #E5E7EB !important;
+  color: #212121 !important;
+}
+
+html[data-theme="light"] .mobile-menu-button span { background: #212121 !important; }
+html[data-theme="light"] .filter-button.is-active { color: #FFFFFF !important; background: #D32F2F !important; border-color: #D32F2F !important; }
+
+html[data-theme="light"] .education-item,
+html[data-theme="light"] .education-note-header,
+html[data-theme="light"] .education-note-body {
+  background: #FFFFFF !important;
+  border-color: #E5E7EB !important;
+  color: #212121 !important;
+  box-shadow: 0 5px 0 #E5E7EB, 0 12px 28px rgba(33, 33, 33, .08) !important;
+}
+
+html[data-theme="light"] .education-item .education-body { color: #444444 !important; }
+html[data-theme="light"] .education-item .education-date { color: #6B7280 !important; }
+html[data-theme="light"] .education-item .education-category { color: #B71C1C !important; background: #FFF1F1 !important; border-color: #F3B8B8 !important; }
+html[data-theme="light"] .education-toggle { color: #212121; background: #F7F8FA; border-color: #E5E7EB; }
+html[data-theme="light"] .education-toggle:hover { color: #FFFFFF; background: #D32F2F; border-color: #D32F2F; }
+
+html[data-theme="light"] p,
+html[data-theme="light"] span,
+html[data-theme="light"] small { text-shadow: none; }
+
+/* Open scanner sections using the same neutral/red theme as the main page. */
+body.scam-checker-page .checker-hero {
+  position: relative;
+  overflow: hidden;
+  color: var(--text) !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-top: 3px solid var(--accent) !important;
+  box-shadow: var(--shadow-panel) !important;
+}
+
+body.scam-checker-page .checker-hero > * { position: relative; z-index: 1; }
+body.scam-checker-page .checker-hero .eyebrow,
+body.scam-checker-page .checker-hero p { color: var(--muted) !important; }
+body.scam-checker-page .checker-hero h2 { color: var(--text) !important; }
+body.scam-checker-page .checker-hero .eyebrow { color: var(--accent) !important; }
+body.scam-checker-page .privacy-banner { color: var(--muted); background: var(--surface-2); border-color: var(--border); }
+body.scam-checker-page .privacy-banner strong { color: var(--text); }
+
+body.scam-checker-page .checker-card.checker-form {
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+body.scam-checker-page .checker-result {
+  position: sticky;
+  top: 112px;
+  align-self: start;
+}
+
+body.scam-checker-page .checker-mode-tabs {
+  display: flex;
+  gap: clamp(16px, 3vw, 34px);
+  margin: 0 0 24px;
+  padding: 0 0 16px;
+  overflow-x: auto;
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--border) !important;
+  border-radius: 0 !important;
+}
+
+body.scam-checker-page .checker-mode-tabs button,
+body.scam-checker-page .checker-mode-tabs button.is-active {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 4px 0 7px;
+  color: var(--muted) !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 2px solid transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  white-space: nowrap;
+}
+
+body.scam-checker-page .checker-mode-tabs button.is-active {
+  color: var(--text) !important;
+  border-bottom-color: var(--accent) !important;
+}
+
+body.scam-checker-page .checker-panels { gap: 0; }
+body.scam-checker-page .checker-panel,
+body.scam-checker-page .checker-panel.is-active {
+  scroll-margin-top: 118px;
+  display: grid;
+  gap: 12px;
+  padding: 34px 0;
+  border-top: 1px solid var(--border);
+}
+
+body.scam-checker-page .checker-panel:first-child { border-top: 0; }
+body.scam-checker-page .checker-panel.is-active { border-left: 3px solid var(--accent); padding-left: 22px; }
+
+.checker-section-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 6px;
+}
+
+.checker-section-heading > span {
+  color: var(--accent);
+  font-size: clamp(28px, 4vw, 46px);
+  line-height: 1;
+}
+
+.checker-section-heading p { margin: 0 0 2px; color: var(--accent); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+.checker-section-heading h3 { margin: 0; color: var(--text); font-size: clamp(25px, 3vw, 36px); line-height: 1.2; }
+
+body.scam-checker-page .checker-mini-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+body.scam-checker-page .checker-mini-actions .primary-action { margin-left: auto; background: var(--accent) !important; border-color: var(--accent) !important; }
+
+body.scam-checker-page .checker-panel,
+body.scam-checker-page .checker-panel label,
+body.scam-checker-page .checker-result,
+body.scam-checker-page .checker-result h3,
+body.scam-checker-page .checker-result p,
+body.scam-checker-page .checker-result li { color: var(--text); }
+
+body.scam-checker-page .scan-safety-note,
+body.scam-checker-page .email-upload-hint,
+body.scam-checker-page .model-note,
+body.scam-checker-page .analysis-disclaimer { color: var(--muted) !important; }
+
+body.scam-checker-page .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 900px) {
+  body.scam-checker-page .checker-mode-tabs { display: flex; }
+  body.scam-checker-page .checker-result { position: static; }
+}
+
+@media (max-width: 560px) {
+  body.scam-checker-page .checker-panel.is-active { padding-left: 14px; }
+  body.scam-checker-page .checker-mini-actions .primary-action { margin-left: 0; }
+  body.scam-checker-page .checker-mini-actions button { flex: 1 1 100%; }
+}
+
+/* Roomier typography and content surfaces across the application. */
+body:not(.splash) {
+  line-height: 1.7;
+}
+
+body:not(.splash) p,
+body:not(.splash) li,
+body:not(.splash) small,
+body:not(.splash) .description,
+body:not(.splash) .intro,
+body:not(.splash) .subcopy,
+body:not(.splash) .form-status,
+body:not(.splash) .demo-hint,
+body:not(.splash) .analysis-disclaimer {
+  line-height: 1.75;
+}
+
+body:not(.splash) h1,
+body:not(.splash) h2,
+body:not(.splash) h3,
+body:not(.splash) h4 {
+  line-height: 1.22;
+}
+
+body:not(.splash) button,
+body:not(.splash) input,
+body:not(.splash) textarea,
+body:not(.splash) select {
+  line-height: 1.5;
+}
+
+.demo-layout,
+.how-grid,
+.cards,
+.trust-grid,
+.verified-grid {
+  width: min(1320px, 100%);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section-heading {
+  max-width: 940px;
+}
+
+.section-heading span,
+.hero .description,
+.checker-hero p,
+.auth-copy p {
+  max-width: 760px;
+}
+
+.contact-card {
+  max-width: 1120px;
+}
+
+@media (min-width: 901px) {
+  .demo-input-card,
+  .demo-result-card,
+  .how-card,
+  .card,
+  .trust-card,
+  .verified-card,
+  .contact-card {
+    padding: clamp(30px, 3vw, 42px);
+  }
+
+  .auth-shell {
+    width: min(1280px, 100%);
+    grid-template-columns: minmax(0, 1.08fr) minmax(420px, .92fr);
+    gap: 34px;
+  }
+
+  .auth-card {
+    max-width: 600px;
+    padding: 48px;
+  }
+
+  .auth-copy {
+    padding: 64px;
+  }
+
+  .checker-shell {
+    width: min(1400px, calc(100% - 64px));
+  }
+
+  .checker-workbench {
+    grid-template-columns: minmax(0, 1.2fr) minmax(400px, .8fr);
+    gap: 30px;
+  }
+
+  body.scam-checker-page .checker-result,
+  .checker-directory,
+  .checker-hero {
+    padding: clamp(34px, 3vw, 48px);
+  }
+}
+
+@media (min-width: 700px) {
+  .onboarding-shell,
+  .onboarding-action {
+    width: min(100%, 720px);
+  }
+
+  .onboarding-content h1,
+  .onboarding-content .intro {
+    max-width: 650px;
+  }
+
+  .onboarding-features article {
+    padding: 22px;
+    gap: 20px;
+  }
+
+  .onboarding-features p {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+}
+
+@media (max-width: 560px) {
+  .demo-input-card,
+  .demo-result-card,
+  .how-card,
+  .card,
+  .trust-card,
+  .verified-card,
+  .contact-card {
+    padding: 24px 20px;
+  }
+}
+
+/* Focused scam-checker workflow: one selected tool and one result panel. */
+body.scam-checker-page .checker-shell {
+  padding-top: 36px;
+  gap: 36px;
+}
+
+body.scam-checker-page .checker-card.checker-form {
+  padding: clamp(24px, 3vw, 38px) !important;
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-top: 3px solid var(--accent) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-panel) !important;
+}
+
+body.scam-checker-page .checker-mode-tabs {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 20px;
+  padding: 8px;
+  overflow: visible;
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 12px !important;
+}
+
+body.scam-checker-page .checker-mode-tabs button,
+body.scam-checker-page .checker-mode-tabs button.is-active {
+  width: 100%;
+  min-height: 50px;
+  padding: 11px 14px;
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: var(--muted) !important;
+  box-shadow: none !important;
+  white-space: normal;
+}
+
+body.scam-checker-page .checker-mode-tabs button:hover {
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+  background: var(--surface) !important;
+}
+
+body.scam-checker-page .checker-mode-tabs button.is-active {
+  color: #FFFFFF !important;
+  border-color: var(--accent) !important;
+  background: var(--accent) !important;
+}
+
+body.scam-checker-page .scan-safety-note {
+  margin: 0;
+  padding: 13px 16px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  background: var(--surface-2);
+  font-size: 13px !important;
+}
+
+body.scam-checker-page .checker-panels {
+  display: block;
+}
+
+body.scam-checker-page .checker-panel {
+  display: none !important;
+}
+
+body.scam-checker-page .checker-panel.is-active {
+  display: grid !important;
+  gap: 16px;
+  padding: 30px 0 0;
+  border: 0;
+}
+
+body.scam-checker-page .checker-panel[hidden] {
+  display: none !important;
+}
+
+body.scam-checker-page .checker-section-heading {
+  margin-bottom: 2px;
+}
+
+body.scam-checker-page .checker-section-heading > span {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  font-size: 18px;
+}
+
+body.scam-checker-page .checker-panel input,
+body.scam-checker-page .checker-panel textarea {
+  min-height: 54px;
+  padding: 15px 16px;
+  border-radius: 9px;
+  font-size: 16px;
+}
+
+body.scam-checker-page .checker-panel textarea {
+  min-height: 150px;
+}
+
+body.scam-checker-page .checker-mini-actions {
+  align-items: stretch;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+body.scam-checker-page .checker-mini-actions button {
+  min-height: 48px;
+  padding: 11px 18px;
+}
+
+body.scam-checker-page .checker-mini-actions .primary-action {
+  flex: 1 1 180px;
+  margin-left: 0;
+}
+
+body.scam-checker-page .checker-result {
+  border-top: 3px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+body.scam-checker-page .result-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+body.scam-checker-page .result-actions button {
+  min-height: 46px;
+}
+
+@media (max-width: 900px) {
+  body.scam-checker-page .checker-mode-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  body.scam-checker-page .checker-shell {
+    width: min(100% - 24px, 700px);
+    padding-top: 22px;
+  }
+
+  body.scam-checker-page .checker-mode-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  body.scam-checker-page .checker-card.checker-form,
+  body.scam-checker-page .checker-result {
+    padding: 20px !important;
+  }
+
+  body.scam-checker-page .checker-section-heading > span {
+    width: 42px;
+    height: 42px;
+  }
+
+  body.scam-checker-page .result-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Keep Scam Checker header navigation readable on light surfaces. */
+html[data-theme="light"] body.scam-checker-page .checker-header-actions a,
+html[data-theme="light"] body.scam-checker-page .checker-header-actions button {
+  color: #212121 !important;
+  background: #F7F8FA !important;
+  border-color: #D1D5DB !important;
+}
+
+html[data-theme="light"] body.scam-checker-page .checker-header-actions a:hover,
+html[data-theme="light"] body.scam-checker-page .checker-header-actions a:focus-visible,
+html[data-theme="light"] body.scam-checker-page .checker-header-actions button:hover,
+html[data-theme="light"] body.scam-checker-page .checker-header-actions button:focus-visible {
+  color: #FFFFFF !important;
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+}

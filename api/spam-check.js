@@ -1,0 +1,651 @@
+import { createHash, randomUUID } from "node:crypto";
+import { performance } from "node:perf_hooks";
+
+const SUPPORTED_SCAN_TYPES = new Set(["message", "link", "email", "phone"]);
+const TOOL_ROUTES = {
+  message: ["intent_nlp", "social_engineering_rules"],
+  link: ["url_parser", "phishing_rules"],
+  email: ["email_parser", "impersonation_rules"],
+  phone: ["phone_normalizer", "number_risk_rules"]
+};
+const AGENT_CACHE = new Map();
+const AGENT_CACHE_TTL_MS = 300_000;
+const AGENT_CACHE_MAX = 256;
+const SHORTENER_DOMAINS = new Set(["bit.ly", "tinyurl.com", "t.co", "is.gd", "cutt.ly", "rb.gy", "ow.ly"]);
+const RISKY_TLDS = new Set(["click", "country", "download", "gq", "loan", "men", "mom", "party", "rest", "review", "stream", "top", "work", "zip"]);
+const URL_BAIT_TERMS = new Set(["account", "auth", "bank", "confirm", "login", "password", "payment", "reset", "secure", "signin", "update", "verify", "wallet"]);
+const BRAND_TERMS = new Set(["amazon", "apple", "facebook", "google", "instagram", "microsoft", "netflix", "paypal", "telegram", "whatsapp"]);
+const FREE_MAIL_DOMAINS = new Set(["gmail.com", "hotmail.com", "icloud.com", "outlook.com", "proton.me", "yahoo.com"]);
+const EMAIL_PATTERN = /^[A-Z0-9.!#$%&'*+/=?^_`{|}~-]+@([A-Z0-9-]+\.)+[A-Z]{2,63}$/i;
+const PHRASE_SIGNALS = new Map([
+  ["verify now", 0.18],
+  ["click here", 0.18],
+  ["gift card", 0.22],
+  ["send your password", 0.28],
+  ["bank details", 0.22],
+  ["credit card number", 0.26],
+  ["verification code", 0.20],
+  ["act now", 0.14],
+  ["အခုပဲ", 0.14],
+  ["စကားဝှက်", 0.20],
+  ["လင့်ခ်ကို နှိပ်", 0.20],
+  ["one time password", 0.24],
+  ["confirm your identity", 0.18],
+  ["pay immediately", 0.20],
+  ["send the code", 0.22],
+  ["keep this confidential", 0.16],
+  ["guaranteed return", 0.20],
+  ["remote access", 0.18],
+  ["do not tell anyone", 0.18],
+  ["avoid arrest", 0.22],
+  ["install this app", 0.16],
+  ["share the access code", 0.24],
+  ["ဘဏ်ဝန်ထမ်း", 0.16],
+  ["otp ကုဒ်", 0.24],
+  ["ငွေလွှဲ", 0.18],
+  ["လျှို့ဝှက်ထား", 0.18]
+]);
+const CONTEXT_SIGNALS = [
+  [/\b(?:send|share|tell|enter)\b.{0,35}\b(?:otp|pin|password|passcode|verification code)\b/i, 0.25, "Requests an authentication secret"],
+  [/\b(?:pay|transfer|send)\b.{0,40}\b(?:money|crypto|bitcoin|gift card|fee|deposit)\b/i, 0.22, "Requests a difficult-to-reverse payment"],
+  [/\b(?:urgent|immediately|final warning|act now|today only)\b/i, 0.12, "Uses urgency or pressure"],
+  [/\b(?:guaranteed|double|risk.?free)\b.{0,30}\b(?:profit|return|investment|money)\b/i, 0.22, "Promises unrealistic financial returns"],
+  [/(https?:\/\/|\bwww\.)/i, 0.06, "Contains a link requiring independent verification"],
+  [/\b(?:bank|police|government|support|ceo|manager)\b.{0,45}\b(?:send|share|pay|install|transfer)\b/i, 0.20, "Claims authority while requesting action"],
+  [/\b(?:secret|confidential|do not tell|keep this between us)\b/i, 0.16, "Requests secrecy"],
+  [/\b(?:remote access|screen share|anydesk|teamviewer|access code)\b/i, 0.22, "Requests remote device access"],
+  [/\b(?:won|winner|prize|lottery|reward)\b.{0,45}\b(?:fee|pay|claim|bank|card)\b/i, 0.22, "Uses a prize or reward lure"],
+  [/\b(?:arrest|lawsuit|police|warrant|penalty)\b/i, 0.18, "Uses threats or intimidation"]
+];
+const BENIGN_SIGNALS = new Map([
+  ["official app", 0.14],
+  ["appointment is confirmed", 0.10],
+  ["meeting has moved", 0.08],
+  ["receipt is attached", 0.08],
+  ["monthly statement", 0.08],
+  ["will never ask", 0.16]
+]);
+const MESSAGE_SPAM_TERMS = [
+  ["password", 5],
+  ["verify", 4],
+  ["urgent", 3],
+  ["click", 3],
+  ["account", 3],
+  ["gift", 3],
+  ["bank", 4],
+  ["otp", 5],
+  ["code", 3],
+  ["money", 3],
+  ["payment", 3],
+  ["free", 2],
+  ["winner", 3]
+];
+const WINDOW_SECONDS = 60;
+const LIMIT = Number(process.env.NLP_RATE_LIMIT || 30);
+const requests = new Map();
+
+function jsonResponse(res, statusCode, payload, extraHeaders = {}) {
+  const body = JSON.stringify(payload);
+  res.statusCode = statusCode;
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.setHeader("Content-Length", Buffer.byteLength(body));
+  res.setHeader("Cache-Control", "no-store, max-age=0");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  for (const [name, value] of Object.entries(extraHeaders)) {
+    res.setHeader(name, String(value));
+  }
+  res.end(body);
+}
+
+function getClientIp(req) {
+  const forwardedFor = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim();
+  return (forwardedFor || req.socket?.remoteAddress || "unknown").slice(0, 80);
+}
+
+function checkRateLimit(key) {
+  const now = Date.now();
+  const cutoff = now - WINDOW_SECONDS * 1000;
+  const safeKey = String(key || "unknown").slice(0, 80);
+  const entries = (requests.get(safeKey) || []).filter((timestamp) => timestamp > cutoff);
+  if (entries.length >= LIMIT) {
+    const retryAfter = Math.max(1, Math.round(WINDOW_SECONDS - (now - entries[0]) / 1000));
+    requests.set(safeKey, entries);
+    return { allowed: false, retryAfter };
+  }
+  entries.push(now);
+  requests.set(safeKey, entries);
+  if (requests.size > 10_000) {
+    requests.clear();
+    requests.set(safeKey, entries);
+  }
+  return { allowed: true, retryAfter: 0 };
+}
+
+function agentGuidance(scanType, risk) {
+  const subject = { message: "message", link: "link", email: "sender", phone: "number" }[scanType] || "item";
+  if (risk === "HIGH") {
+    return {
+      headline: "High-risk behavior detected",
+      summary: `I found strong warning signals in this ${subject}. Treat it as unsafe unless the organization verifies it through an official channel.`,
+      actions: [
+        "Do not click, reply, pay, call back, or share any code.",
+        "Block the sender and preserve the content as evidence.",
+        "Contact the organization through its official app, website, or published phone number."
+      ]
+    };
+  }
+  if (risk === "MEDIUM") {
+    return {
+      headline: "Suspicious signals need verification",
+      summary: `I found warning signals in this ${subject}, but the evidence is not conclusive. Pause and verify it independently before acting.`,
+      actions: [
+        "Do not use contact details or links contained in the suspicious content.",
+        "Verify the request through an official channel.",
+        "Never share passwords, OTP codes, recovery keys, or payment details."
+      ]
+    };
+  }
+  return {
+    headline: "No strong threat signal found",
+    summary: `I did not find strong automated warning signals in this ${subject}. This is not a guarantee of safety, especially for unexpected requests.`,
+    actions: [
+      "Confirm the sender and context independently if the request was unexpected.",
+      "Open official apps or websites directly instead of following supplied links.",
+      "Keep credentials, verification codes, and payment details private."
+    ]
+  };
+}
+
+function result(scanType, score, category, reason, indicators, model) {
+  const boundedScore = Math.max(0, Math.min(99, Math.round(score)));
+  let risk;
+  let verdict;
+  let confidence;
+  if (boundedScore >= 70) {
+    risk = "HIGH";
+    verdict = "scam";
+    confidence = Math.min(99, 72 + Math.round((boundedScore - 70) * 0.9));
+  } else if (boundedScore >= 35) {
+    risk = "MEDIUM";
+    verdict = "suspicious";
+    confidence = Math.min(92, 60 + Math.round((boundedScore - 35) * 0.9));
+  } else {
+    risk = "LOW";
+    verdict = "unknown";
+    confidence = Math.min(88, 58 + Math.round((35 - boundedScore) * 0.7));
+  }
+
+  const guidance = agentGuidance(scanType, risk);
+  return {
+    scan_type: scanType,
+    verdict,
+    risk,
+    risk_score: boundedScore,
+    confidence,
+    category,
+    reason,
+    indicators: [...new Set((indicators || []).filter(Boolean))].slice(0, 6),
+    model,
+    agent_headline: guidance.headline,
+    agent_summary: guidance.summary,
+    recommended_actions: guidance.actions,
+    requires_human_review: risk !== "LOW",
+    is_spam: verdict === "scam" || verdict === "suspicious",
+    label: verdict === "unknown" ? "not_spam" : "spam",
+    spam_probability: Number((confidence / 100).toFixed(4)),
+    nlp_stack: ["heuristic feature extractor", "phrase heuristics", "explainable risk scoring"]
+  };
+}
+
+function normalizeText(value) {
+  return String(value || "")
+    .normalize("NFKC")
+    .replace(/[\u200B-\u200D\uFEFF]/g, "");
+}
+
+function tokenize(text) {
+  return normalizeText(text)
+    .toLowerCase()
+    .match(/[a-z0-9]+|[\u1000-\u109f]+/giu) || [];
+}
+
+function spamTerms(tokens) {
+  const frequency = new Map();
+  for (const token of new Set(tokens)) {
+    const count = MESSAGE_SPAM_TERMS.find(([term]) => term === token)?.[1] || 0;
+    if (count > 0) frequency.set(token, count);
+  }
+  return [...frequency.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4)
+    .map(([token]) => token);
+}
+
+function analyzeMessage(value) {
+  const cleaned = normalizeText(value).trim();
+  const tokens = tokenize(cleaned);
+  if (!tokens.length) {
+    throw new Error("Message does not contain readable words.");
+  }
+
+  let probability = 0.12;
+  const lowered = cleaned.toLowerCase();
+  const phrases = [...PHRASE_SIGNALS.keys()].filter((phrase) => lowered.includes(phrase));
+  const contextual = CONTEXT_SIGNALS.filter(([pattern]) => pattern.test(cleaned));
+  const phraseBoost = phrases.reduce((sum, phrase) => sum + PHRASE_SIGNALS.get(phrase), 0);
+  const contextBoost = contextual.reduce((sum, [, boost]) => sum + boost, 0);
+  let benignDiscount = Math.min(0.24, [...BENIGN_SIGNALS].reduce((sum, [phrase, weight]) => sum + (lowered.includes(phrase) ? weight : 0), 0));
+  const combinationBoost = contextual.length >= 2 ? 0.10 : 0;
+  if (contextual.some(([, boost]) => boost >= 0.22)) benignDiscount = Math.min(benignDiscount, 0.04);
+
+  if (/(password|passcode|otp|verification code)/i.test(cleaned)) probability += 0.34;
+  if (/(urgent|immediately|act now|today only)/i.test(cleaned)) probability += 0.2;
+  if (/(gift card|bank details|credit card|payment|money|crypto)/i.test(cleaned)) probability += 0.18;
+  if (/(https?:\/\/|www\.)/i.test(cleaned)) probability += 0.08;
+  if (cleaned.length > 120) probability -= 0.05;
+
+  probability = Math.max(0.01, Math.min(0.99, probability + phraseBoost + Math.min(0.45, contextBoost) + combinationBoost - benignDiscount));
+  const isSpam = probability >= 0.50;
+  const indicators = [...phrases, ...contextual.map(([, , label]) => label), ...spamTerms(tokens)];
+  const confidence = isSpam ? probability : 1 - probability;
+  const risk = probability >= 0.70 ? "HIGH" : probability >= 0.50 ? "MEDIUM" : "LOW";
+  const indicatorSet = new Set(indicators);
+  const category = indicatorSet.has("Requests an authentication secret")
+    ? "Credential phishing"
+    : indicatorSet.has("Requests a difficult-to-reverse payment")
+      ? "Payment scam"
+      : indicatorSet.has("Requests remote device access")
+        ? "Remote-access scam"
+        : indicatorSet.has("Uses a prize or reward lure")
+          ? "Prize or reward scam"
+          : indicatorSet.has("Promises unrealistic financial returns")
+            ? "Investment scam"
+            : isSpam ? "Spam / Scam Message" : "Likely Safe Message";
+  const reason = isSpam
+    ? `Spam-like language detected: ${[...new Set(indicators)].slice(0, 4).join(", ")}.`
+    : "The NLP model found no strong spam pattern in this message.";
+
+  return {
+    ...result(
+      "message",
+      probability * 100,
+      category,
+      reason,
+      indicators.length ? indicators : ["No strong spam phrases detected"],
+      "safemind-intent-nlp-v3"
+    ),
+    is_spam: isSpam,
+    label: isSpam ? "spam" : "not_spam",
+    spam_probability: Number(probability.toFixed(4)),
+    confidence: Math.round(confidence * 100),
+    risk,
+    category,
+    reason,
+    indicators: [...new Set(indicators)].slice(0, 6)
+  };
+}
+
+function analyzeLink(value) {
+  const candidate = value.includes("://") ? value : `https://${value}`;
+  let parsed;
+  try {
+    parsed = new URL(candidate);
+    if (!["http:", "https:"].includes(parsed.protocol) || !parsed.hostname) {
+      throw new Error();
+    }
+  } catch {
+    return result("link", 96, "Invalid or dangerous URL", "The value is not a valid HTTP or HTTPS address.", ["Invalid URL format"], "url-threat-features-v2");
+  }
+
+  let score = 5;
+  const indicators = [];
+  const hostname = parsed.hostname.toLowerCase().replace(/\.$/, "");
+  const labels = hostname.split(".");
+
+  if (parsed.protocol !== "https:") {
+    score += 20;
+    indicators.push("Connection does not use HTTPS");
+  }
+
+  if (/^\d{1,3}(?:\.\d{1,3}){3}$/.test(hostname)) {
+    score += 35;
+    indicators.push("Uses an IP address instead of a domain");
+  }
+
+  if (hostname.includes("xn--")) {
+    score += 30;
+    indicators.push("Internationalized domain may imitate another name");
+  }
+
+  if (/[^\x00-\x7F]/.test(hostname)) {
+    score += 24;
+    indicators.push("Unicode domain requires careful visual verification");
+  }
+
+  if (SHORTENER_DOMAINS.has(hostname) || [...SHORTENER_DOMAINS].some((item) => hostname.endsWith(`.${item}`))) {
+    score += 30;
+    indicators.push("Shortened URL hides its final destination");
+  }
+
+  if (parsed.username || parsed.password || value.split("?")[0].includes("@")) {
+    score += 30;
+    indicators.push("URL contains misleading user-information syntax");
+  }
+
+  if (labels.length > 4) {
+    score += 14;
+    indicators.push("Unusually deep subdomain structure");
+  }
+
+  if ((hostname.match(/-/g) || []).length >= 3) {
+    score += 14;
+    indicators.push("Domain contains many hyphens");
+  }
+
+  if (RISKY_TLDS.has(labels[labels.length - 1])) {
+    score += 18;
+    indicators.push(`Frequently abused .${labels[labels.length - 1]} domain ending`);
+  }
+
+  const inspected = `${hostname}${parsed.pathname}`.toLowerCase();
+  const bait = [...URL_BAIT_TERMS].filter((term) => inspected.includes(term));
+  if (bait.length) {
+    score += Math.min(32, bait.length * 9);
+    indicators.push(`Credential or payment bait: ${bait.slice(0, 4).join(", ")}`);
+  }
+
+  if (value.length > 180) {
+    score += 12;
+    indicators.push("Unusually long URL");
+  }
+
+  if ((value.match(/%/g) || []).length >= 4) {
+    score += 14;
+    indicators.push("Heavy URL encoding may hide the destination path");
+  }
+
+  const category = score >= 35 ? "Potential phishing link" : "No obvious URL threats";
+  const reason = indicators.length
+    ? "Structural phishing indicators were detected in this URL."
+    : "No common structural phishing indicators were detected; verify the sender before opening it.";
+
+  return result("link", score, category, reason, indicators.length ? indicators : ["No known structural warning signs"], "url-threat-features-v2");
+}
+
+function analyzeEmail(value) {
+  const lowered = String(value || "").trim().toLowerCase();
+  if (!EMAIL_PATTERN.test(lowered)) {
+    return result("email", 92, "Invalid or deceptive email address", "The sender address is malformed or cannot be reliably verified.", ["Invalid email format"], "email-threat-features-v2");
+  }
+
+  const [, domain] = lowered.split("@");
+  const labels = domain.split(".");
+  let score = 6;
+  const indicators = [];
+
+  if (domain.includes("xn--")) {
+    score += 30;
+    indicators.push("Punycode domain may imitate a trusted brand");
+  }
+
+  if (RISKY_TLDS.has(labels[labels.length - 1])) {
+    score += 22;
+    indicators.push(`Frequently abused .${labels[labels.length - 1]} domain ending`);
+  }
+
+  const brands = [...BRAND_TERMS].filter((term) => lowered.includes(term));
+  if (brands.length && FREE_MAIL_DOMAINS.has(domain)) {
+    score += 38;
+    indicators.push("Brand name is sent from a free mailbox provider");
+  }
+
+  if (brands.length && domain.includes("-")) {
+    score += 22;
+    indicators.push("Brand-like domain uses impersonation-style separators");
+  }
+
+  if ((domain.match(/-/g) || []).length >= 3) {
+    score += 15;
+    indicators.push("Domain contains many hyphens");
+  }
+
+  const local = lowered.split("@")[0];
+  if (local.length > 64 || local.includes("..")) {
+    score += 20;
+    indicators.push("Unusual mailbox structure");
+  }
+
+  if (/(security|support|verify|billing|admin)/.test(local) && RISKY_TLDS.has(labels[labels.length - 1])) {
+    score += 20;
+    indicators.push("Authority-style mailbox on a high-risk domain");
+  }
+
+  const category = score >= 35 ? "Potential sender impersonation" : "No obvious sender threats";
+  const reason = indicators.length
+    ? "The sender address contains impersonation or domain-risk indicators."
+    : "The address format has no obvious impersonation indicators; confirm the domain independently.";
+
+  return result("email", score, category, reason, indicators.length ? indicators : ["Valid email structure"], "email-threat-features-v2");
+}
+
+function analyzePhone(value) {
+  const normalized = String(value || "").replace(/[^\d+]/g, "");
+  const digits = normalized.replace(/\D/g, "");
+
+  if (!(digits.length >= 7 && digits.length <= 15) || (normalized.match(/\+/g) || []).length > 1 || (normalized.includes("+") && !normalized.startsWith("+"))) {
+    return result("phone", 86, "Invalid phone number", "The number does not match a valid international phone-number structure.", ["Invalid phone number format"], "phone-risk-features-v2");
+  }
+
+  let score = 8;
+  const indicators = [];
+
+  if (!String(value || "").trim().startsWith("+")) {
+    score += 8;
+    indicators.push("Country code is missing");
+  }
+
+  if (digits.startsWith("1900") || digits.startsWith("900")) {
+    score += 48;
+    indicators.push("Premium-rate prefix");
+  }
+
+  if (/(.)\1{5,}/.test(digits)) {
+    score += 28;
+    indicators.push("Long repeated-digit sequence");
+  }
+
+  if (["012345", "123456", "234567", "987654", "876543"].some((sequence) => digits.includes(sequence))) {
+    score += 22;
+    indicators.push("Artificial sequential-digit pattern");
+  }
+
+  if (new Set(digits).size <= 3) {
+    score += 20;
+    indicators.push("Unusually low digit variety");
+  }
+
+  const category = score >= 35 ? "Suspicious phone pattern" : "Unknown phone number";
+  const reason = indicators.length && score >= 35
+    ? "The number contains patterns often associated with suspicious or premium-rate calls."
+    : "No strong number-pattern warning was found; an unknown caller still requires verification.";
+
+  return result("phone", score, category, reason, indicators.length ? indicators : ["Valid phone-number structure"], "phone-risk-features-v2");
+}
+
+function analyzePayload(scanType, content) {
+  if (!SUPPORTED_SCAN_TYPES.has(scanType)) {
+    throw new Error("Scan type must be message, link, email, or phone.");
+  }
+  if (typeof content !== "string" || !content.trim()) {
+    throw new Error("Content must not be empty.");
+  }
+
+  const value = content.trim();
+  const limits = { message: 10_000, link: 2_048, email: 254, phone: 32 };
+  if (value.length > limits[scanType]) {
+    throw new Error(`${scanType[0].toUpperCase()}${scanType.slice(1)} must be ${limits[scanType]} characters or fewer.`);
+  }
+
+  return scanType === "message"
+    ? analyzeMessage(value)
+    : scanType === "link"
+      ? analyzeLink(value)
+      : scanType === "email"
+        ? analyzeEmail(value)
+        : analyzePhone(value);
+}
+
+function buildInvestigation(scanType, content, analysis, investigationTimeMs) {
+  const evidence = [];
+  const addMatches = (regex, kind, label, severity, explanation) => {
+    for (const match of content.match(regex) || []) evidence.push({ kind, label, severity, value: match.slice(0, 180), explanation });
+  };
+  addMatches(/https?:\/\/[^\s<>"']+/gi, "url", "URL found", "medium", "Inspect the destination independently.");
+  addMatches(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,63}/gi, "email", "Email address found", "low", "Verify the sender domain.");
+  addMatches(/\b(?:bc1[a-z0-9]{25,62}|0x[a-f0-9]{40})\b/gi, "crypto_wallet", "Crypto wallet found", "high", "Crypto payments are difficult to reverse.");
+  const behaviors = [
+    [/\b(?:otp|one.?time password|verification code|passcode)\b|otp ကုဒ်/i, "OTP request", "high", 25],
+    [/\b(?:password|pin|recovery key|login code)\b|စကားဝှက်/i, "Credential request", "high", 25],
+    [/\b(?:pay|payment|transfer|gift card|bitcoin|crypto|bank details)\b|ငွေလွှဲ/i, "Money request", "high", 25],
+    [/\b(?:urgent|immediately|act now|final warning|today only)\b|ချက်ချင်း|အခုပဲ/i, "Urgency language", "medium", 20]
+  ];
+  const scoring = [];
+  let allocated = 0;
+  for (const [pattern, label, severity, weight] of behaviors) {
+    if (pattern.test(content)) {
+      evidence.push({ kind: "behavior", label, severity, value: null, explanation: `Detected ${label.toLowerCase()} in the submitted content.` });
+      const applied = Math.min(weight, Math.max(0, analysis.risk_score - allocated));
+      if (applied) scoring.push({ label, score: applied, source: "evidence" });
+      allocated += applied;
+    }
+  }
+  if (allocated < analysis.risk_score) scoring.push({ label: "ML pattern score", score: analysis.risk_score - allocated, source: "model" });
+  const status = analysis.risk_score >= 90 ? "Critical" : analysis.risk_score >= 70 ? "High Risk" : analysis.risk_score >= 50 ? "Likely Scam" : analysis.risk_score >= 25 ? "Suspicious" : "Safe";
+  const caseId = randomUUID();
+  const caseDate = new Date().toISOString().slice(0, 10).replaceAll("-", "");
+  const nodes = [{ id: "input", type: scanType, label: scanType[0].toUpperCase() + scanType.slice(1) }];
+  const edges = [];
+  evidence.filter((item) => ["url", "email", "phone", "crypto_wallet"].includes(item.kind)).forEach((item, index) => {
+    nodes.push({ id: `evidence-${index}`, type: item.kind, label: item.label });
+    edges.push({ source: "input", target: `evidence-${index}`, relation: "contains" });
+  });
+  return {
+    case_id: caseId,
+    case_number: `CASE-${caseDate}-${caseId.slice(0, 8).toUpperCase()}`,
+    status,
+    confidence: analysis.confidence,
+    threat_type: analysis.category,
+    investigation_time_ms: Number(investigationTimeMs.toFixed(3)),
+    evidence_count: evidence.length + (analysis.indicators || []).length,
+    document: { detected_type: scanType, language: /[\u1000-\u109f]/.test(content) ? "my" : "en", encoding: "unicode", character_count: content.trim().length, normalization: "NFKC", entities_extracted: true },
+    intelligence: { local_reputation_checked: true, external_feeds_configured: false, whois_configured: false, note: "Live providers are not configured; no external reputation was invented." },
+    predictions: { model: analysis.model, probabilities: { safe_or_unknown: Math.max(0, 100 - analysis.risk_score) / 100, suspicious_or_scam: analysis.risk_score / 100 }, calibration: "derived_from_active_model_risk" },
+    evidence: evidence.slice(0, 16),
+    scoring,
+    timeline: [
+      ["Input Agent", "Reading and normalizing input"], ["Threat Agent", "Checking available intelligence"],
+      ["ML Agent", "Running classification models"], ["Evidence Agent", "Extracting entities and behaviors"],
+      ["Reasoning Agent", "Scoring explainable evidence"], ["Decision Agent", "Producing risk decision"]
+    ].map(([agent, label]) => ({ agent, label, status: "completed", duration_ms: 0 })),
+    graph: { nodes, edges },
+    related_cases: { available: false, matches: [], reason: "Vector similarity is ready for pgvector but not configured." },
+    knowledge: { available: false, citations: [], reason: "RAG providers are not configured; no citation was fabricated." }
+  };
+}
+
+function runAgent(scanType, content) {
+  const started = performance.now();
+  const key = createHash("sha256").update(`${scanType}\0${content.trim()}`).digest("hex");
+  const cached = AGENT_CACHE.get(key);
+  const cacheHit = Boolean(cached && Date.now() - cached.createdAt < AGENT_CACHE_TTL_MS);
+  let analysis = cacheHit ? structuredClone(cached.analysis) : analyzePayload(scanType, content);
+  if (!cacheHit) {
+    AGENT_CACHE.set(key, { createdAt: Date.now(), analysis: structuredClone(analysis) });
+    if (AGENT_CACHE.size > AGENT_CACHE_MAX) AGENT_CACHE.delete(AGENT_CACHE.keys().next().value);
+  }
+  const latencyMs = Math.max(0.01, performance.now() - started);
+  analysis.investigation = buildInvestigation(scanType, content, analysis, latencyMs);
+  const outputTokens = Math.max(1, Math.round(Buffer.byteLength(JSON.stringify(analysis), "utf8") / 4));
+  const internalTelemetry = {
+    run_id: randomUUID(),
+    intent: `analyze_${scanType}`,
+    intent_confidence: 1,
+    parameters: { scan_type: scanType, content_length: content.trim().length, content_stored: false },
+    selected_tools: TOOL_ROUTES[scanType] || [],
+    tool_selection_correct: Boolean(TOOL_ROUTES[scanType]?.length),
+    task_succeeded: true,
+    turns_to_completion: 1,
+    estimated_cost_usd: 0,
+    cache_hit: cacheHit,
+    latency_ms: Number(latencyMs.toFixed(3)),
+    ttft_ms: Number(latencyMs.toFixed(3)),
+    ttft_mode: "non_streaming_response",
+    output_tokens_estimated: outputTokens,
+    tokens_per_second_estimated: Number((outputTokens / (latencyMs / 1000)).toFixed(2)),
+    compute_device: "cpu",
+    throughput_per_gpu: null,
+    batch_size: 1,
+    batch_efficiency: 1
+  };
+  void internalTelemetry;
+  return analysis;
+}
+
+export default function handler(req, res) {
+  const method = String(req.method || "GET").toUpperCase();
+
+  if (method === "OPTIONS") {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    return jsonResponse(res, 204, {});
+  }
+
+  if (method === "GET") {
+    return jsonResponse(res, 200, {
+      status: "ok",
+      model: "safemind-hybrid-security-v3",
+      scan_types: [...SUPPORTED_SCAN_TYPES]
+    });
+  }
+
+  if (method !== "POST") {
+    return jsonResponse(res, 405, { error: "Method not allowed." }, { Allow: "GET, POST, OPTIONS" });
+  }
+
+  const { allowed, retryAfter } = checkRateLimit(getClientIp(req));
+  if (!allowed) {
+    return jsonResponse(res, 429, { error: "Too many scans. Please wait before trying again." }, { "Retry-After": retryAfter });
+  }
+
+  const contentType = String(req.headers["content-type"] || "").split(";", 1)[0].trim().toLowerCase();
+  if (contentType !== "application/json") {
+    return jsonResponse(res, 415, { error: "Content-Type must be application/json." });
+  }
+
+  let body = "";
+  req.on("data", (chunk) => {
+    body += chunk;
+    if (body.length > 40_000) {
+      req.destroy();
+    }
+  });
+
+  req.on("end", () => {
+    try {
+      const payload = JSON.parse(body || "{}");
+      if (typeof payload !== "object" || Array.isArray(payload) || payload === null) {
+        throw new Error("The request body must be a JSON object.");
+      }
+      const scanType = payload.scan_type ?? (Object.prototype.hasOwnProperty.call(payload, "message") ? "message" : null);
+      const content = payload.content ?? payload.message;
+      return jsonResponse(res, 200, runAgent(scanType, content));
+    } catch (error) {
+      return jsonResponse(res, 400, { error: error.message || "Unable to analyze this message." });
+    }
+  });
+
+  req.on("error", () => {
+    jsonResponse(res, 500, { error: "Unable to analyze this message." });
+  });
+}

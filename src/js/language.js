@@ -1,0 +1,700 @@
+const translations = {
+  SafeMind: "SafeMind",
+  Features: "လုပ်ဆောင်ချက်များ",
+  Demo: "အစမ်းသုံးရန်",
+  Contacts: "ဆက်သွယ်ရန်",
+  Trust: "ယုံကြည်မှု",
+  FAQ: "မေးလေ့ရှိသော မေးခွန်းများ",
+  "Contact us": "ဆက်သွယ်ရန်",
+  Login: "ဝင်ရောက်ရန်",
+  "Get Started": "စတင်ရန်",
+  "Start Protecting": "စတင်ကာကွယ်ရန်",
+  "AI Powered Security": "AI စွမ်းအားသုံး လုံခြုံရေး",
+  "Your AI Shield Against Scams":
+    "လိမ်လည်မှုများမှ ကာကွယ်ပေးမည့် သင့် AI ဒိုင်းလွှား",
+  "Analyze suspicious phone numbers, messages and links before they become a threat.":
+    "သံသယဖြစ်ဖွယ် ဖုန်းနံပါတ်များ၊ စာတိုများနှင့် လင့်ခ်များကို အန္တရာယ်မဖြစ်မီ စစ်ဆေးပါ။",
+  "Try Demo": "အစမ်းစစ်ဆေးရန်",
+  "Phone intelligence": "ဖုန်းနံပါတ် စိစစ်မှု",
+  "Message analysis": "စာတို စိစစ်မှု",
+  "Link inspection": "လင့်ခ် စိစစ်မှု",
+  "Interactive Demo": "အပြန်အလှန် အစမ်းသုံးစနစ်",
+  "Test a suspicious input instantly":
+    "သံသယဖြစ်ဖွယ် အချက်အလက်ကို ချက်ချင်းစစ်ဆေးပါ",
+  "Check phone numbers, messages, links, and email addresses against the SafeMind directory.":
+    "ဖုန်းနံပါတ်၊ စာတို၊ လင့်ခ်နှင့် အီးမေးလ်များကို SafeMind မှတ်တမ်းနှင့် တိုက်စစ်ပါ။",
+  "Phone Number": "ဖုန်းနံပါတ်",
+  Message: "စာတို",
+  Link: "လင့်ခ်",
+  Email: "အီးမေးလ်",
+  "Phone number": "ဖုန်းနံပါတ်",
+  "Website link": "ဝဘ်ဆိုက်လင့်ခ်",
+  "Email address": "အီးမေးလ်လိပ်စာ",
+  "Analyze Demo": "အစမ်းစစ်ဆေးရန်",
+  "Scam example": "လိမ်လည်မှု နမူနာ",
+  "Not scam": "လိမ်လည်မှု မဟုတ်",
+  "Not in database": "ဒေတာဘေ့စ်တွင် မရှိ",
+  Result: "ရလဒ်",
+  "Verified reporting contacts": "အတည်ပြုထားသော တိုင်ကြားရန်လိပ်စာများ",
+  "Official phishing-report email addresses":
+    "တရားဝင် phishing တိုင်ကြားရန် အီးမေးလ်များ",
+  "These are organization-published abuse contacts, not general customer-support inboxes.":
+    "ဤလိပ်စာများသည် အဖွဲ့အစည်းများထုတ်ပြန်ထားသော လိမ်လည်မှုတိုင်ကြားရန် လိပ်စာများဖြစ်သည်။",
+  "Minimal UI. Serious protection.":
+    "ရိုးရှင်းသော မျက်နှာပြင်၊ ထိရောက်သော ကာကွယ်မှု။",
+  "Phone Scans": "ဖုန်း စစ်ဆေးမှု",
+  "Message Analysis": "စာတို စိစစ်မှု",
+  "Link Safety": "လင့်ခ် လုံခြုံရေး",
+  "How It Works": "အသုံးပြုပုံ",
+  "From check to action in three steps":
+    "အဆင့်သုံးဆင့်ဖြင့် စစ်ဆေးပြီး အရေးယူပါ",
+  "Paste or scan": "ထည့်သွင်း သို့မဟုတ် စစ်ဆေးပါ",
+  "Analyze instantly": "ချက်ချင်း စိစစ်ပါ",
+  "Protect your account": "သင့်အကောင့်ကို ကာကွယ်ပါ",
+  "Trust Statistics": "ယုံကြည်မှု ကိန်းဂဏန်းများ",
+  "Numbers that show the system working":
+    "စနစ်၏ ထိရောက်မှုကို ပြသသော ကိန်းဂဏန်းများ",
+  "Scans processed": "စစ်ဆေးပြီးမှု",
+  "Average uptime": "ပျမ်းမျှ အသုံးပြုနိုင်ချိန်",
+  "Average response": "ပျမ်းမျှ တုံ့ပြန်ချိန်",
+  "Protection available": "ကာကွယ်မှု ရရှိနိုင်ချိန်",
+  "Built by": "ဖန်တီးသူ",
+  "Need help staying safe?": "လုံခြုံရေးအကူအညီ လိုပါသလား။",
+  "Email SafeMind": "SafeMind သို့ အီးမေးလ်ပို့ရန်",
+  "We will help point you in the right direction.":
+    "သင့်အား မှန်ကန်သော လမ်းညွှန်မှု ပေးပါမည်။",
+  "Common questions, answered quickly":
+    "မေးလေ့ရှိသော မေးခွန်းများအတွက် အမြန်အဖြေများ",
+  "Professional scam detection for modern teams and individuals.":
+    "အဖွဲ့များနှင့် တစ်ဦးချင်းအတွက် ကျွမ်းကျင်သော လိမ်လည်မှု စစ်ဆေးရေး။",
+  Scanner: "စစ်ဆေးကိရိယာ",
+  "Open scanner": "စစ်ဆေးကိရိယာ ဖွင့်ရန်",
+  "Report a scam": "လိမ်လည်မှု တိုင်ကြားရန်",
+  "Scam directory": "လိမ်လည်မှု မှတ်တမ်း",
+  Education: "ပညာပေး",
+  Logout: "ထွက်ရန်",
+  "Welcome,": "ကြိုဆိုပါသည်၊",
+  "Your security overview.": "သင့်လုံခြုံရေး အကျဉ်းချုပ်။",
+  "Monitor your screening activity, review practical guidance, and send suspicious content for expert review.":
+    "သင့်စစ်ဆေးမှုများကို ကြည့်ရှု၊ အသုံးဝင်သော လမ်းညွှန်ချက်များကို ဖတ်ရှုပြီး သံသယဖြစ်ဖွယ်အကြောင်းအရာကို ကျွမ်းကျင်သူထံ ပို့ပါ။",
+  "Open scam scanner": "လိမ်လည်မှု စစ်ဆေးကိရိယာ ဖွင့်ရန်",
+  "Browse education": "ပညာပေးအကြောင်းအရာ ကြည့်ရန်",
+  Level: "အဆင့်",
+  credits: "ခရက်ဒစ်",
+  "day verification streak": "ရက်ဆက် စစ်ဆေးမှု",
+  "Completed analyses": "စစ်ဆေးပြီးမှု",
+  "Milestones reached": "မှတ်တိုင် ရရှိမှု",
+  "Credits per analysis": "တစ်ကြိမ်စစ်ဆေးလျှင် ခရက်ဒစ်",
+  "Recent activity": "လတ်တလော လုပ်ဆောင်မှု",
+  "Latest security checks": "နောက်ဆုံး လုံခြုံရေးစစ်ဆေးမှုများ",
+  "Your most recent analyses from the dedicated scanner.":
+    "သီးသန့်စစ်ဆေးကိရိယာမှ နောက်ဆုံးစစ်ဆေးမှုများ။",
+  "No scan activity yet.": "စစ်ဆေးမှု မရှိသေးပါ။",
+  "Response protocol": "တုံ့ပြန်ရေး လုပ်ထုံးလုပ်နည်း",
+  "When something feels wrong": "သံသယဖြစ်လာသည့်အခါ",
+  Pause: "ရပ်တန့်ပါ",
+  Verify: "အတည်ပြုပါ",
+  Block: "ပိတ်ဆို့ပါ",
+  Report: "တိုင်ကြားပါ",
+  "Do not click, reply, pay, or share a code while under pressure.":
+    "ဖိအားပေးခံနေရချိန်တွင် မနှိပ်ပါနှင့်၊ မတုံ့ပြန်ပါနှင့်၊ ငွေမပေးပါနှင့်၊ ကုဒ်မမျှဝေပါနှင့်။",
+  "Contact the organization using its official app or website—not the message.":
+    "စာတိုထဲမှ လင့်ခ်မဟုတ်ဘဲ တရားဝင်အက်ပ် သို့မဟုတ် ဝဘ်ဆိုက်မှ ဆက်သွယ်ပါ။",
+  "Block the sender and change affected passwords from a trusted device.":
+    "ပို့သူကို ပိတ်ဆို့ပြီး ယုံကြည်ရသော စက်မှ စကားဝှက်များ ပြောင်းပါ။",
+  "Send uncertain content to SafeMind for administrator review.":
+    "မသေချာသော အကြောင်းအရာကို စီမံသူစစ်ဆေးရန် SafeMind သို့ ပို့ပါ။",
+  "Admin review": "စီမံသူ စစ်ဆေးမှု",
+  "Send a scam report": "လိမ်လည်မှု တိုင်ကြားချက် ပို့ရန်",
+  "Report type": "တိုင်ကြားမှု အမျိုးအစား",
+  "What should the admin check?": "စီမံသူ စစ်ဆေးရမည့်အကြောင်းအရာ",
+  "Additional context": "နောက်ထပ် အချက်အလက်",
+  "Send report": "တိုင်ကြားချက် ပို့ရန်",
+  "Scam education": "လိမ်လည်မှု ပညာပေး",
+  "Learn the warning signs": "သတိပေးလက္ခဏာများကို လေ့လာပါ",
+  "Practical guidance published by SafeMind administrators.":
+    "SafeMind စီမံသူများ ထုတ်ပြန်ထားသော အသုံးဝင်သည့် လမ်းညွှန်ချက်များ။",
+  All: "အားလုံး",
+  Phishing: "Phishing",
+  Phone: "ဖုန်း",
+  "Account safety": "အကောင့် လုံခြုံရေး",
+  "Admin publishing": "စီမံသူ ထုတ်ဝေမှု",
+  "Article title": "ဆောင်းပါးခေါင်းစဉ်",
+  Category: "အမျိုးအစား",
+  "Education content": "ပညာပေးအကြောင်းအရာ",
+  "Publish education": "ပညာပေးဆောင်းပါး ထုတ်ဝေရန်",
+  "Loading education…": "ပညာပေးအကြောင်းအရာ ဖွင့်နေသည်…",
+  "No education has been published yet.": "ပညာပေးအကြောင်းအရာ မထုတ်ဝေရသေးပါ။",
+  "Education note controls": "ပညာပေး မှတ်စု ထိန်းချုပ်မှုများ",
+  "Maximize all notes": "မှတ်စုအားလုံး ဖြန့်ကြည့်ရန်",
+  "Minimize all notes": "မှတ်စုအားလုံး ခေါက်သိမ်းရန်",
+  Maximize: "ဖြန့်ကြည့်ရန်",
+  Minimize: "ခေါက်သိမ်းရန်",
+  Published: "ထုတ်ဝေသည့်နေ့",
+  Other: "အခြား",
+  "Open navigation": "လမ်းညွှန်မီနူး ဖွင့်ရန်",
+  "Switch language": "ဘာသာစကား ပြောင်းရန်",
+  "Back to Dashboard": "ဒက်ရှ်ဘုတ်သို့ ပြန်ရန်",
+  "Scam Checker": "လိမ်လည်မှု စစ်ဆေးကိရိယာ",
+  "Security analysis": "လုံခြုံရေး စိစစ်မှု",
+  "Analyze suspicious content with confidence.":
+    "သံသယဖြစ်ဖွယ် အကြောင်းအရာကို ယုံကြည်စိတ်ချစွာ စိစစ်ပါ။",
+  "SafeMind analyzes only the text you submit. Files stay local in your browser until you choose to send a review report.":
+    "SafeMind သည် သင်ပေးပို့သည့် စာသားကိုသာ စိစစ်သည်။ ပြန်လည်စစ်ဆေးရန် ပို့မည်ဟု ရွေးချယ်သည့်အထိ ဖိုင်များသည် သင့်ဘရောက်ဇာအတွင်းတွင်သာ ရှိနေသည်။",
+  "Check phone numbers, messages, links, and email senders with hybrid AI analysis, verified records, and explainable signals.":
+    "ဖုန်းနံပါတ်၊ စာတို၊ လင့်ခ်နှင့် အီးမေးလ်ပို့သူများကို ရှင်းလင်းစွာ အကြောင်းပြနိုင်သော AI စိစစ်မှုနှင့် အတည်ပြုမှတ်တမ်းများဖြင့် စစ်ဆေးပါ။",
+  "Number Checker": "ဖုန်းနံပါတ် စစ်ဆေးရန်",
+  "Message Checker": "စာတို စစ်ဆေးရန်",
+  "Link Checker": "လင့်ခ် စစ်ဆေးရန်",
+  Notes: "မှတ်ချက်",
+  "Use Example": "နမူနာသုံးရန်",
+  "Upload email file": "အီးမေးလ် ဖိုင်တင်ရန်",
+  "Upload a raw `.eml`, `.txt`, or exported message file. SafeMind extracts the sender and body locally for analysis.":
+    "မူရင်း `.eml`၊ `.txt` သို့မဟုတ် ထုတ်ယူထားသော စာတိုဖိုင်ကို တင်ပါ။ SafeMind သည် ပို့သူနှင့် အကြောင်းအရာကို စက်ပစ္စည်းအတွင်းတွင်သာ ခွဲထုတ်စိစစ်သည်။",
+  "Ready to analyze:": "စိစစ်ရန် အသင့်ဖြစ်သည်:",
+  "Please use a file smaller than 1 MB.": "1 MB ထက်ငယ်သော ဖိုင်ကိုသာ အသုံးပြုပါ။",
+  "Report as scam": "လိမ်လည်မှုအဖြစ် တိုင်ကြားရန်",
+  "Submit as safe": "လုံခြုံမှုအဖြစ် ပို့ရန်",
+  "Request review": "ပြန်လည်စစ်ဆေးရန် တောင်းဆိုရန်",
+  Analyze: "စိစစ်ရန်",
+  "Risk Score": "အန္တရာယ်အဆင့်",
+  "Awaiting input": "အချက်အလက် စောင့်နေသည်",
+  "Choose a checker and enter a value.":
+    "စစ်ဆေးမှုအမျိုးအစားရွေးပြီး အချက်အလက်ထည့်ပါ။",
+  "Automated analysis reduces risk but cannot guarantee that content is safe. Verify unexpected requests through an official channel and never upload credentials, recovery codes, or payment data.":
+    "အလိုအလျောက်စိစစ်မှုသည် အန္တရာယ်လျော့ချပေးသော်လည်း လုံးဝလုံခြုံကြောင်း အာမခံမပေးနိုင်ပါ။ မမျှော်လင့်သော တောင်းဆိုချက်များကို တရားဝင်လမ်းကြောင်းမှ အတည်ပြုပြီး လျှို့ဝှက်အချက်အလက်၊ ပြန်လည်ရယူကုဒ်များ၊ သို့မဟုတ် ငွေပေးချေမှုအချက်အလက်များကို မတင်ပါနှင့်။",
+  "Live Lists": "တိုက်ရိုက်မှတ်တမ်း",
+  "Shared scam directory": "မျှဝေထားသော လိမ်လည်မှုမှတ်တမ်း",
+  Scam: "လိမ်လည်မှု",
+  Safe: "လုံခြုံ",
+  "Pending classification": "အမျိုးအစား သတ်မှတ်ရန် စောင့်ဆိုင်းနေသည်",
+};
+
+Object.assign(translations, {
+  "SafeMind Guide": "SafeMind လမ်းညွှန်",
+  "Loading article...": "ဆောင်းပါး ဖွင့်နေသည်...",
+  "Back to education": "ပညာပေးစာမျက်နှာသို့ ပြန်ရန်",
+  "Welcome to SafeMind": "SafeMind မှ ကြိုဆိုပါသည်",
+  "Scam protection in your pocket": "သင့်လက်ထဲက လိမ်လည်မှုကာကွယ်ရေး",
+  "Check before you trust.": "မယုံကြည်မီ စစ်ဆေးပါ။",
+  "Scan suspicious messages, links, phone numbers, and email addresses before you respond.": "မတုံ့ပြန်မီ သံသယဖြစ်ဖွယ် စာတို၊ လင့်ခ်၊ ဖုန်းနံပါတ်နှင့် အီးမေးလ်လိပ်စာများကို စစ်ဆေးပါ။",
+  "Scan instantly": "ချက်ချင်း စစ်ဆေးရန်",
+  "Look for common scam signals in seconds.": "လိမ်လည်မှုလက္ခဏာများကို စက္ကန့်ပိုင်းအတွင်း ရှာဖွေပါ။",
+  "Check verified records": "အတည်ပြုမှတ်တမ်းများ စစ်ဆေးရန်",
+  "Compare details with the SafeMind directory.": "အချက်အလက်များကို SafeMind မှတ်တမ်းနှင့် တိုက်စစ်ပါ။",
+  "Report unknown threats": "မသိရှိသေးသော အန္တရာယ်များ တိုင်ကြားရန်",
+  "Send uncertain cases for administrator review.": "မသေချာသော အမှုများကို စီမံသူစစ်ဆေးရန် ပို့ပါ။",
+  "Stay alert. Never share passwords or verification codes.": "သတိရှိပါ။ စကားဝှက် သို့မဟုတ် အတည်ပြုကုဒ်များကို မျှဝေပါနှင့်။",
+  "SafeMind Profile": "SafeMind ကိုယ်ရေးအချက်အလက်",
+  Overview: "အကျဉ်းချုပ်",
+  Reports: "တိုင်ကြားချက်များ",
+  Account: "အကောင့်",
+  "Edit profile": "ကိုယ်ရေးအချက်အလက် ပြင်ရန်",
+  User: "အသုံးပြုသူ",
+  Profile: "ကိုယ်ရေးအချက်အလက်",
+  "Display name": "ပြသမည့်အမည်",
+  "Save profile": "ကိုယ်ရေးအချက်အလက် သိမ်းရန်",
+  Security: "လုံခြုံရေး",
+  "Change password": "စကားဝှက် ပြောင်းရန်",
+  "New password": "စကားဝှက်အသစ်",
+  "Update password": "စကားဝှက် ပြင်ဆင်ရန်",
+  "SafeMind Signup": "SafeMind အကောင့်ဖွင့်ရန်",
+  "Start securing your inbox": "သင့်စာဝင်ပုံးကို စတင်ကာကွယ်ပါ",
+  "Create your account": "သင့်အကောင့် ဖန်တီးပါ",
+  "Set up SafeMind to save scam reports, track protection activity and launch into the dashboard.": "လိမ်လည်မှုတိုင်ကြားချက်များ သိမ်းရန်၊ ကာကွယ်ရေးလုပ်ဆောင်မှုများ ကြည့်ရန်နှင့် ဒက်ရှ်ဘုတ်သို့ ဝင်ရန် SafeMind အကောင့်ဖွင့်ပါ။",
+  "Sign up": "အကောင့်ဖွင့်ရန်",
+  "Create a new workspace with email, Google or Microsoft.": "အီးမေးလ်၊ Google သို့မဟုတ် Microsoft ဖြင့် အကောင့်အသစ် ဖန်တီးပါ။",
+  Password: "စကားဝှက်",
+  "Use 12 or more characters with upper and lowercase letters, a number, and a symbol.": "စာလုံးအကြီး၊ စာလုံးအသေး၊ ဂဏန်းနှင့် သင်္ကေတပါဝင်သော စာလုံး ၁၂ လုံးနှင့်အထက် အသုံးပြုပါ။",
+  "Create account": "အကောင့် ဖန်တီးရန်",
+  "or continue with": "သို့မဟုတ် ဆက်လက်ဝင်ရန်",
+  "Continue with Google": "Google ဖြင့် ဆက်လက်ရန်",
+  "Continue with Microsoft": "Microsoft ဖြင့် ဆက်လက်ရန်",
+  "Already have an account?": "အကောင့်ရှိပြီးသားလား။",
+  "Cybersecurity SaaS": "ဆိုက်ဘာလုံခြုံရေး ဝန်ဆောင်မှု",
+  "Welcome back": "ပြန်လည်ကြိုဆိုပါသည်",
+  "Log in to reach your dashboard, see your protection score and open the scam checker.": "ဒက်ရှ်ဘုတ်၊ ကာကွယ်ရေးအဆင့်နှင့် လိမ်လည်မှုစစ်ဆေးကိရိယာကို အသုံးပြုရန် ဝင်ရောက်ပါ။",
+  "Use your email account or continue with a social provider.": "အီးမေးလ်အကောင့် သို့မဟုတ် အခြားဝန်ဆောင်မှုဖြင့် ဝင်ရောက်ပါ။",
+  "Don't have an account?": "အကောင့်မရှိသေးဘူးလား။",
+  "Create one": "အကောင့်ဖွင့်ရန်",
+  "Your password": "သင့်စကားဝှက်",
+  "At least 12 characters": "အနည်းဆုံး စာလုံး ၁၂ လုံး",
+  "Paste a number that looks suspicious or unfamiliar.": "သံသယဖြစ်ဖွယ် သို့မဟုတ် မသိသောနံပါတ်ကို ထည့်ပါ။",
+  "Risk: LOW": "အန္တရာယ်: နိမ့်",
+  "Confidence: 0%": "ယုံကြည်နိုင်မှု: ၀%",
+  "Category: Awaiting input": "အမျိုးအစား: အချက်အလက် စောင့်နေသည်",
+  "Report to admin": "စီမံသူထံ တိုင်ကြားရန်",
+  "Designed to stay calm, fast and readable while surfacing only the details users need.": "အသုံးပြုသူလိုအပ်သည့် အချက်အလက်များကိုသာ ရိုးရှင်း၊ မြန်ဆန်၊ ဖတ်ရှုလွယ်စွာ ပြသထားသည်။",
+  "Check unfamiliar numbers against a shared scam directory and your own report history.": "မသိသောနံပါတ်များကို မျှဝေထားသော လိမ်လည်မှုမှတ်တမ်းနှင့် သင့်တိုင်ကြားမှုမှတ်တမ်းတို့ဖြင့် တိုက်စစ်ပါ။",
+  "Detect pressure tactics, fake support language and urgent social engineering patterns.": "ဖိအားပေးမှု၊ အကူအညီပေးဟန်ဆောင်မှုနှင့် အရေးပေါ်လှည့်စားမှုပုံစံများကို ရှာဖွေပါ။",
+  "Inspect suspicious domains, impersonation paths and phishing markers before clicking.": "မနှိပ်မီ သံသယဖြစ်ဖွယ် ဒိုမိန်း၊ အယောင်ဆောင်လမ်းကြောင်းနှင့် phishing လက္ခဏာများကို စစ်ဆေးပါ။",
+  "SafeMind keeps the product flow focused so users can move quickly from suspicion to clarity.": "SafeMind သည် သံသယမှ ရှင်းလင်းမှုသို့ လျင်မြန်စွာ ရောက်ရှိနိုင်ရန် အသုံးပြုပုံကို ရိုးရှင်းထားသည်။",
+  "Add a phone number, message or URL to inspect it.": "စစ်ဆေးရန် ဖုန်းနံပါတ်၊ စာတို သို့မဟုတ် URL ထည့်ပါ။",
+  "SafeMind classifies signals, confidence and category in real time.": "SafeMind သည် လက္ခဏာ၊ ယုံကြည်နိုင်မှုနှင့် အမျိုးအစားကို အချိန်နှင့်တပြေးညီ သတ်မှတ်ပေးသည်။",
+  "Save trusted or suspicious numbers to your security dashboard.": "ယုံကြည်ရသော သို့မဟုတ် သံသယဖြစ်ဖွယ် နံပါတ်များကို လုံခြုံရေးဒက်ရှ်ဘုတ်တွင် သိမ်းပါ။",
+  "These metrics summarize how SafeMind is helping users stay ahead of scams.": "ဤကိန်းဂဏန်းများသည် SafeMind က အသုံးပြုသူများကို လိမ်လည်မှုမှ မည်သို့ကာကွယ်ပေးနေသည်ကို ဖော်ပြသည်။",
+  "Questions, feedback, or a scam you are unsure about? Get in touch with the SafeMind team.": "မေးခွန်း၊ အကြံပြုချက် သို့မဟုတ် မသေချာသော လိမ်လည်မှုရှိပါသလား။ SafeMind အဖွဲ့ကို ဆက်သွယ်ပါ။",
+  "Keep users oriented without turning the landing page into a wall of text.": "စာသားများလွန်းခြင်းမရှိဘဲ အသုံးပြုသူများ နားလည်လွယ်အောင် ကူညီထားသည်။",
+  "Does SafeMind store my scans?": "SafeMind က ကျွန်ုပ်၏ စစ်ဆေးမှုများကို သိမ်းပါသလား။",
+  "Saved numbers and reports are stored in Supabase so authenticated users can review their history.": "သိမ်းထားသောနံပါတ်နှင့် တိုင်ကြားချက်များကို Supabase တွင် သိမ်းထားပြီး ဝင်ရောက်ထားသူများက မှတ်တမ်းပြန်ကြည့်နိုင်သည်။",
+  "Do I need an account to use the demo?": "အစမ်းသုံးရန် အကောင့်လိုပါသလား။",
+  "No. The interactive demo runs locally in the browser so visitors can try the product before signing in.": "မလိုပါ။ အစမ်းစနစ်သည် ဘရောက်ဇာအတွင်းတွင်သာ လုပ်ဆောင်သောကြောင့် အကောင့်မဝင်မီ စမ်းသုံးနိုင်သည်။",
+  "What happens after login?": "ဝင်ရောက်ပြီးနောက် ဘာဖြစ်မလဲ။",
+  "Authenticated users land on the dashboard, where they can review stats and open the dedicated scam checker.": "ဝင်ရောက်ထားသူများသည် ကိန်းဂဏန်းများကြည့်ရန်နှင့် လိမ်လည်မှုစစ်ဆေးကိရိယာ ဖွင့်ရန် ဒက်ရှ်ဘုတ်သို့ ရောက်ရှိမည်။",
+  "SafeMind Dashboard": "SafeMind ဒက်ရှ်ဘုတ်",
+  Dashboard: "ဒက်ရှ်ဘုတ်",
+  "Security overview": "လုံခြုံရေး အကျဉ်းချုပ်",
+  "Protection center": "ကာကွယ်ရေးစင်တာ",
+  "Review your latest checks or scan suspicious content before you act.": "အရေးမယူမီ နောက်ဆုံးစစ်ဆေးမှုများကို ကြည့်ရှုပါ သို့မဟုတ် သံသယဖြစ်ဖွယ်အကြောင်းအရာကို စစ်ဆေးပါ။",
+  "Total scans": "စုစုပေါင်း စစ်ဆေးမှု",
+  Credits: "ခရက်ဒစ်များ",
+  "Current streak": "လက်ရှိ ရက်ဆက်မှု",
+  Milestones: "မှတ်တိုင်များ",
+  Activity: "လုပ်ဆောင်မှု",
+  "Recent security checks": "လတ်တလော လုံခြုံရေးစစ်ဆေးမှုများ",
+  "New scan": "စစ်ဆေးမှုအသစ်",
+  "SafeMind Scam Checker": "SafeMind လိမ်လည်မှု စစ်ဆေးကိရိယာ",
+  "Privacy-aware scanning": "ကိုယ်ရေးလုံခြုံမှု ဦးစားပေး စစ်ဆေးမှု",
+  "Email Checker": "အီးမေးလ် စစ်ဆေးရန်",
+  "Never paste passwords, one-time codes, recovery keys, or full payment-card numbers.": "စကားဝှက်၊ တစ်ကြိမ်သုံးကုဒ်၊ ပြန်လည်ရယူသော့ သို့မဟုတ် ငွေပေးချေကတ်နံပါတ်အပြည့်အစုံကို မထည့်ပါနှင့်။",
+  Clear: "ရှင်းလင်းရန်",
+  "Sender email address": "ပို့သူ၏ အီးမေးလ်လိပ်စာ",
+  LOW: "နိမ့်",
+  "LOW RISK": "အန္တရာယ် နိမ့်",
+  "0% confidence": "ယုံကြည်နိုင်မှု ၀%",
+  "Hybrid analysis ready": "ပေါင်းစပ်စိစစ်မှု အသင့်ဖြစ်သည်",
+  "Copy analysis": "စိစစ်မှုကို ကူးယူရန်",
+  "Report for review": "ပြန်လည်စစ်ဆေးရန် တိုင်ကြားရန်",
+  "Verified phone numbers, messages, links, and email records from Supabase appear here.": "Supabase မှ အတည်ပြုထားသော ဖုန်းနံပါတ်၊ စာတို၊ လင့်ခ်နှင့် အီးမေးလ်မှတ်တမ်းများကို ဤနေရာတွင် ပြသသည်။",
+  "SafeMind Education": "SafeMind ပညာပေး",
+  Guides: "လမ်းညွှန်များ",
+  "Scam safety guides": "လိမ်လည်မှုကာကွယ်ရေး လမ်းညွှန်များ",
+  "Read the warning signs": "သတိပေးလက္ခဏာများကို ဖတ်ရှုပါ",
+  "Articles open in a separate browser tab.": "ဆောင်းပါးများကို ဘရောက်ဇာတက်ဘ်အသစ်တွင် ဖွင့်မည်။",
+  "Loading education...": "ပညာပေးအကြောင်းအရာ ဖွင့်နေသည်...",
+  Administrator: "စီမံသူ",
+  "Publish a guide": "လမ်းညွှန် ထုတ်ဝေရန်",
+  "Article content": "ဆောင်းပါးအကြောင်းအရာ",
+  "Publish article": "ဆောင်းပါး ထုတ်ဝေရန်",
+  "SafeMind Reports": "SafeMind တိုင်ကြားချက်များ",
+  "Request a manual review": "လူကိုယ်တိုင် ပြန်လည်စစ်ဆေးရန် တောင်းဆိုပါ",
+  "Manual review": "လူကိုယ်တိုင် စစ်ဆေးမှု",
+  "Send suspicious content": "သံသယဖြစ်ဖွယ်အကြောင်းအရာ ပို့ရန်",
+  "An administrator will review the content you submit.": "သင်ပို့သော အကြောင်းအရာကို စီမံသူက စစ်ဆေးမည်။",
+  "Suspicious content": "သံသယဖြစ်ဖွယ် အကြောင်းအရာ",
+  Context: "နောက်ခံအချက်အလက်",
+  "Where did you receive it?": "၎င်းကို မည်သည့်နေရာမှ ရရှိခဲ့သနည်း။",
+  "Screenshot (optional)": "ဖန်သားပြင်ပုံ (မထည့်လည်းရသည်)",
+  "Add one PNG, JPEG, or WebP image up to 5 MB. Do not include passwords, verification codes, or payment details.": "5 MB အထိ PNG၊ JPEG သို့မဟုတ် WebP ပုံတစ်ပုံ ထည့်နိုင်သည်။ စကားဝှက်၊ အတည်ပြုကုဒ် သို့မဟုတ် ငွေပေးချေမှုအချက်အလက် မထည့်ပါနှင့်။",
+  "Selected screenshot preview": "ရွေးထားသော ဖန်သားပြင်ပုံ အစမ်းမြင်ကွင်း",
+  "Remove screenshot": "ဖန်သားပြင်ပုံ ဖယ်ရှားရန်",
+  "Accepted image formats: PNG, JPEG, and WebP. Maximum size: 5 MB.": "လက်ခံသော ပုံအမျိုးအစားများမှာ PNG၊ JPEG နှင့် WebP ဖြစ်ပြီး အများဆုံး 5 MB ဖြစ်သည်။",
+  "SafeMind Login": "SafeMind ဝင်ရောက်ရန်",
+  "Primary navigation": "အဓိက လမ်းညွှန်မီနူး",
+  "Filter education": "ပညာပေးအကြောင်းအရာ စစ်ထုတ်ရန်",
+  "Checker sections": "စစ်ဆေးမှု ကဏ္ဍများ",
+  "Detected indicators": "တွေ့ရှိသော လက္ခဏာများ",
+  "Demo modes": "အစမ်းစစ်ဆေးမှု အမျိုးအစားများ",
+  "Built by SafeMind": "SafeMind ဖန်တီးသူများ",
+  "SafeMind dashboard": "SafeMind ဒက်ရှ်ဘုတ်",
+  "Account statistics": "အကောင့် ကိန်းဂဏန်းများ",
+  "SafeMind is loading": "SafeMind ဖွင့်နေသည်",
+  "Loading SafeMind": "SafeMind ဖွင့်နေသည်",
+  "Add details, context, or evidence": "အသေးစိတ်၊ နောက်ခံအချက်အလက် သို့မဟုတ် သက်သေအထောက်အထား ထည့်ပါ",
+  "Your account will close today unless you verify now": "ယခုအတည်မပြုပါက သင့်အကောင့်ကို ယနေ့ပိတ်မည်",
+  "Color theme": "အရောင်ပုံစံ",
+  "Use light mode": "အလင်းပုံစံ အသုံးပြုရန်",
+  "Use dark mode": "အမှောင်ပုံစံ အသုံးပြုရန်",
+  "Light mode": "အလင်းပုံစံ",
+  "Dark mode": "အမှောင်ပုံစံ",
+  Light: "အလင်း",
+  Dark: "အမှောင်",
+  "Close navigation": "လမ်းညွှန်မီနူး ပိတ်ရန်",
+  "More options": "နောက်ထပ် ရွေးချယ်စရာများ",
+  "Check a complete international phone number.": "နိုင်ငံတကာဖုန်းနံပါတ်အပြည့်အစုံကို စစ်ဆေးပါ။",
+  "Paste the full suspicious message.": "သံသယဖြစ်ဖွယ် စာတိုအပြည့်အစုံကို ထည့်ပါ။",
+  "Paste the complete URL without opening it.": "URL ကို မဖွင့်ဘဲ အပြည့်အစုံ ထည့်ပါ။",
+  "Check the sender or an official reporting address.": "ပို့သူ သို့မဟုတ် တရားဝင်တိုင်ကြားရန်လိပ်စာကို စစ်ဆေးပါ။",
+  "Checking…": "စစ်ဆေးနေသည်…",
+  "Official source": "တရားဝင် ရင်းမြစ်",
+  "Phishing reports": "Phishing တိုင်ကြားချက်များ",
+  "Suspicious email and text reports": "သံသယဖြစ်ဖွယ် အီးမေးလ်နှင့် စာတို တိုင်ကြားချက်များ",
+  "Suspicious email reports": "သံသယဖြစ်ဖွယ် အီးမေးလ် တိုင်ကြားချက်များ",
+  "Awaiting input": "အချက်အလက် စောင့်နေသည်",
+  "Enter a value to check.": "စစ်ဆေးရန် အချက်အလက် ထည့်ပါ။",
+  "Manual review recommended": "လူကိုယ်တိုင် ပြန်လည်စစ်ဆေးရန် အကြံပြုသည်",
+  "NOT SCAM": "လိမ်လည်မှု မဟုတ်",
+  "HIGH RISK": "အန္တရာယ် မြင့်",
+  SUSPICIOUS: "သံသယဖြစ်ဖွယ်",
+  "NOT VERIFIED": "အတည်မပြုရသေး",
+  WAITING: "စောင့်ဆိုင်းနေသည်",
+  "Read article": "ဆောင်းပါး ဖတ်ရန်",
+  Recently: "မကြာသေးမီက",
+  Safety: "လုံခြုံရေး",
+  "Article not found.": "ဆောင်းပါး မတွေ့ပါ။",
+  "Published recently": "မကြာသေးမီက ထုတ်ဝေထားသည်",
+  "Sending report...": "တိုင်ကြားချက် ပို့နေသည်...",
+  "Uploading screenshot...": "ဖန်သားပြင်ပုံ တင်နေသည်...",
+  "Choose a PNG, JPEG, or WebP screenshot.": "PNG၊ JPEG သို့မဟုတ် WebP ဖန်သားပြင်ပုံ ရွေးပါ။",
+  "The selected screenshot is empty.": "ရွေးထားသော ဖန်သားပြင်ပုံတွင် အချက်အလက် မရှိပါ။",
+  "Choose a screenshot smaller than 5 MB.": "5 MB ထက်ငယ်သော ဖန်သားပြင်ပုံ ရွေးပါ။",
+  "Choose a valid image screenshot.": "မှန်ကန်သော ဖန်သားပြင်ပုံ ရွေးပါ။",
+  "Screenshot ready to upload.": "ဖန်သားပြင်ပုံ တင်ရန် အသင့်ဖြစ်သည်။",
+  "The report could not be sent. Please try again.": "တိုင်ကြားချက် မပို့နိုင်ပါ။ ထပ်မံကြိုးစားပါ။",
+  "Report sent for administrator review.": "စီမံသူစစ်ဆေးရန် တိုင်ကြားချက် ပို့ပြီးပါပြီ။",
+  "Publishing article...": "ဆောင်းပါး ထုတ်ဝေနေသည်...",
+  "The article could not be published.": "ဆောင်းပါး မထုတ်ဝေနိုင်ပါ။",
+  "Article published.": "ဆောင်းပါး ထုတ်ဝေပြီးပါပြီ။",
+  "Saving profile...": "ကိုယ်ရေးအချက်အလက် သိမ်းနေသည်...",
+  "The profile could not be saved.": "ကိုယ်ရေးအချက်အလက် မသိမ်းနိုင်ပါ။",
+  "Profile saved.": "ကိုယ်ရေးအချက်အလက် သိမ်းပြီးပါပြီ။",
+  "Updating password...": "စကားဝှက် ပြင်ဆင်နေသည်...",
+  "The password could not be updated.": "စကားဝှက် မပြင်ဆင်နိုင်ပါ။",
+  "Password updated.": "စကားဝှက် ပြင်ဆင်ပြီးပါပြီ။",
+  "Analyzing...": "စိစစ်နေသည်...",
+  "Analysis copied.": "စိစစ်မှုကို ကူးယူပြီးပါပြီ။",
+  "Copy was blocked by the browser.": "ဘရောက်ဇာက ကူးယူမှုကို ပိတ်ထားသည်။",
+  "Sending for review…": "ပြန်လည်စစ်ဆေးရန် ပို့နေသည်…",
+  "The report could not be sent. Please try again later.": "တိုင်ကြားချက် မပို့နိုင်ပါ။ နောက်မှ ထပ်မံကြိုးစားပါ။",
+  "Analysis Error": "စိစစ်မှု အမှား",
+  "Directory Error": "မှတ်တမ်း အမှား",
+  "Save Error": "သိမ်းဆည်းမှု အမှား",
+  "Submitted for review": "ပြန်လည်စစ်ဆေးရန် ပို့ထားသည်",
+  "Enter a phone number to analyze.": "စိစစ်ရန် ဖုန်းနံပါတ် ထည့်ပါ။",
+  "Enter a message to analyze.": "စိစစ်ရန် စာတို ထည့်ပါ။",
+  "Enter a URL to analyze.": "စိစစ်ရန် URL ထည့်ပါ။",
+  "Enter a sender email address to analyze.": "စိစစ်ရန် ပို့သူ၏ အီးမေးလ်လိပ်စာ ထည့်ပါ။",
+  "Enter a phone number to save.": "သိမ်းရန် ဖုန်းနံပါတ် ထည့်ပါ။",
+  "Verified threat directory match": "အတည်ပြုထားသော အန္တရာယ်မှတ်တမ်းနှင့် ကိုက်ညီသည်",
+  "Verified safe directory match": "အတည်ပြုထားသော လုံခြုံမှတ်တမ်းနှင့် ကိုက်ညီသည်",
+  "This value exists in the verified SafeMind directory.": "ဤအချက်အလက်သည် အတည်ပြုထားသော SafeMind မှတ်တမ်းတွင် ရှိသည်။",
+  "Exact directory match": "မှတ်တမ်းနှင့် အတိအကျ ကိုက်ညီသည်",
+  "The file was analyzed using both sender and message signals.": "ဖိုင်ကို ပို့သူနှင့် စာတိုလက္ခဏာနှစ်မျိုးလုံးဖြင့် စိစစ်ထားသည်။",
+  "The email file could not be read.": "အီးမေးလ်ဖိုင်ကို ဖတ်မရပါ။",
+  "The security analysis service is unavailable.": "လုံခြုံရေးစိစစ်မှုဝန်ဆောင်မှု မရရှိနိုင်ပါ။",
+  "The scan timed out. Please try again.": "စစ်ဆေးချိန် ကျော်လွန်သွားသည်။ ထပ်မံကြိုးစားပါ။",
+  "Supabase is not configured.": "Supabase ကို မသတ်မှတ်ရသေးပါ။",
+  "Please use a file smaller than 1 MB.": "1 MB ထက်ငယ်သော ဖိုင်ကိုသာ အသုံးပြုပါ။",
+  "Authentication is unavailable. Refresh the page and try again.": "အကောင့်ဝင်စနစ် မရရှိနိုင်ပါ။ စာမျက်နှာကို ပြန်ဖွင့်ပြီး ထပ်မံကြိုးစားပါ။",
+  "Enter both your email and password.": "အီးမေးလ်နှင့် စကားဝှက် နှစ်ခုလုံး ထည့်ပါ။",
+  "Enter a valid email address.": "မှန်ကန်သော အီးမေးလ်လိပ်စာ ထည့်ပါ။",
+  "Creating your account...": "သင့်အကောင့် ဖန်တီးနေသည်...",
+  "Signing you in...": "ဝင်ရောက်နေသည်...",
+  "Incorrect email or password.": "အီးမေးလ် သို့မဟုတ် စကားဝှက် မမှန်ပါ။",
+  "Confirm your email address before logging in.": "မဝင်ရောက်မီ သင့်အီးမေးလ်လိပ်စာကို အတည်ပြုပါ။",
+  "Account creation failed.": "အကောင့် ဖန်တီးမှု မအောင်မြင်ပါ။",
+  "Login failed.": "ဝင်ရောက်မှု မအောင်မြင်ပါ။",
+  "Check your email to confirm your account, then log in.": "သင့်အီးမေးလ်တွင် အကောင့်အတည်ပြုပြီးနောက် ဝင်ရောက်ပါ။",
+  "Social login could not be started. Please try again.": "အခြားဝန်ဆောင်မှုဖြင့် ဝင်ရောက်မှု မစတင်နိုင်ပါ။ ထပ်မံကြိုးစားပါ။"
+});
+
+Object.assign(translations, {
+  "SafeMind logo": "SafeMind လိုဂို",
+  "Authentication is not configured. Add the public Supabase settings to .env and restart the site.": "အကောင့်ဝင်စနစ်ကို မသတ်မှတ်ရသေးပါ။ အများသုံး Supabase ဆက်တင်များကို .env တွင် ထည့်ပြီး ဆိုက်ကို ပြန်ဖွင့်ပါ။",
+  "Use 12–128 characters with upper and lowercase letters, a number, and a symbol.": "စာလုံးအကြီး၊ စာလုံးအသေး၊ ဂဏန်းနှင့် သင်္ကေတပါဝင်သော စာလုံး ၁၂ မှ ၁၂၈ လုံးအထိ အသုံးပြုပါ။",
+  "Could not reach the authentication service. Check your connection and try again.": "အကောင့်ဝင်ဝန်ဆောင်မှုကို ဆက်သွယ်မရပါ။ အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်မံကြိုးစားပါ။",
+  "Login succeeded, but the session could not be saved. Allow site storage and try again.": "ဝင်ရောက်မှု အောင်မြင်သော်လည်း အသုံးပြုမှုအခြေအနေကို မသိမ်းနိုင်ပါ။ ဆိုက်သိမ်းဆည်းခွင့်ပြုပြီး ထပ်မံကြိုးစားပါ။",
+  "Not scam — verified directory match": "လိမ်လည်မှုမဟုတ် — အတည်ပြုမှတ်တမ်းနှင့် ကိုက်ညီသည်",
+  "Scam — directory match": "လိမ်လည်မှု — မှတ်တမ်းနှင့် ကိုက်ညီသည်",
+  "Matched the SafeMind directory": "SafeMind မှတ်တမ်းနှင့် ကိုက်ညီသည်",
+  "Database record found": "ဒေတာဘေ့စ်မှတ်တမ်း တွေ့ရှိသည်",
+  "Not scam — verified official contact": "လိမ်လည်မှုမဟုတ် — အတည်ပြုထားသော တရားဝင်ဆက်သွယ်ရန်လိပ်စာ",
+  "Published on the organization’s official website": "အဖွဲ့အစည်း၏ တရားဝင်ဝဘ်ဆိုက်တွင် ထုတ်ပြန်ထားသည်",
+  "High-risk warning signs found": "အန္တရာယ်မြင့် သတိပေးလက္ခဏာများ တွေ့ရှိသည်",
+  "Suspicious — use caution": "သံသယဖြစ်ဖွယ် — သတိထားပါ",
+  "No obvious warning signs": "ထင်ရှားသော သတိပေးလက္ခဏာ မတွေ့ပါ",
+  "Likely scam — warning signs found": "လိမ်လည်မှု ဖြစ်နိုင်သည် — သတိပေးလက္ခဏာများ တွေ့ရှိသည်",
+  "Urgency or credential-theft language detected": "အရေးပေါ်ဖိအားပေးမှု သို့မဟုတ် အကောင့်အချက်အလက်ခိုးယူသည့် စကားလုံးများ တွေ့ရှိသည်",
+  "Phishing-style URL pattern detected": "Phishing ပုံစံ URL လက္ခဏာ တွေ့ရှိသည်",
+  "Impersonation-style sender domain detected": "အယောင်ဆောင်ပို့သူ ဒိုမိန်းလက္ခဏာ တွေ့ရှိသည်",
+  "Local fallback analysis": "စက်အတွင်း အရန်စိစစ်မှု",
+  "Automated pattern detection": "အလိုအလျောက် ပုံစံရှာဖွေမှု",
+  "SafeMind has no verified record for this value.": "ဤအချက်အလက်အတွက် SafeMind တွင် အတည်ပြုမှတ်တမ်း မရှိသေးပါ။",
+  "Unknown does not mean safe": "မသိရှိသေးခြင်းသည် လုံခြုံသည်ဟု မဆိုလိုပါ",
+  "Send it to an admin for manual review": "လူကိုယ်တိုင်စစ်ဆေးရန် စီမံသူထံ ပို့ပါ",
+  "AI detected a high-risk number pattern": "AI က အန္တရာယ်မြင့် နံပါတ်ပုံစံကို တွေ့ရှိသည်",
+  "AI scan completed; manual verification recommended": "AI စစ်ဆေးမှု ပြီးပါပြီ။ လူကိုယ်တိုင် အတည်ပြုရန် အကြံပြုသည်",
+  "Submitted from the AI scanner result panel.": "AI စစ်ဆေးမှုရလဒ်မှ ပို့ထားသည်။",
+  "Scam phone": "လိမ်လည်ဖုန်း",
+  "Safe phone": "လုံခြုံသောဖုန်း",
+  "Other phone": "အခြားဖုန်း",
+  scam: "လိမ်လည်မှု",
+  safe: "လုံခြုံ",
+  other: "အခြား",
+  phone: "ဖုန်း",
+  message: "စာတို",
+  link: "လင့်ခ်",
+  email: "အီးမေးလ်",
+  sender: "ပို့သူ",
+  number: "နံပါတ်",
+  item: "အချက်အလက်",
+  scan: "စစ်ဆေးမှု",
+  unknown: "မသိရှိသေး",
+  low: "နိမ့်",
+  medium: "အလယ်အလတ်",
+  high: "မြင့်"
+});
+
+Object.assign(translations, {
+  "Requests an authentication secret": "အကောင့်အတည်ပြု လျှို့ဝှက်အချက်အလက် တောင်းဆိုထားသည်",
+  "Requests a difficult-to-reverse payment": "ပြန်လည်ရယူရန်ခက်ခဲသော ငွေပေးချေမှု တောင်းဆိုထားသည်",
+  "Uses urgency or pressure": "အရေးပေါ်ဖိအားပေးထားသည်",
+  "Promises unrealistic financial returns": "မဖြစ်နိုင်လောက်သော ငွေကြေးအမြတ် ကတိပြုထားသည်",
+  "Contains a link requiring independent verification": "သီးခြားအတည်ပြုရန်လိုသော လင့်ခ် ပါဝင်သည်",
+  "Message does not contain readable words.": "စာတိုတွင် ဖတ်ရှုနိုင်သော စကားလုံးများ မပါဝင်ပါ။",
+  "Spam / Scam Message": "Spam / လိမ်လည်မှု စာတို",
+  "Likely Safe Message": "လုံခြုံနိုင်ဖွယ် စာတို",
+  "The NLP model found no strong spam pattern in this message.": "NLP မော်ဒယ်က ဤစာတိုတွင် ပြင်းထန်သော spam ပုံစံ မတွေ့ပါ။",
+  "No strong spam phrases detected": "ပြင်းထန်သော spam စကားစုများ မတွေ့ပါ",
+  "Invalid or dangerous URL": "မမှန်ကန်သော သို့မဟုတ် အန္တရာယ်ရှိသော URL",
+  "The value is not a valid HTTP or HTTPS address.": "ဤအချက်အလက်သည် မှန်ကန်သော HTTP သို့မဟုတ် HTTPS လိပ်စာ မဟုတ်ပါ။",
+  "Invalid URL format": "URL ပုံစံ မမှန်ပါ",
+  "Connection does not use HTTPS": "ချိတ်ဆက်မှုတွင် HTTPS မသုံးထားပါ",
+  "Uses an IP address instead of a domain": "ဒိုမိန်းအစား IP လိပ်စာ အသုံးပြုထားသည်",
+  "Internationalized domain may imitate another name": "နိုင်ငံတကာစာလုံးပါ ဒိုမိန်းသည် အခြားအမည်ကို အယောင်ဆောင်နိုင်သည်",
+  "Unicode domain requires careful visual verification": "Unicode ဒိုမိန်းကို အမြင်ဖြင့် သေချာအတည်ပြုရန် လိုသည်",
+  "Shortened URL hides its final destination": "အတိုချုံ့ URL က နောက်ဆုံးရောက်မည့်နေရာကို ဖုံးကွယ်ထားသည်",
+  "URL contains misleading user-information syntax": "URL တွင် လှည့်စားနိုင်သော အသုံးပြုသူအချက်အလက် ပုံစံ ပါဝင်သည်",
+  "Unusually deep subdomain structure": "ပုံမှန်မဟုတ်သော အဆင့်များစွာပါ subdomain ဖွဲ့စည်းပုံ",
+  "Domain contains many hyphens": "ဒိုမိန်းတွင် တုံးတိုများစွာ ပါဝင်သည်",
+  "Unusually long URL": "ပုံမှန်မဟုတ်ဘဲ ရှည်လျားသော URL",
+  "Heavy URL encoding may hide the destination path": "URL encoding များလွန်းခြင်းက ရောက်မည့်လမ်းကြောင်းကို ဖုံးကွယ်နိုင်သည်",
+  "Potential phishing link": "Phishing ဖြစ်နိုင်သော လင့်ခ်",
+  "No obvious URL threats": "ထင်ရှားသော URL အန္တရာယ် မတွေ့ပါ",
+  "Structural phishing indicators were detected in this URL.": "ဤ URL တွင် phishing ဖွဲ့စည်းပုံလက္ခဏာများ တွေ့ရှိသည်။",
+  "No common structural phishing indicators were detected; verify the sender before opening it.": "အများတွေ့ရသော phishing ဖွဲ့စည်းပုံလက္ခဏာ မတွေ့ပါ။ မဖွင့်မီ ပို့သူကို အတည်ပြုပါ။",
+  "No known structural warning signs": "သိရှိထားသော ဖွဲ့စည်းပုံသတိပေးလက္ခဏာ မရှိပါ",
+  "Invalid or deceptive email address": "မမှန်ကန်သော သို့မဟုတ် လှည့်စားနိုင်သော အီးမေးလ်လိပ်စာ",
+  "The sender address is malformed or cannot be reliably verified.": "ပို့သူလိပ်စာပုံစံ မမှန် သို့မဟုတ် ယုံကြည်စိတ်ချစွာ အတည်မပြုနိုင်ပါ။",
+  "Invalid email format": "အီးမေးလ်ပုံစံ မမှန်ပါ",
+  "Punycode domain may imitate a trusted brand": "Punycode ဒိုမိန်းသည် ယုံကြည်ရသော အမှတ်တံဆိပ်ကို အယောင်ဆောင်နိုင်သည်",
+  "Brand name is sent from a free mailbox provider": "အမှတ်တံဆိပ်အမည်ကို အခမဲ့အီးမေးလ်ဝန်ဆောင်မှုမှ ပို့ထားသည်",
+  "Brand-like domain uses impersonation-style separators": "အမှတ်တံဆိပ်ဆန်သော ဒိုမိန်းတွင် အယောင်ဆောင် ခွဲခြားသင်္ကေတများ သုံးထားသည်",
+  "Unusual mailbox structure": "ပုံမှန်မဟုတ်သော အီးမေးလ်အကောင့် ဖွဲ့စည်းပုံ",
+  "Authority-style mailbox on a high-risk domain": "အန္တရာယ်မြင့်ဒိုမိန်းပေါ်ရှိ တာဝန်ရှိသူအယောင်ဆောင် အီးမေးလ်အကောင့်",
+  "Potential sender impersonation": "ပို့သူအယောင်ဆောင်မှု ဖြစ်နိုင်သည်",
+  "No obvious sender threats": "ပို့သူထံမှ ထင်ရှားသော အန္တရာယ် မတွေ့ပါ",
+  "The sender address contains impersonation or domain-risk indicators.": "ပို့သူလိပ်စာတွင် အယောင်ဆောင်မှု သို့မဟုတ် ဒိုမိန်းအန္တရာယ် လက္ခဏာများ ပါဝင်သည်။",
+  "The address format has no obvious impersonation indicators; confirm the domain independently.": "လိပ်စာပုံစံတွင် ထင်ရှားသော အယောင်ဆောင်လက္ခဏာ မတွေ့ပါ။ ဒိုမိန်းကို သီးခြားအတည်ပြုပါ။",
+  "Valid email structure": "မှန်ကန်သော အီးမေးလ်ဖွဲ့စည်းပုံ",
+  "Invalid phone number": "ဖုန်းနံပါတ် မမှန်ပါ",
+  "The number does not match a valid international phone-number structure.": "နံပါတ်သည် မှန်ကန်သော နိုင်ငံတကာဖုန်းနံပါတ် ဖွဲ့စည်းပုံနှင့် မကိုက်ညီပါ။",
+  "Invalid phone number format": "ဖုန်းနံပါတ်ပုံစံ မမှန်ပါ",
+  "Country code is missing": "နိုင်ငံကုဒ် မပါရှိပါ",
+  "Premium-rate prefix": "အခကြေးငွေမြင့် ဖုန်းရှေ့ဆက်နံပါတ်",
+  "Long repeated-digit sequence": "ထပ်နေသော ဂဏန်းအစဉ် ရှည်လျားသည်",
+  "Artificial sequential-digit pattern": "တမင်ဖန်တီးထားသော ဂဏန်းအစဉ်ပုံစံ",
+  "Unusually low digit variety": "အသုံးပြုထားသော ဂဏန်းအမျိုးအစား နည်းလွန်းသည်",
+  "Suspicious phone pattern": "သံသယဖြစ်ဖွယ် ဖုန်းနံပါတ်ပုံစံ",
+  "Unknown phone number": "မသိရှိသေးသော ဖုန်းနံပါတ်",
+  "The number contains patterns often associated with suspicious or premium-rate calls.": "နံပါတ်တွင် သံသယဖြစ်ဖွယ် သို့မဟုတ် အခကြေးငွေမြင့် ဖုန်းခေါ်ဆိုမှုနှင့် ဆက်စပ်သော ပုံစံများ ပါဝင်သည်။",
+  "No strong number-pattern warning was found; an unknown caller still requires verification.": "ပြင်းထန်သော နံပါတ်ပုံစံသတိပေးချက် မတွေ့ပါ။ သို့သော် မသိသောခေါ်ဆိုသူကို အတည်ပြုရန် လိုသေးသည်။",
+  "Valid phone-number structure": "မှန်ကန်သော ဖုန်းနံပါတ်ဖွဲ့စည်းပုံ"
+});
+
+Object.assign(translations, {
+  "SafeMind Security Agent": "SafeMind လုံခြုံရေး AI ကိုယ်စားလှယ်",
+  "Ready to investigate": "စစ်ဆေးရန် အသင့်ဖြစ်သည်",
+  "Investigating signals…": "လက္ခဏာများကို စိစစ်နေသည်…",
+  "Analysis complete": "စိစစ်မှု ပြီးပါပြီ",
+  "Agent assessment": "AI ကိုယ်စားလှယ်၏ သုံးသပ်ချက်",
+  "Waiting for content": "အကြောင်းအရာ စောင့်နေသည်",
+  "Choose a checker, enter the content, and I will explain the risk and the safest next steps.": "စစ်ဆေးမှုအမျိုးအစားရွေးပြီး အကြောင်းအရာထည့်ပါ။ အန္တရာယ်နှင့် အလုံခြုံဆုံး နောက်တစ်ဆင့်များကို ရှင်းပြပေးမည်။",
+  "Recommended next steps": "အကြံပြုထားသော နောက်တစ်ဆင့်များ",
+  "Evidence considered": "ထည့်သွင်းစဉ်းစားထားသော သက်သေအထောက်အထား",
+  "High-risk behavior detected": "အန္တရာယ်မြင့် အပြုအမူ တွေ့ရှိသည်",
+  "Suspicious signals need verification": "သံသယဖြစ်ဖွယ် လက္ခဏာများကို အတည်ပြုရန် လိုသည်",
+  "No strong threat signal found": "ပြင်းထန်သော အန္တရာယ်လက္ခဏာ မတွေ့ပါ",
+  "Do not engage or share any code.": "မတုံ့ပြန်ပါနှင့်၊ မည်သည့်ကုဒ်ကိုမျှ မမျှဝေပါနှင့်။",
+  "Block the sender and preserve the evidence.": "ပို့သူကို ပိတ်ဆို့ပြီး သက်သေအထောက်အထားကို သိမ်းထားပါ။",
+  "Verify through the organization’s official app, website, or phone number.": "အဖွဲ့အစည်း၏ တရားဝင်အက်ပ်၊ ဝဘ်ဆိုက် သို့မဟုတ် ဖုန်းနံပါတ်မှ အတည်ပြုပါ။",
+  "Do not use links or contact details in the content.": "အကြောင်းအရာထဲရှိ လင့်ခ် သို့မဟုတ် ဆက်သွယ်ရန်အချက်အလက်ကို မသုံးပါနှင့်။",
+  "Verify the request through an official channel.": "တောင်းဆိုချက်ကို တရားဝင်လမ်းကြောင်းမှ အတည်ပြုပါ။",
+  "Keep credentials, OTP codes, and payment details private.": "အကောင့်အချက်အလက်၊ OTP ကုဒ်နှင့် ငွေပေးချေမှုအချက်အလက်များကို လျှို့ဝှက်ထားပါ။",
+  "Confirm unexpected requests independently.": "မမျှော်လင့်သော တောင်းဆိုချက်များကို သီးခြားအတည်ပြုပါ။",
+  "Open official apps or websites directly.": "တရားဝင်အက်ပ် သို့မဟုတ် ဝဘ်ဆိုက်ကို တိုက်ရိုက်ဖွင့်ပါ။",
+  "Never share credentials or verification codes.": "အကောင့်အချက်အလက် သို့မဟုတ် အတည်ပြုကုဒ်များကို မမျှဝေပါနှင့်။",
+  "Credential phishing": "အကောင့်အချက်အလက် ခိုးယူမှု",
+  "Payment scam": "ငွေပေးချေမှု လိမ်လည်မှု",
+  "Remote-access scam": "အဝေးထိန်းအသုံးပြုခွင့် လိမ်လည်မှု",
+  "Prize or reward scam": "ဆု သို့မဟုတ် ဆုလာဘ် လိမ်လည်မှု",
+  "Investment scam": "ရင်းနှီးမြှုပ်နှံမှု လိမ်လည်မှု",
+  "Claims authority while requesting action": "တာဝန်ရှိသူအဖြစ် အယောင်ဆောင်ပြီး လုပ်ဆောင်ရန် တောင်းဆိုထားသည်",
+  "Requests secrecy": "လျှို့ဝှက်ထားရန် တောင်းဆိုထားသည်",
+  "Requests remote device access": "စက်ကို အဝေးမှ အသုံးပြုခွင့် တောင်းဆိုထားသည်",
+  "Uses a prize or reward lure": "ဆု သို့မဟုတ် ဆုလာဘ်ဖြင့် ဆွဲဆောင်ထားသည်",
+  "Uses threats or intimidation": "ခြိမ်းခြောက်မှု သို့မဟုတ် ကြောက်ရွံ့အောင် ပြုလုပ်ထားသည်",
+  "Do not click, reply, pay, call back, or share any code.": "မနှိပ်ပါနှင့်၊ မတုံ့ပြန်ပါနှင့်၊ ငွေမပေးပါနှင့်၊ ပြန်မခေါ်ပါနှင့်၊ မည်သည့်ကုဒ်ကိုမျှ မမျှဝေပါနှင့်။",
+  "Block the sender and preserve the content as evidence.": "ပို့သူကို ပိတ်ဆို့ပြီး အကြောင်းအရာကို သက်သေအဖြစ် သိမ်းထားပါ။",
+  "Contact the organization through its official app, website, or published phone number.": "အဖွဲ့အစည်း၏ တရားဝင်အက်ပ်၊ ဝဘ်ဆိုက် သို့မဟုတ် ထုတ်ပြန်ထားသော ဖုန်းနံပါတ်မှ ဆက်သွယ်ပါ။",
+  "Do not use contact details or links contained in the suspicious content.": "သံသယဖြစ်ဖွယ်အကြောင်းအရာထဲရှိ ဆက်သွယ်ရန်အချက်အလက် သို့မဟုတ် လင့်ခ်များကို မသုံးပါနှင့်။",
+  "Never share passwords, OTP codes, recovery keys, or payment details.": "စကားဝှက်၊ OTP ကုဒ်၊ ပြန်လည်ရယူသော့ သို့မဟုတ် ငွေပေးချေမှုအချက်အလက်ကို မမျှဝေပါနှင့်။",
+  "Scan result": "စစ်ဆေးမှုရလဒ်",
+  Ready: "အသင့်ဖြစ်သည်",
+  Complete: "ပြီးပါပြီ",
+  "Ready to scan": "စစ်ဆေးရန် အသင့်ဖြစ်သည်",
+  "What to do": "လုပ်ဆောင်ရန်",
+  "Warning signs": "သတိပေးလက္ခဏာများ",
+  "Send for review": "ပြန်လည်စစ်ဆေးရန် ပို့ရန်",
+  "Was this result useful?": "ဤရလဒ် အသုံးဝင်ပါသလား။",
+  Confirm: "အတည်ပြုရန်",
+  Cancel: "မမှန်ဟု သတ်မှတ်ရန်",
+  "Feedback could not be saved.": "တုံ့ပြန်ချက်ကို မသိမ်းနိုင်ပါ။",
+  "Result confirmed. Thank you.": "ရလဒ်ကို အတည်ပြုပြီးပါပြီ။ ကျေးဇူးတင်ပါသည်။",
+  "Result marked incorrect. Thank you.": "ရလဒ်ကို မမှန်ဟု သတ်မှတ်ပြီးပါပြီ။ ကျေးဇူးတင်ပါသည်။",
+  "Investigation case": "စုံစမ်းစစ်ဆေးမှု မှတ်တမ်း",
+  "Investigation timeline": "စုံစမ်းစစ်ဆေးမှု အဆင့်များ",
+  "Explainable risk score": "ရှင်းလင်းပြနိုင်သော အန္တရာယ်အမှတ်",
+  Evidence: "သက်သေအထောက်အထား",
+  "Threat relationships": "အန္တရာယ် ဆက်နွယ်မှုများ",
+  "Observed entities": "တွေ့ရှိသော အချက်အလက်များ",
+  "Threat intelligence": "အန္တရာယ်ဆိုင်ရာ ထောက်လှမ်းချက်",
+  "Local checks": "စက်အတွင်း စစ်ဆေးမှု",
+  "Related cases and knowledge": "ဆက်စပ်အမှုများနှင့် အသိပညာ",
+  "Evidence-backed only": "သက်သေအထောက်အထားရှိမှသာ",
+  Waiting: "စောင့်နေသည်",
+  Investigating: "စုံစမ်းနေသည်",
+  Completed: "ပြီးပါပြီ",
+  "Local checks only": "စက်အတွင်း စစ်ဆေးမှုသာ",
+  "Live intelligence": "တိုက်ရိုက် ထောက်လှမ်းချက်",
+  "Investigation in progress.": "စုံစမ်းစစ်ဆေးနေသည်။",
+  "Waiting for investigation.": "စုံစမ်းစစ်ဆေးမှုကို စောင့်နေသည်။",
+  "Label this result": "ဤရလဒ်ကို အမျိုးအစားသတ်မှတ်ပါ",
+  Correct: "မှန်ကန်သည်",
+  Incorrect: "မမှန်ကန်ပါ",
+  "False positive": "အန္တရာယ်မရှိဘဲ မှားယွင်းသတိပေးမှု",
+  "False negative": "အန္တရာယ်ရှိသော်လည်း မတွေ့ရှိမှု",
+  "Confirm the sender and context independently if the request was unexpected.": "တောင်းဆိုချက် မမျှော်လင့်ဘဲ ရောက်လာပါက ပို့သူနှင့် နောက်ခံအခြေအနေကို သီးခြားအတည်ပြုပါ။",
+  "Open official apps or websites directly instead of following supplied links.": "ပေးပို့ထားသော လင့်ခ်များအစား တရားဝင်အက်ပ် သို့မဟုတ် ဝဘ်ဆိုက်ကို တိုက်ရိုက်ဖွင့်ပါ။",
+  "Keep credentials, verification codes, and payment details private.": "အကောင့်အချက်အလက်၊ အတည်ပြုကုဒ်နှင့် ငွေပေးချေမှုအချက်အလက်များကို လျှို့ဝှက်ထားပါ။"
+});
+
+const originalText = new WeakMap();
+const attributes = ["placeholder", "aria-label", "title", "alt"];
+const originalDocumentTitle = document.title;
+
+function activeLanguage() {
+  return localStorage.getItem("safemindLanguage") === "my" ? "my" : "en";
+}
+
+function translatePattern(value) {
+  const patterns = [
+    [/^(\d[\d,]*) characters$/, (_, count) => `စာလုံး ${count}`],
+    [/^Confidence: (\d+)%$/, (_, score) => `ယုံကြည်နိုင်မှု: ${score}%`],
+    [/^(\d+)% confidence$/, (_, score) => `ယုံကြည်နိုင်မှု ${score}%`],
+    [/^Category: (.+)$/, (_, category) => `အမျိုးအစား: ${translateString(category, "my")}`],
+    [/^Organization: (.+)$/, (_, name) => `အဖွဲ့အစည်း: ${name}`],
+    [/^Analysis engine: (.+)$/, (_, model) => `စိစစ်ရေးစနစ်: ${model}`],
+    [/^No (.+) entries yet$/, (_, type) => `${translateString(type, "my")} မှတ်တမ်း မရှိသေးပါ`],
+    [/^Ready to analyze: (.+)$/, (_, detail) => `စိစစ်ရန် အသင့်ဖြစ်သည်: ${detail}`],
+    [/^(.+) selected for analysis\.$/, (_, file) => `${file} ကို စိစစ်ရန် ရွေးထားသည်။`],
+    [/^Read (.+) in a new tab$/, (_, title) => `${title} ကို တက်ဘ်အသစ်တွင် ဖတ်ရန်`],
+    [/^Published (.+)$/, (_, date) => `${date} တွင် ထုတ်ဝေသည်`],
+    [/^File: (.+)$/, (_, file) => `ဖိုင်: ${file}`],
+    [/^Extracted sender: (.+)$/, (_, sender) => `ခွဲထုတ်ရရှိသော ပို့သူ: ${sender}`],
+    [/^Subject: (.+)$/, (_, subject) => `အကြောင်းအရာ: ${subject}`],
+    [/^From: (.+)$/, (_, sender) => `ပို့သူ: ${sender}`],
+    [/^Scam number found: (.+)$/, (_, phone) => `လိမ်လည်နံပါတ် တွေ့ရှိသည်: ${phone}`],
+    [/^Safe number found: (.+)$/, (_, phone) => `လုံခြုံသောနံပါတ် တွေ့ရှိသည်: ${phone}`],
+    [/^Other category found: (.+)$/, (_, phone) => `အခြားအမျိုးအစား တွေ့ရှိသည်: ${phone}`],
+    [/^Frequently abused (\..+) domain ending$/, (_, ending) => `မကြာခဏ အလွဲသုံးစားလုပ်သော ${ending} ဒိုမိန်းအဆုံးသတ်`],
+    [/^Credential or payment bait: (.+)$/, (_, terms) => `အကောင့် သို့မဟုတ် ငွေပေးချေမှု လှည့်ကွက်: ${terms}`],
+    [/^Spam-like language detected: (.+)$/, (_, details) => `Spam ဆန်သော စကားလုံးများ တွေ့ရှိသည်: ${details}`],
+    [/^I found strong warning signals in this (.+)\. Treat it as unsafe unless (?:the organization verifies it|it is verified) through an official channel\.$/, (_, subject) => `ဤ${translateString(subject, "my")}တွင် ပြင်းထန်သော သတိပေးလက္ခဏာများ တွေ့ရှိသည်။ တရားဝင်လမ်းကြောင်းမှ အတည်မပြုမချင်း အန္တရာယ်ရှိသည်ဟု သတ်မှတ်ပါ။`],
+    [/^I found warning signals in this (.+), but the evidence is not conclusive\. Pause and verify it independently(?: before acting)?\.$/, (_, subject) => `ဤ${translateString(subject, "my")}တွင် သတိပေးလက္ခဏာများ တွေ့ရှိသော်လည်း သက်သေမခိုင်လုံသေးပါ။ ရပ်တန့်ပြီး သီးခြားအတည်ပြုပါ။`],
+    [/^I did not find strong automated warning signals in this (.+)\. This (?:is not a guarantee of safety, especially for unexpected requests|does not guarantee that it is safe)\.$/, (_, subject) => `ဤ${translateString(subject, "my")}တွင် ပြင်းထန်သော အလိုအလျောက်သတိပေးလက္ခဏာ မတွေ့ပါ။ သို့သော် လုံခြုံသည်ဟု အာမခံခြင်း မဟုတ်ပါ။`],
+    [/^Saved (.+) as (.+)\.$/, (_, value, type) => `${value} ကို ${translateString(type, "my")} အဖြစ် သိမ်းပြီးပါပြီ။`]
+  ];
+  for (const [pattern, replacement] of patterns) {
+    if (pattern.test(value)) return value.replace(pattern, replacement);
+  }
+  return value;
+}
+
+export function translateString(value, language = activeLanguage()) {
+  const text = String(value ?? "");
+  if (language !== "my") return text;
+  return translations[text] || translatePattern(text);
+}
+
+function translateTextNode(node, language) {
+  if (!originalText.has(node)) originalText.set(node, node.nodeValue);
+  const original = originalText.get(node);
+  if (language === "en") {
+    if (node.nodeValue !== original) node.nodeValue = original;
+    return;
+  }
+  const trimmed = original.trim();
+  if (!trimmed) return;
+  const translated = translateString(trimmed, language);
+  if (translated !== trimmed) {
+    const nextValue = original.replace(trimmed, translated);
+    if (node.nodeValue !== nextValue) node.nodeValue = nextValue;
+  }
+}
+
+function translateElement(element, language) {
+  if (element.closest("script,style")) return;
+  if (!element.matches("input,textarea,select")) {
+    element.childNodes.forEach((node) => {
+      if (node.nodeType === Node.TEXT_NODE) translateTextNode(node, language);
+    });
+  }
+  attributes.forEach((name) => {
+    if (!element.hasAttribute(name)) return;
+    const key = `languageOriginal${name.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())}`;
+    if (!element.dataset[key])
+      element.dataset[key] = element.getAttribute(name);
+    const original = element.dataset[key];
+    const nextValue = translateString(original, language);
+    if (element.getAttribute(name) !== nextValue) element.setAttribute(name, nextValue);
+  });
+}
+
+function applyLanguage(language, announce = true) {
+  document.documentElement.lang = language === "my" ? "my" : "en";
+  document.title = translateString(originalDocumentTitle, language);
+  document
+    .querySelectorAll("body *")
+    .forEach((element) => translateElement(element, language));
+  document.querySelectorAll("[data-language-toggle]").forEach((button) => {
+    const label = language === "my" ? "English" : "မြန်မာ";
+    if (button.textContent !== label) button.textContent = label;
+    button.setAttribute("aria-pressed", String(language === "my"));
+  });
+  if (announce)
+    window.dispatchEvent(
+      new CustomEvent("safemind:language-change", { detail: { language } }),
+    );
+}
+
+export function initLanguage() {
+  let language =
+    localStorage.getItem("safemindLanguage") === "my" ? "my" : "en";
+  applyLanguage(language);
+  document.querySelectorAll("[data-language-toggle]").forEach((button) =>
+    button.addEventListener("click", () => {
+      language = language === "en" ? "my" : "en";
+      localStorage.setItem("safemindLanguage", language);
+      applyLanguage(language);
+    }),
+  );
+  const observer = new MutationObserver((records) => {
+    if (language !== "my") return;
+    records.forEach((record) => {
+      if (record.type !== "attributes" || !attributes.includes(record.attributeName)) return;
+      const value = record.target.getAttribute(record.attributeName);
+      if (!value || translateString(value, "my") === value) return;
+      const key = `languageOriginal${record.attributeName.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())}`;
+      record.target.dataset[key] = value;
+    });
+    applyLanguage(language, false);
+  });
+  observer.observe(document.body, {
+    attributes: true,
+    attributeFilter: attributes,
+    childList: true,
+    characterData: true,
+    subtree: true,
+  });
+}

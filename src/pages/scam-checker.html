@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeMind Scam Checker</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#050505">
+    <script>(()=>{let t="";try{t=localStorage.getItem("safemind-theme")||""}catch{}if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t})()</script>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="SafeMind">
+    <link rel="stylesheet" href="../css/scam-checker.css">
+    <link rel="stylesheet" href="../css/theme.css">
+</head>
+<body class="scam-checker-page" data-page="scam-checker">
+    <header class="checker-header">
+        <a href="main.html" class="checker-header-brand" data-logo-link>
+            <img src="/assets/safemind-logo.png" alt="SafeMind logo">
+            <div>
+                <p>SafeMind</p>
+                <h1>Scam Checker</h1>
+            </div>
+        </a>
+
+        <div class="checker-header-actions">
+            <button class="language-toggle" type="button" data-language-toggle aria-label="Switch language">မြန်မာ</button>
+            <a href="dashboard.html">Overview</a>
+            <a href="reports.html">Reports</a>
+            <a href="education.html">Education</a>
+            <a href="profile.html">Profile</a>
+            <button type="button" data-logout>Logout</button>
+        </div>
+    </header>
+
+    <main class="checker-shell">
+        <section class="checker-workbench">
+            <article class="checker-card checker-form reveal">
+                <div class="checker-mode-tabs" role="tablist" aria-label="Checker sections">
+                    <button type="button" id="phoneTab" class="is-active" role="tab" data-checker-mode="phone" aria-controls="phone" aria-selected="true" tabindex="0">Number Checker</button>
+                    <button type="button" id="messageTab" role="tab" data-checker-mode="message" aria-controls="message" aria-selected="false" tabindex="-1">Message Checker</button>
+                    <button type="button" id="linkTab" role="tab" data-checker-mode="link" aria-controls="link" aria-selected="false" tabindex="-1">Link Checker</button>
+                    <button type="button" id="emailTab" role="tab" data-checker-mode="email" aria-controls="email" aria-selected="false" tabindex="-1">Email Checker</button>
+                </div>
+
+                <p class="scan-safety-note">Never paste passwords, one-time codes, recovery keys, or full payment-card numbers.</p>
+
+                <div class="checker-panels">
+                    <section class="checker-panel is-active" role="tabpanel" aria-labelledby="phoneTab" data-checker-panel="phone" id="phone">
+                        <div class="checker-section-heading"><span>01</span><div><p>Number Checker</p><h3>Phone number</h3></div></div>
+                        <label class="sr-only" for="phoneInput">Phone number</label>
+                        <input id="phoneInput" type="tel" inputmode="tel" autocomplete="off" maxlength="32" placeholder="+1 555 000 0000">
+
+                        <label for="phoneNotes">Notes</label>
+                        <textarea id="phoneNotes" rows="4" maxlength="2000" placeholder="Add details, context, or evidence"></textarea>
+
+                        <div class="checker-mini-actions">
+                            <button type="button" data-fill-example="+1 900 555 0100">Use Example</button>
+                            <button type="button" class="primary-action" data-analyze-mode="phone">Analyze</button>
+                            <button type="button" data-clear-mode="phone">Clear</button>
+                        </div>
+
+                        <div class="checker-save-row">
+                            <button type="button" id="checkerSave" data-save-category="scam">Report as scam</button>
+                            <button type="button" data-save-category="safe">Submit as safe</button>
+                            <button type="button" data-save-category="other">Request review</button>
+                        </div>
+                    </section>
+
+                    <section class="checker-panel" role="tabpanel" aria-labelledby="messageTab" data-checker-panel="message" id="message" hidden>
+                        <div class="checker-section-heading"><span>02</span><div><p>Message Checker</p><h3>Message</h3></div></div>
+                        <label class="sr-only" for="messageInput">Message</label>
+                        <textarea id="messageInput" rows="7" maxlength="10000" spellcheck="false" placeholder="Your account will close today unless you verify now"></textarea>
+
+                        <div class="checker-mini-actions">
+                            <button type="button" data-fill-example="Your account will close today unless you verify now">Use Example</button>
+                            <button type="button" class="primary-action" data-analyze-mode="message">Analyze</button>
+                            <button type="button" data-clear-mode="message">Clear</button>
+                        </div>
+                    </section>
+
+                    <section class="checker-panel" role="tabpanel" aria-labelledby="linkTab" data-checker-panel="link" id="link" hidden>
+                        <div class="checker-section-heading"><span>03</span><div><p>Link Checker</p><h3>Link</h3></div></div>
+                        <label class="sr-only" for="linkInput">Link</label>
+                        <input id="linkInput" type="url" inputmode="url" autocomplete="off" maxlength="2048" spellcheck="false" placeholder="https://secure-login.example.com/verify">
+
+                        <div class="checker-mini-actions">
+                            <button type="button" data-fill-example="https://secure-login.example.com/verify">Use Example</button>
+                            <button type="button" class="primary-action" data-analyze-mode="link">Analyze</button>
+                            <button type="button" data-clear-mode="link">Clear</button>
+                        </div>
+                    </section>
+
+                    <section class="checker-panel" role="tabpanel" aria-labelledby="emailTab" data-checker-panel="email" id="email" hidden>
+                        <div class="checker-section-heading"><span>04</span><div><p>Email Checker</p><h3>Sender email address</h3></div></div>
+                        <label class="sr-only" for="emailInput">Sender email address</label>
+                        <input id="emailInput" type="email" inputmode="email" autocomplete="off" maxlength="254" spellcheck="false" placeholder="support@example.com">
+
+                        <div class="email-upload">
+                            <label for="emailFileInput">Upload email file</label>
+                            <input id="emailFileInput" type="file" accept=".eml,.txt,.html,.htm,message/rfc822">
+                            <p class="email-upload-hint" id="emailFileMeta">Upload a raw `.eml`, `.txt`, or exported message file. SafeMind extracts the sender and body locally for analysis.</p>
+                        </div>
+
+                        <div class="checker-mini-actions">
+                            <button type="button" data-fill-example="microsoft-support@outlook-security.example">Use Example</button>
+                            <button type="button" class="primary-action" data-analyze-mode="email">Analyze</button>
+                            <button type="button" data-clear-mode="email">Clear</button>
+                        </div>
+                    </section>
+                </div>
+            </article>
+
+            <article class="checker-card checker-result reveal">
+                <div class="agent-header">
+                    <span class="agent-mark" aria-hidden="true">AI</span>
+                    <div><strong>Investigation case</strong><span id="agentState">Ready</span></div>
+                    <span class="agent-status-dot" aria-hidden="true"></span>
+                </div>
+                <div class="checker-loading" data-checker-loading></div>
+                <div class="case-identity" id="caseIdentity" hidden>
+                    <strong id="caseNumber">CASE</strong>
+                    <span id="caseDuration">0 ms</span>
+                </div>
+                <div class="result-summary-line">
+                    <h3 id="riskScore">Ready to scan</h3>
+                    <p id="riskConfidence" hidden>0% confidence</p>
+                </div>
+                <p id="riskCategory" hidden>Awaiting input</p>
+                <p id="riskReason">Choose a checker and enter a value.</p>
+                <section class="agent-response" id="agentResponse" aria-live="polite" hidden>
+                    <h4 id="agentHeadline">Waiting for content</h4>
+                    <div class="agent-next-steps" id="agentNextSteps" hidden>
+                        <p>What to do</p>
+                        <ol id="agentActions"></ol>
+                    </div>
+                </section>
+                <p class="evidence-label" id="evidenceLabel" hidden>Warning signs</p>
+                <ul class="result-indicators" id="resultIndicators" aria-label="Detected indicators"></ul>
+                <div class="result-actions">
+                    <button type="button" id="reportAnalysis" disabled>Send for review</button>
+                </div>
+                <div class="agent-feedback" id="agentFeedback" hidden>
+                    <span>Label this result</span>
+                    <button type="button" data-agent-feedback="confirm" data-case-feedback="correct">Correct</button>
+                    <button type="button" data-agent-feedback="cancel" data-case-feedback="incorrect">Incorrect</button>
+                    <button type="button" data-agent-feedback="cancel" data-case-feedback="false_positive">False positive</button>
+                    <button type="button" data-agent-feedback="cancel" data-case-feedback="false_negative">False negative</button>
+                </div>
+                <p class="result-action-status" id="resultActionStatus" role="status" aria-live="polite"></p>
+                <p class="analysis-disclaimer">Never share passwords, OTP codes, recovery keys, or payment details.</p>
+            </article>
+        </section>
+
+        <section class="investigation-dashboard reveal" id="investigationDashboard" hidden>
+            <article class="investigation-panel timeline-panel">
+                <div class="investigation-heading"><p>Investigation timeline</p><span id="timelineStatus">Waiting</span></div>
+                <ol class="investigation-timeline" id="investigationTimeline"></ol>
+            </article>
+            <article class="investigation-panel score-panel">
+                <div class="investigation-heading"><p>Explainable risk score</p><span id="scoreTotal">0 points</span></div>
+                <div class="score-contributions" id="scoreContributions"></div>
+            </article>
+            <article class="investigation-panel evidence-panel">
+                <div class="investigation-heading"><p>Evidence</p><span id="evidenceCount">0 findings</span></div>
+                <div class="evidence-grid" id="evidenceGrid"></div>
+            </article>
+            <article class="investigation-panel graph-panel">
+                <div class="investigation-heading"><p>Threat relationships</p><span>Observed entities</span></div>
+                <div class="threat-graph" id="threatGraph"></div>
+            </article>
+            <article class="investigation-panel intelligence-panel">
+                <div class="investigation-heading"><p>Threat intelligence</p><span id="intelligenceState">Local checks</span></div>
+                <p id="intelligenceSummary"></p>
+            </article>
+            <article class="investigation-panel related-panel">
+                <div class="investigation-heading"><p>Related cases and knowledge</p><span>Evidence-backed only</span></div>
+                <p id="relatedCasesState"></p>
+                <p id="knowledgeState"></p>
+            </article>
+        </section>
+
+        <section class="checker-directory reveal">
+            <div class="section-heading section-heading-left">
+                <p>Live Lists</p>
+                <h2>Shared scam directory</h2>
+                <span>Verified phone numbers, messages, links, and email records from Supabase appear here.</span>
+            </div>
+
+            <div class="list-columns">
+                <article>
+                    <h4>Scam</h4>
+                    <ul id="scamList"></ul>
+                </article>
+                <article>
+                    <h4>Safe</h4>
+                    <ul id="safeList"></ul>
+                </article>
+                <article>
+                    <h4>Pending classification</h4>
+                    <ul id="otherList"></ul>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <nav class="scanner-mobile-nav" aria-label="Primary navigation">
+        <a href="dashboard.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1Z"/></svg><span>Overview</span></a>
+        <a class="is-active" href="scam-checker.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4M11 8v6M8 11h6"/></svg><span>Scanner</span></a>
+        <a href="reports.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4m0 1h11l-2 4 2 4H5"/></svg><span>Reports</span></a>
+        <a href="education.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H11v17H7.5A3.5 3.5 0 0 0 4 22Zm16 0A3.5 3.5 0 0 0 16.5 2H13v17h3.5A3.5 3.5 0 0 1 20 22Z"/></svg><span>Education</span></a>
+    </nav>
+
+    <script type="module" src="../js/scam-checker.js"></script>
+</body>
+</html>
