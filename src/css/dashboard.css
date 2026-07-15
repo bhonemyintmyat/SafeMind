@@ -550,6 +550,257 @@ body.dashboard-page p { margin-top: 0; }
   .stat-grid { grid-template-columns: 1fr; }
 }
 
+/* SafeMind AI Security Copilot */
+.education-copilot-page {
+  --background: #0B1120;
+  --sidebar: #0B1120;
+  --surface: #111827;
+  --surface-raised: #172033;
+  --border: #1E293B;
+  --border-red: #315ea8;
+  --red: #2563EB;
+  --red-dark: #1D4ED8;
+  --text: #F8FAFC;
+  --muted: #94A3B8;
+  --quiet: #718096;
+  --success: #10B981;
+  --danger: #EF4444;
+  --warning: #F59E0B;
+  background:
+    radial-gradient(circle at 65% 0%, rgba(37, 99, 235, .11), transparent 32rem),
+    var(--background);
+}
+
+html[data-theme="light"] .education-copilot-page {
+  --background: #F8FAFC;
+  --sidebar: #FFFFFF;
+  --surface: #FFFFFF;
+  --surface-raised: #F1F5F9;
+  --border: #E2E8F0;
+  --border-red: #93B4F4;
+  --red: #2563EB;
+  --red-dark: #1D4ED8;
+  --text: #0F172A;
+  --muted: #475569;
+  --quiet: #64748B;
+  --success: #059669;
+  --danger: #DC2626;
+  --warning: #D97706;
+}
+
+.education-copilot-page .dashboard-sidebar { background: color-mix(in srgb, var(--sidebar) 96%, transparent); }
+.education-copilot-page .nav-link:hover,
+.education-copilot-page .nav-link:focus-visible,
+.education-copilot-page .nav-link.is-active { background: color-mix(in srgb, var(--red) 13%, var(--surface)); border-color: color-mix(in srgb, var(--red) 42%, var(--border)); }
+.education-copilot-page .nav-link.is-active svg { color: #60A5FA; }
+.education-copilot-page .dashboard-header { position: sticky; top: 0; z-index: 20; min-height: 82px; padding-block: 12px; background: color-mix(in srgb, var(--background) 88%, transparent); backdrop-filter: blur(18px); }
+.education-copilot-page .dashboard-header h1 { font-size: clamp(20px, 2vw, 27px); }
+.education-copilot-page .dashboard-content { width: min(1480px, calc(100% - 36px)); padding: 20px 0 34px; }
+.copilot-topbar-actions { display: flex; align-items: center; gap: 12px; }
+.copilot-ready { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); font-size: 13px; }
+.copilot-ready i,
+.copilot-panel-title i { width: 8px; height: 8px; border-radius: 50%; background: var(--success); box-shadow: 0 0 0 4px color-mix(in srgb, var(--success) 14%, transparent); }
+
+.copilot-sidebar-context { display: grid; gap: 22px; margin: 24px 8px 18px; }
+.copilot-sidebar-context section { display: grid; gap: 6px; }
+.copilot-sidebar-context p { margin: 0 0 4px; color: var(--quiet); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+.copilot-sidebar-context button { min-height: 40px; display: flex; align-items: center; gap: 9px; padding: 8px 10px; border: 0; border-radius: 9px; color: var(--muted); background: transparent; text-align: left; }
+.copilot-sidebar-context button:hover,
+.copilot-sidebar-context button:focus-visible { color: var(--text); background: var(--surface-raised); outline: 2px solid color-mix(in srgb, var(--red) 50%, transparent); }
+.copilot-sidebar-context button span { width: 22px; height: 22px; display: grid; place-items: center; border-radius: 7px; color: #BFDBFE; background: color-mix(in srgb, var(--red) 22%, transparent); }
+#educationRecentAnalyses { display: grid; gap: 6px; }
+#educationRecentAnalyses > span { padding: 7px 10px; color: var(--quiet); font-size: 12px; }
+#educationRecentAnalyses button { min-width: 0; display: grid; gap: 1px; }
+#educationRecentAnalyses button strong,
+#educationRecentAnalyses button small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#educationRecentAnalyses button strong { color: var(--text); font-size: 12px; font-weight: 500; }
+#educationRecentAnalyses button small { color: var(--quiet); font-size: 10px; }
+
+.copilot-workspace { display: grid; grid-template-columns: minmax(0, 3fr) minmax(250px, 1fr); gap: 16px; align-items: start; }
+.education-copilot-page .education-chat-card { height: 80vh; min-height: 640px; max-height: 900px; border: 0; border-radius: 22px; background: color-mix(in srgb, var(--surface) 94%, transparent); box-shadow: 0 24px 70px rgba(0, 0, 0, .24); backdrop-filter: blur(20px); }
+.education-copilot-page .education-chat-header { min-height: 72px; padding: 12px 18px; border-color: var(--border); background: color-mix(in srgb, var(--surface) 92%, transparent); }
+.education-copilot-page .education-chat-header > div { display: flex; align-items: center; gap: 11px; }
+.education-copilot-page .education-chat-header > div > span:last-child { display: grid; }
+.education-copilot-page .education-chat-header small { grid-column: auto; display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 11px; }
+.education-agent-avatar,
+.education-welcome-icon { display: grid; place-items: center; color: #DBEAFE; background: linear-gradient(145deg, #2563EB, #10B981); box-shadow: 0 8px 24px rgba(37, 99, 235, .25); }
+.education-agent-avatar { width: 42px; height: 42px; flex: 0 0 auto; border-radius: 13px; }
+.education-agent-avatar svg,
+.education-welcome-icon svg { width: 23px; height: 23px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.education-chat-header .education-online-dot { width: 7px; height: 7px; display: inline-block; grid-row: auto; }
+.education-copilot-page .education-chat-header button { min-height: 38px; padding: 7px 11px; border: 0; border-radius: 10px; color: var(--muted); background: var(--surface-raised); }
+.education-copilot-page .education-chat-header button:hover { color: var(--text); transform: translateY(-1px); }
+
+.education-copilot-page .education-chat-log { gap: 14px; padding: 24px clamp(14px, 3vw, 32px); background: transparent; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+.education-welcome { width: min(100%, 720px); display: grid; justify-items: center; align-self: center; margin: auto auto 6px; padding: 10px; text-align: center; }
+.education-welcome-icon { width: 58px; height: 58px; margin-bottom: 15px; border-radius: 18px; }
+.education-welcome p { margin: 0 0 1px; color: #60A5FA; font-size: 15px; }
+.education-welcome h2 { margin: 0 0 7px; font-size: clamp(23px, 3vw, 32px); font-weight: 700; }
+.education-welcome > span:not(.education-welcome-icon) { max-width: 650px; color: var(--muted); font-size: 14px; }
+.education-capabilities { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 13px; }
+.education-capabilities span { padding: 4px 9px; border-radius: 999px; color: #BFDBFE; background: color-mix(in srgb, var(--red) 13%, transparent); font-size: 11px; }
+.education-copilot-page .education-empty-actions { width: min(100%, 760px); grid-template-columns: repeat(3, minmax(0, 1fr)); align-self: center; margin: 0 auto auto; }
+.education-copilot-page .education-empty-actions button { min-height: 92px; grid-template-columns: auto minmax(0, 1fr); column-gap: 10px; align-content: center; padding: 13px; border: 0; border-radius: 15px; background: var(--surface-raised); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border) 75%, transparent); transition: transform .15s ease, box-shadow .15s ease, background .15s ease; }
+.education-copilot-page .education-empty-actions button:hover,
+.education-copilot-page .education-empty-actions button:focus-visible { transform: translateY(-2px); background: color-mix(in srgb, var(--red) 10%, var(--surface-raised)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--red) 55%, transparent), 0 10px 24px rgba(0,0,0,.12); outline: none; }
+.education-empty-actions i { width: 31px; height: 31px; display: grid; place-items: center; grid-row: 1 / 3; border-radius: 10px; background: color-mix(in srgb, var(--red) 14%, transparent); font-style: normal; }
+.education-copilot-page .education-empty-actions strong { align-self: end; font-size: 12px; }
+.education-copilot-page .education-empty-actions span { align-self: start; font-size: 10px; }
+
+.education-copilot-page .education-message { width: min(92%, 820px); max-width: none; animation: copilot-message-in .2s ease both; }
+@keyframes copilot-message-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+.education-copilot-page .education-message-avatar { width: 34px; height: 34px; border-radius: 11px; background: linear-gradient(145deg, #2563EB, #10B981); }
+.education-copilot-page .education-message.is-user .education-message-avatar { background: #334155; }
+.education-copilot-page .education-message > div { min-width: 0; padding: 13px 15px; border: 0; border-radius: 5px 16px 16px; background: var(--surface-raised); box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+.education-copilot-page .education-message.is-user > div { border-radius: 16px 5px 16px 16px; background: color-mix(in srgb, var(--red) 18%, var(--surface)); }
+.education-message-time { display: block; margin-top: 8px; color: var(--quiet); font-size: 10px; }
+.education-message.is-user .education-message-time { text-align: right; }
+.education-response-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.education-response-section { min-width: 0; padding: 11px; border-radius: 11px; background: color-mix(in srgb, var(--surface) 74%, transparent); }
+.education-response-section:first-child,
+.education-response-section[data-section="summary"],
+.education-response-section[data-section="recommended-actions"] { grid-column: 1 / -1; }
+.education-response-section h3 { margin: 0 0 5px; color: #93C5FD; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
+.education-response-section p { color: var(--text); font-size: 13px; line-height: 1.65; }
+.education-response-section[data-section="threat-level"] { background: color-mix(in srgb, var(--danger) 10%, var(--surface)); }
+.education-response-actions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 9px; padding-top: 8px; border-top: 1px solid var(--border); }
+.education-response-actions button { min-width: 30px; min-height: 30px; display: inline-grid; place-items: center; padding: 4px 7px; border: 0; border-radius: 8px; color: var(--muted); background: transparent; font-size: 11px; }
+.education-response-actions button:hover,
+.education-response-actions button:focus-visible { color: var(--text); background: var(--surface); outline: 2px solid color-mix(in srgb, var(--red) 45%, transparent); }
+
+.education-copilot-page .education-quick-prompts { flex-wrap: nowrap; overflow-x: auto; padding: 9px 18px 2px; border: 0; scrollbar-width: none; }
+.education-copilot-page .education-quick-prompts::-webkit-scrollbar { display: none; }
+.education-copilot-page .education-quick-prompts button { flex: 0 0 auto; min-height: 32px; padding: 5px 10px; border: 0; color: var(--muted); background: var(--surface-raised); font-size: 11px; }
+.education-copilot-page .education-quick-prompts button:hover { color: #BFDBFE; background: color-mix(in srgb, var(--red) 14%, var(--surface-raised)); }
+.education-evidence-tray { margin: 8px 16px 0; padding: 13px; border-radius: 14px; background: var(--surface-raised); box-shadow: inset 0 0 0 1px var(--border); }
+.education-evidence-tray[hidden] { display: none; }
+.education-evidence-tray > div:first-child { display: flex; align-items: center; justify-content: space-between; margin-bottom: 9px; }
+.education-evidence-tray > div:first-child button { width: 32px; height: 32px; border: 0; border-radius: 8px; color: var(--muted); background: var(--surface); font-size: 20px; }
+.education-evidence-fields { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 8px; }
+.education-evidence-fields label { display: grid; gap: 4px; color: var(--muted); font-size: 11px; }
+.education-evidence-fields select,
+.education-evidence-fields textarea { min-height: 42px; width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 9px; color: var(--text); background: var(--surface); font: inherit; outline: none; }
+.education-evidence-fields textarea { min-height: 70px; resize: vertical; }
+.education-evidence-fields select:focus,
+.education-evidence-fields textarea:focus { border-color: var(--red); box-shadow: 0 0 0 3px color-mix(in srgb, var(--red) 18%, transparent); }
+.education-copilot-page .education-upload { margin-top: 8px; padding: 9px 11px; border: 0; border-radius: 9px; color: #93C5FD; background: color-mix(in srgb, var(--red) 10%, var(--surface)); }
+.education-copilot-page .education-file-preview { margin-top: 8px; border: 0; background: var(--surface); }
+
+.education-copilot-page .education-chat-form { grid-template-columns: auto minmax(0, 1fr) auto; align-items: end; gap: 8px; margin: 8px 14px 4px; padding: 7px; border: 1px solid color-mix(in srgb, var(--red) 30%, var(--border)); border-radius: 18px; background: var(--surface-raised); box-shadow: 0 14px 34px rgba(0, 0, 0, .14); }
+.education-composer-tools { display: flex; gap: 2px; }
+.education-composer-tools button { width: 36px; height: 36px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 10px; color: var(--muted); background: transparent; }
+.education-composer-tools button:hover,
+.education-composer-tools button:focus-visible { color: #93C5FD; background: color-mix(in srgb, var(--red) 12%, transparent); outline: none; }
+.education-composer-tools svg,
+.education-chat-form .primary-button svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.education-copilot-page .education-chat-form textarea { min-height: 40px; max-height: 124px; padding: 9px 5px; border: 0; color: var(--text); background: transparent; resize: none; box-shadow: none; }
+.education-copilot-page .education-chat-form textarea:focus { box-shadow: none; }
+.education-copilot-page .education-chat-form .primary-button { min-width: 46px; width: auto; height: 42px; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 0 12px; border-radius: 13px; }
+.education-copilot-page .education-chat-form .primary-button span { font-size: 12px; }
+.education-copilot-page .education-chat-status { min-height: 18px; padding: 0 20px; font-size: 11px; }
+.education-copilot-page .education-disclaimer { padding: 3px 20px 11px; text-align: center; font-size: 10px; }
+
+.copilot-insights { display: grid; gap: 12px; }
+.copilot-panel { padding: 16px; border: 0; border-radius: 17px; background: color-mix(in srgb, var(--surface) 94%, transparent); box-shadow: 0 16px 42px rgba(0, 0, 0, .14); backdrop-filter: blur(18px); }
+.copilot-panel-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+.copilot-panel-title small { color: var(--quiet); font-size: 9px; text-transform: none; }
+.copilot-agent-status > strong,
+.copilot-learning > strong { display: block; margin-bottom: 10px; font-size: 14px; }
+.copilot-agent-status dl { display: grid; gap: 7px; margin: 0; }
+.copilot-agent-status dl div { display: flex; justify-content: space-between; gap: 10px; }
+.copilot-agent-status dt { color: var(--quiet); font-size: 11px; }
+.copilot-agent-status dd { margin: 0; color: var(--text); font-size: 11px; text-align: right; }
+.copilot-score-ring { --score: 0; --score-color: var(--red); width: 112px; aspect-ratio: 1; display: grid; place-content: center; justify-items: center; margin: 6px auto 12px; border-radius: 50%; background: radial-gradient(circle, var(--surface) 57%, transparent 59%), conic-gradient(var(--score-color) calc(var(--score) * 1%), var(--border) 0); }
+.copilot-score-ring[data-risk="high"] { --score-color: var(--danger); }
+.copilot-score-ring[data-risk="medium"] { --score-color: var(--warning); }
+.copilot-score-ring[data-risk="low"] { --score-color: var(--success); }
+.copilot-score-ring strong { font-size: 24px; }
+.copilot-score-ring span { color: var(--muted); font-size: 10px; }
+.copilot-protection > p,
+.copilot-learning p,
+.copilot-trend p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.65; }
+.copilot-learning button { min-height: 34px; margin-top: 11px; padding: 6px 10px; border: 0; border-radius: 9px; color: #BFDBFE; background: color-mix(in srgb, var(--red) 14%, transparent); }
+.copilot-trend p { display: flex; gap: 8px; }
+.copilot-trend p i { width: 8px; height: 8px; flex: 0 0 auto; margin-top: 5px; border-radius: 50%; background: var(--warning); }
+
+@media (max-width: 1120px) {
+  .copilot-workspace { grid-template-columns: minmax(0, 1fr) 230px; }
+  .education-copilot-page .education-empty-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .copilot-agent-status { display: none; }
+}
+
+@media (max-width: 900px) {
+  .copilot-workspace { grid-template-columns: 1fr; }
+  .copilot-insights { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .copilot-agent-status { display: none; }
+  .copilot-panel { min-height: 130px; }
+  .copilot-score-ring { width: 76px; float: left; margin: 0 12px 0 0; }
+  .copilot-score-ring strong { font-size: 18px; }
+}
+
+@media (max-width: 720px) {
+  .education-copilot-page { padding-bottom: 66px; }
+  .education-copilot-page .dashboard-header { min-height: 64px; padding: 9px 14px; }
+  .education-copilot-page .dashboard-header > div:first-child p,
+  .education-copilot-page .copilot-ready,
+  .education-copilot-page .profile-link { display: none; }
+  .education-copilot-page .dashboard-content { width: 100%; padding: 0; }
+  .education-copilot-page .dashboard-sidebar { height: 66px; }
+  .copilot-sidebar-context { display: none; }
+  .copilot-workspace { display: block; }
+  .education-copilot-page .education-chat-card { height: calc(100dvh - 130px); min-height: 540px; max-height: none; border-radius: 0; box-shadow: none; }
+  .education-copilot-page .education-chat-header { min-height: 60px; padding: 8px 12px; }
+  .education-agent-avatar { width: 36px; height: 36px; }
+  .education-copilot-page .education-chat-header strong { font-size: 13px; }
+  .education-copilot-page .education-chat-header button { min-height: 34px; font-size: 11px; }
+  .education-copilot-page .education-chat-log { padding: 14px 11px; }
+  .education-welcome { padding: 5px; }
+  .education-welcome-icon { width: 48px; height: 48px; margin-bottom: 9px; }
+  .education-welcome h2 { font-size: 22px; }
+  .education-welcome > span:not(.education-welcome-icon) { font-size: 12px; }
+  .education-capabilities { display: none; }
+  .education-copilot-page .education-empty-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+  .education-copilot-page .education-empty-actions button { min-height: 70px; padding: 9px; }
+  .education-copilot-page .education-empty-actions span { display: none; }
+  .education-copilot-page .education-message { width: 97%; }
+  .education-response-grid { grid-template-columns: 1fr; }
+  .education-response-section,
+  .education-response-section:first-child,
+  .education-response-section[data-section="summary"],
+  .education-response-section[data-section="recommended-actions"] { grid-column: auto; }
+  .education-evidence-tray { max-height: 44vh; overflow-y: auto; margin: 6px 8px 0; }
+  .education-evidence-fields { grid-template-columns: 1fr; }
+  .education-copilot-page .education-chat-form { margin-inline: 8px; grid-template-columns: auto minmax(0, 1fr) auto; }
+  .education-composer-tools button:not(:first-child) { display: none; }
+  .education-copilot-page .education-chat-form .primary-button { width: 42px; min-width: 42px; padding: 0; }
+  .education-copilot-page .education-chat-form .primary-button span { display: none; }
+  .copilot-insights { display: none; }
+}
+
+@media (max-width: 380px) {
+  .education-copilot-page .education-empty-actions { grid-template-columns: 1fr; }
+  .education-copilot-page .education-empty-actions button { min-height: 54px; }
+  .education-copilot-page .education-chat-header button { width: 34px; overflow: hidden; white-space: nowrap; color: transparent; }
+  .education-copilot-page .education-chat-header button span { color: var(--text); }
+}
+
+html[lang="my"] .education-copilot-page .education-welcome h2,
+html[lang="my"] .education-copilot-page .education-welcome > span,
+html[lang="my"] .education-copilot-page .education-empty-actions button,
+html[lang="my"] .education-copilot-page .copilot-panel { line-height: 1.75; }
+
+@media (prefers-reduced-motion: reduce) {
+  .education-copilot-page *,
+  .education-copilot-page *::before,
+  .education-copilot-page *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+@media (forced-colors: active) {
+  .education-copilot-page button,
+  .education-copilot-page .copilot-panel,
+  .education-copilot-page .education-response-section { border: 1px solid CanvasText; }
+}
+
 /* Bilingual scam education agent */
 .education-agent {
   display: grid;
