@@ -10,6 +10,7 @@ export default defineConfig({
 		strictPort: true,
 		proxy: {
 			"/api/spam-check": "http://127.0.0.1:5050",
+			"/api/education-chat": "http://127.0.0.1:5051",
 			"/health": "http://127.0.0.1:5050"
 		}
 	},

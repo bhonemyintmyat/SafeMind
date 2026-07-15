@@ -13,6 +13,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="SafeMind">
     <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/brand-palette.css">
 </head>
 <body class="dashboard-page" data-page="education">
     <div class="dashboard-shell">
@@ -31,25 +32,75 @@
             </div>
         </aside>
         <div class="dashboard-main">
-            <header class="dashboard-header"><div><p>Education</p><h1>Scam safety guides</h1></div><a class="profile-link" href="profile.html"><span class="avatar" data-avatar>SM</span><span><b class="username">User</b><small>Edit profile</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a></header>
+            <header class="dashboard-header"><div><p>Education</p><h1>Ask the Scam Coach</h1></div><a class="profile-link" href="profile.html"><span class="avatar" data-avatar>SM</span><span><b class="username">User</b><small>Edit profile</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a></header>
             <main class="dashboard-content">
-                <section class="content-card">
-                    <div class="section-title"><div><p>Guides</p><h2>Read the warning signs</h2><span>Articles open in a separate browser tab.</span></div></div>
-                    <div class="education-filters" role="group" aria-label="Filter education"><button class="is-active" type="button" data-education-filter="all">All</button><button type="button" data-education-filter="phishing">Phishing</button><button type="button" data-education-filter="phone">Phone</button><button type="button" data-education-filter="account">Account safety</button></div>
-                    <div class="education-feed" id="educationFeed" aria-live="polite"><p class="empty-state">Loading education...</p></div>
-                </section>
-                <section class="content-card admin-publish" id="adminPublish" hidden>
-                    <div class="section-title"><div><p>Administrator</p><h2>Publish a guide</h2></div></div>
-                    <form class="dashboard-form" id="educationForm">
-                        <label for="educationTitle">Article title</label><input id="educationTitle" maxlength="140" required>
-                        <label for="educationCategory">Category</label><input id="educationCategory" maxlength="60" required>
-                        <label for="educationContent">Article content</label><textarea id="educationContent" rows="8" maxlength="10000" required></textarea>
-                        <button class="primary-button" type="submit" id="educationSubmit">Publish article</button><p class="form-status" id="educationStatus" role="status" aria-live="polite"></p>
-                    </form>
+                <section class="education-agent" aria-labelledby="educationAgentTitle">
+                    <aside class="education-evidence-card">
+                        <div class="education-agent-heading">
+                            <span class="education-agent-icon" aria-hidden="true">AI</span>
+                            <div><p>Private evidence workspace</p><h2 id="educationAgentTitle">Show what happened</h2></div>
+                        </div>
+                        <p class="education-agent-intro">Paste the suspicious message or upload a screenshot. SafeMind combines local NLP signals, verified records, and AI guidance.</p>
+                        <div class="education-start-guide" aria-label="Before you start">
+                            <strong>Before you start</strong>
+                            <ol>
+                                <li>Hide passwords, OTP codes, card numbers, and identity documents.</li>
+                                <li>Add only the evidence needed to understand the scam.</li>
+                                <li>Ask what looks suspicious and what you should do next.</li>
+                            </ol>
+                        </div>
+                        <label for="educationEvidenceType">Evidence type</label>
+                        <select id="educationEvidenceType">
+                            <option value="auto">Detect automatically</option>
+                            <option value="message">Message</option>
+                            <option value="link">Link</option>
+                            <option value="email">Email</option>
+                            <option value="phone">Phone number</option>
+                        </select>
+                        <label for="educationEvidence">Scam evidence</label>
+                        <textarea id="educationEvidence" rows="7" maxlength="10000" placeholder="Paste the message, link, sender, or phone number here..."></textarea>
+                        <label class="education-upload" for="educationEvidenceFile">
+                            <span>Upload screenshot or text file</span>
+                            <small>PNG, JPEG, WebP, TXT, or EML. Maximum 2 MB.</small>
+                        </label>
+                        <input class="sr-only" id="educationEvidenceFile" type="file" accept="image/png,image/jpeg,image/webp,text/plain,.txt,.eml">
+                        <div class="education-file-preview" id="educationFilePreview" hidden>
+                            <img id="educationFileImage" alt="Uploaded scam evidence preview" hidden>
+                            <div><strong id="educationFileName"></strong><span id="educationFileMeta"></span></div>
+                            <button type="button" id="educationFileRemove">Remove</button>
+                        </div>
+                        <p class="education-file-status" id="educationFileStatus" role="status" aria-live="polite"></p>
+                    </aside>
+
+                    <section class="education-chat-card" aria-label="SafeMind Scam Coach chat">
+                        <div class="education-chat-header">
+                            <div><span class="education-online-dot" aria-hidden="true"></span><strong>SafeMind Scam Coach</strong><small>English + မြန်မာ</small></div>
+                            <button type="button" id="educationNewChat">New chat</button>
+                        </div>
+                        <div class="education-chat-log" id="educationChatLog" aria-live="polite" aria-relevant="additions">
+                            <article class="education-message is-assistant">
+                                <span class="education-message-avatar" aria-hidden="true">SM</span>
+                                <div><strong>How I can help</strong><p>Upload scam evidence or paste the suspicious content, then ask why it may be a scam. I can explain warning signs in English or Burmese and suggest safe next steps.</p><p>I cannot guarantee that content is safe. Always verify unexpected requests through an official channel.</p></div>
+                            </article>
+                        </div>
+                        <div class="education-quick-prompts" aria-label="Suggested questions">
+                            <button type="button" data-education-prompt="Why does this look like a scam?">Why is this suspicious?</button>
+                            <button type="button" data-education-prompt="What should I do immediately after being scammed?">What should I do now?</button>
+                            <button type="button" data-education-prompt="Explain the warning signs in simple language.">Explain the warning signs</button>
+                        </div>
+                        <form class="education-chat-form" id="educationChatForm">
+                            <label class="sr-only" for="educationQuestion">Ask SafeMind about this scam</label>
+                            <textarea id="educationQuestion" rows="2" maxlength="4000" placeholder="Ask why this is a scam or what to do next..."></textarea>
+                            <button class="primary-button" type="submit" id="educationChatSubmit">Send</button>
+                        </form>
+                        <p class="education-chat-status" id="educationChatStatus" role="status" aria-live="polite"></p>
+                        <p class="education-disclaimer">AI guidance can be wrong. Never share credentials or send money based only on this chat.</p>
+                    </section>
                 </section>
             </main>
         </div>
     </div>
     <script type="module" src="../js/dashboard.js"></script>
+    <script type="module" src="../js/education-chat.js"></script>
 </body>
 </html>

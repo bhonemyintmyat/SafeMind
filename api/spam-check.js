@@ -553,7 +553,7 @@ function buildInvestigation(scanType, content, analysis, investigationTimeMs) {
   };
 }
 
-function runAgent(scanType, content) {
+export function runAgent(scanType, content) {
   const started = performance.now();
   const key = createHash("sha256").update(`${scanType}\0${content.trim()}`).digest("hex");
   const cached = AGENT_CACHE.get(key);

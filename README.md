@@ -51,9 +51,11 @@ The interface supports English and Burmese across navigation, forms, scanner con
 
 Users can submit suspicious activity for review and attach supporting screenshots. Upload validation limits accepted formats and file size, while report states support a clear review workflow.
 
-### Security education
+### Bilingual AI Scam Coach
 
-SafeMind includes educational material that helps users recognize common manipulation patterns such as urgency, impersonation, credential requests, remote-access scams, prize fraud, and payment pressure.
+The Education workspace lets users paste suspicious content or upload a victim screenshot and discuss it with an AI security coach in English or Burmese. Answers are grounded with SafeMind's NLP assessment and verified directory matches, then organized into an assessment, warning signs, immediate actions, and a reusable safety lesson.
+
+The coach starts with privacy instructions, accepts only restricted evidence formats, and reminds users that automated guidance cannot guarantee safety.
 
 ### Browser extension
 
@@ -94,7 +96,7 @@ SafeMind is organized into distinct product and analysis layers:
 | Web client | Responsive interface, localization, validation, and investigation views |
 | Security API | Unified request validation and explainable analysis responses |
 | NLP service | Classification, intent detection, entity extraction, and security heuristics |
-| Agent runtime | Investigation coordination, evidence evaluation, and decision logic |
+| Agent runtime | Investigation coordination, evidence evaluation, decision logic, and bilingual coaching |
 | Extension | Minimal-permission browser entry point |
 | PWA layer | Installable application metadata and offline-ready assets |
 

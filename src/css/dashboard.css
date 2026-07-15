@@ -550,6 +550,136 @@ body.dashboard-page p { margin-top: 0; }
   .stat-grid { grid-template-columns: 1fr; }
 }
 
+/* Bilingual scam education agent */
+.education-agent {
+  display: grid;
+  grid-template-columns: minmax(290px, .76fr) minmax(0, 1.45fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+.education-evidence-card,
+.education-chat-card {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: 0 16px 42px rgba(15, 23, 42, .08);
+}
+
+.education-evidence-card {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  padding: clamp(22px, 3vw, 32px);
+}
+
+.education-agent-heading { display: flex; align-items: center; gap: 13px; }
+.education-agent-heading p { margin: 0 0 2px; color: var(--red); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+.education-agent-heading h2 { margin: 0; font-size: clamp(22px, 2.5vw, 29px); }
+.education-agent-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  color: #fff;
+  background: var(--red);
+  font: 700 14px/1 system-ui, sans-serif;
+}
+.education-agent-intro { margin: 2px 0 4px; color: var(--muted); font-size: 15px; }
+.education-start-guide { padding: 16px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-raised); }
+.education-start-guide strong { display: block; margin-bottom: 7px; color: var(--text); }
+.education-start-guide ol { margin: 0; padding-left: 20px; color: var(--muted); font-size: 14px; }
+.education-start-guide li + li { margin-top: 5px; }
+.education-evidence-card label:not(.education-upload) { margin-top: 3px; color: var(--text); font-size: 14px; }
+.education-evidence-card select,
+.education-evidence-card textarea,
+.education-chat-form textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  outline: none;
+  color: var(--text);
+  background: var(--background);
+  font: inherit;
+}
+.education-evidence-card select { min-height: 46px; padding: 9px 12px; }
+.education-evidence-card textarea { min-height: 160px; padding: 13px; resize: vertical; }
+.education-evidence-card select:focus,
+.education-evidence-card textarea:focus,
+.education-chat-form textarea:focus { border-color: var(--red); box-shadow: 0 0 0 3px color-mix(in srgb, var(--red) 18%, transparent); }
+.education-upload {
+  display: grid;
+  gap: 3px;
+  padding: 15px;
+  border: 1px dashed var(--red);
+  border-radius: 10px;
+  color: var(--red);
+  background: color-mix(in srgb, var(--red) 7%, var(--surface));
+  cursor: pointer;
+}
+.education-upload small { color: var(--muted); }
+.education-file-preview { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; align-items: center; gap: 11px; padding: 10px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface-raised); }
+.education-file-preview[hidden] { display: none; }
+.education-file-preview img { width: 58px; height: 48px; border-radius: 7px; object-fit: cover; }
+.education-file-preview div { min-width: 0; display: grid; }
+.education-file-preview strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.education-file-preview span { color: var(--muted); font-size: 12px; }
+.education-file-preview button,
+.education-chat-header button { min-height: 36px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 7px; color: var(--text); background: var(--surface); }
+.education-file-status,
+.education-chat-status { min-height: 23px; margin: 0; color: var(--muted); font-size: 13px; }
+.education-file-status[data-state="success"],
+.education-chat-status[data-state="success"] { color: var(--success); }
+.education-file-status[data-state="error"],
+.education-chat-status[data-state="error"] { color: var(--danger); }
+
+.education-chat-card { min-height: 680px; display: grid; grid-template-rows: auto minmax(320px, 1fr) auto auto auto auto; overflow: hidden; }
+.education-chat-header { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 17px 20px; border-bottom: 1px solid var(--border); }
+.education-chat-header > div { display: grid; grid-template-columns: auto auto; align-items: center; column-gap: 8px; }
+.education-chat-header small { grid-column: 2; color: var(--muted); }
+.education-online-dot { width: 9px; height: 9px; grid-row: 1 / 3; border-radius: 50%; background: var(--success); box-shadow: 0 0 0 4px color-mix(in srgb, var(--success) 14%, transparent); }
+.education-chat-log { min-height: 0; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; padding: 22px; background: var(--background); scroll-behavior: smooth; }
+.education-message { max-width: min(88%, 720px); display: flex; align-items: flex-start; gap: 10px; }
+.education-message.is-user { align-self: flex-end; flex-direction: row-reverse; }
+.education-message-avatar { width: 34px; height: 34px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 9px; color: #fff; background: var(--red); font: 700 10px/1 system-ui, sans-serif; }
+.education-message.is-user .education-message-avatar { background: var(--success); }
+.education-message > div { padding: 13px 15px; border: 1px solid var(--border); border-radius: 4px 13px 13px; background: var(--surface); }
+.education-message.is-user > div { border-color: color-mix(in srgb, var(--red) 32%, var(--border)); border-radius: 13px 4px 13px 13px; background: color-mix(in srgb, var(--red) 9%, var(--surface)); }
+.education-message strong { display: block; margin-bottom: 5px; }
+.education-message p { margin: 0; color: var(--text); white-space: pre-wrap; overflow-wrap: anywhere; }
+.education-message p + p { margin-top: 9px; color: var(--muted); }
+.education-risk-badge { display: inline-flex; margin-bottom: 8px; padding: 3px 8px; border-radius: 999px; color: #fff; background: var(--warning, #f59e0b); font-size: 11px; }
+.education-risk-badge[data-risk="high"] { background: var(--danger); }
+.education-risk-badge[data-risk="low"] { background: var(--success); }
+.education-quick-prompts { display: flex; flex-wrap: wrap; gap: 7px; padding: 12px 18px 0; border-top: 1px solid var(--border); }
+.education-quick-prompts button { min-height: 36px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 999px; color: var(--muted); background: var(--surface); font-size: 12px; }
+.education-quick-prompts button:hover { color: var(--red); border-color: var(--red); }
+.education-chat-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 9px; padding: 12px 18px 8px; }
+.education-chat-form textarea { min-height: 52px; max-height: 150px; padding: 12px; resize: vertical; }
+.education-chat-form .primary-button { width: auto; min-width: 84px; margin: 0; }
+.education-chat-status { padding: 0 20px; }
+.education-disclaimer { margin: 0; padding: 7px 20px 15px; color: var(--quiet); font-size: 12px; }
+
+@media (max-width: 980px) {
+  .education-agent { grid-template-columns: 1fr; }
+  .education-chat-card { min-height: 650px; }
+}
+
+@media (max-width: 560px) {
+  .education-evidence-card { padding: 18px; }
+  .education-chat-card { min-height: 620px; }
+  .education-chat-log { padding: 16px 12px; }
+  .education-message { max-width: 96%; }
+  .education-chat-form { grid-template-columns: 1fr; }
+  .education-chat-form .primary-button { width: 100%; }
+  .education-file-preview { grid-template-columns: 48px minmax(0, 1fr); }
+  .education-file-preview img { width: 48px; height: 44px; }
+  .education-file-preview button { grid-column: 1 / -1; width: 100%; }
+}
+
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
 
 /* Readable controls and consistent contrast. */
