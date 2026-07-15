@@ -22,6 +22,8 @@ if (form && chatLog) {
   const history = [];
   let selectedImage = null;
   let activeObjectUrl = "";
+  let activeRequest = null;
+  let lastAssessment = null;
 
   const locale = () => document.documentElement.lang === "my" ? "my" : "en";
   const copy = (english, burmese) => locale() === "my" ? burmese : english;
@@ -198,6 +200,124 @@ if (form && chatLog) {
     return normalizedText;
   }
 
+  function loadingStages() {
+    return locale() === "my"
+      ? ["အကောင့်အချက်အလက် ခိုးယူသည့်ပုံစံများကို ရှာဖွေနေသည်", "ဘာသာစကားပုံစံဖြင့် စာသားကို စိစစ်နေသည်", "အတည်ပြုထားသော လိမ်လည်မှုမှတ်တမ်းနှင့် တိုက်စစ်နေသည်", "လူမှုဆိုင်ရာ လှည့်ဖြားမှုလက္ခဏာများကို သုံးသပ်နေသည်", "နားလည်လွယ်သော အဖြေကို ပြင်ဆင်နေသည်"]
+      : ["Detecting phishing patterns", "Running NLP analysis", "Checking known scam records", "Evaluating social engineering signals", "Preparing a clear explanation"];
+  }
+
+  function createLoadingMessage() {
+    const article = document.createElement("article");
+    article.className = "education-message is-assistant is-loading";
+    const avatar = document.createElement("span");
+    avatar.className = "education-message-avatar";
+    avatar.setAttribute("aria-hidden", "true");
+    avatar.textContent = "SM";
+    const content = document.createElement("div");
+    const label = document.createElement("strong");
+    label.textContent = copy("Analyzing evidence...", "သက်သေအထောက်အထားကို စိစစ်နေသည်...");
+    const dots = document.createElement("span");
+    dots.className = "education-typing-dots";
+    dots.setAttribute("aria-hidden", "true");
+    dots.innerHTML = "<i></i><i></i><i></i>";
+    const stages = document.createElement("ul");
+    stages.className = "education-analysis-stages";
+    const waitPanel = document.createElement("div");
+    waitPanel.className = "education-wait-panel";
+    waitPanel.hidden = true;
+    const waitText = document.createElement("p");
+    const waitActions = document.createElement("div");
+    const continueButton = document.createElement("button");
+    const retryButton = document.createElement("button");
+    const cancelButton = document.createElement("button");
+    continueButton.type = retryButton.type = cancelButton.type = "button";
+    continueButton.textContent = copy("Continue waiting", "ဆက်လက်စောင့်ရန်");
+    retryButton.textContent = copy("Retry", "ထပ်ကြိုးစားရန်");
+    cancelButton.textContent = copy("Cancel", "မလုပ်တော့ပါ");
+    waitActions.append(continueButton, retryButton, cancelButton);
+    waitPanel.append(waitText, waitActions);
+    content.append(label, dots, stages, waitPanel);
+    article.append(avatar, content);
+    chatLog.append(article);
+    chatLog.scrollTop = chatLog.scrollHeight;
+
+    const timers = [];
+    const stageItems = loadingStages().map((text) => {
+      const item = document.createElement("li");
+      item.textContent = text;
+      stages.append(item);
+      return item;
+    });
+    stageItems.forEach((item, index) => timers.push(window.setTimeout(() => {
+      item.classList.add("is-complete");
+      if (index === 1) label.textContent = copy("Checking scam indicators...", "လိမ်လည်မှုလက္ခဏာများကို စစ်ဆေးနေသည်...");
+    }, 850 + index * 900)));
+    timers.push(window.setTimeout(() => {
+      waitText.textContent = copy("I'm still analyzing this evidence. You can keep waiting, retry, or cancel.", "ဤသက်သေအထောက်အထားကို ဆက်လက်စိစစ်နေပါသည်။ ဆက်စောင့်နိုင်သလို ထပ်ကြိုးစားခြင်း သို့မဟုတ် မလုပ်တော့ခြင်းကို ရွေးနိုင်ပါသည်။");
+      waitPanel.hidden = false;
+      dots.hidden = true;
+    }, 8_000));
+
+    let responseParagraph = null;
+    function clearTimers() { timers.forEach(window.clearTimeout); }
+    return {
+      article,
+      continueButton,
+      retryButton,
+      cancelButton,
+      reset() {
+        clearTimers();
+        article.remove();
+        return createLoadingMessage();
+      },
+      beginResponse(assessment) {
+        clearTimers();
+        article.classList.remove("is-loading");
+        content.replaceChildren();
+        if (assessment?.risk) {
+          const badge = document.createElement("span");
+          badge.className = "education-risk-badge";
+          badge.dataset.risk = String(assessment.risk).toLowerCase();
+          badge.textContent = `${assessment.risk} · ${assessment.confidence || 0}%`;
+          content.append(badge);
+        }
+        responseParagraph = document.createElement("p");
+        content.append(responseParagraph);
+      },
+      setResponse(text) {
+        if (!responseParagraph) this.beginResponse(lastAssessment);
+        responseParagraph.textContent = plainText(text);
+        chatLog.scrollTop = chatLog.scrollHeight;
+      },
+      finish(text) {
+        clearTimers();
+        this.setResponse(text);
+        article.classList.remove("is-loading");
+      },
+      cancel() {
+        clearTimers();
+        content.replaceChildren();
+        const message = document.createElement("p");
+        message.textContent = copy("Analysis cancelled. Your evidence remains available if you want to try again.", "စိစစ်မှုကို ရပ်လိုက်ပါပြီ။ ထပ်ကြိုးစားလိုပါက သက်သေအထောက်အထားကို ဆက်လက်အသုံးပြုနိုင်သည်။");
+        content.append(message);
+        article.classList.remove("is-loading");
+      }
+    };
+  }
+
+  function updateFollowUps(prompts) {
+    const container = document.querySelector(".education-quick-prompts");
+    if (!container || !Array.isArray(prompts) || !prompts.length) return;
+    container.replaceChildren(...prompts.map((prompt) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.educationPrompt = prompt;
+      button.textContent = prompt;
+      button.addEventListener("click", () => { questionInput.value = prompt; questionInput.focus(); });
+      return button;
+    }));
+  }
+
   async function sendQuestion(question) {
     const evidenceText = evidenceInput.value.trim();
     if (!question && !evidenceText && !selectedImage) {
@@ -208,52 +328,118 @@ if (form && chatLog) {
     const selectedType = evidenceType.value;
     const scanType = selectedType === "auto" ? detectType(evidenceText || userQuestion) : selectedType;
     const previousHistory = history.slice(-8);
+    chatLog.querySelector(".education-empty-actions")?.remove();
     await appendMessage("user", userQuestion);
     history.push({ role: "user", content: userQuestion });
     submitButton.disabled = true;
     questionInput.disabled = true;
     setStatus(chatStatus, copy("SafeMind is matching NLP signals and verified records...", "SafeMind သည် NLP လက္ခဏာများနှင့် အတည်ပြုမှတ်တမ်းများကို တိုက်စစ်နေသည်..."), "pending");
-    try {
-      const directoryContext = await directoryLookup(scanType, evidenceText);
+    const loadingMessage = createLoadingMessage();
+    const directoryContext = await directoryLookup(scanType, evidenceText);
+    const requestPayload = {
+      question: userQuestion,
+      evidence_text: evidenceText,
+      scan_type: scanType,
+      image: selectedImage,
+      directory_context: directoryContext,
+      history: previousHistory,
+      language: locale(),
+      stream: true,
+      memory: { last_assessment: lastAssessment, evidence_retained: Boolean(evidenceText || selectedImage) }
+    };
+
+    async function startAttempt(loading) {
       const controller = new AbortController();
+      activeRequest = controller;
+      let retrying = false;
+      let cancelled = false;
+      loading.continueButton.onclick = () => {
+        loading.continueButton.closest(".education-wait-panel").hidden = true;
+        setStatus(chatStatus, copy("Still analyzing. The answer will stream here when ready.", "ဆက်လက်စိစစ်နေပါသည်။ အဖြေရရှိသည်နှင့် ဤနေရာတွင် တဖြည်းဖြည်း ပြသပါမည်။"), "pending");
+      };
+      loading.retryButton.onclick = () => {
+        retrying = true;
+        controller.abort();
+        const nextLoading = loading.reset();
+        setStatus(chatStatus, copy("Retrying the analysis...", "စိစစ်မှုကို ထပ်မံကြိုးစားနေသည်..."), "pending");
+        void startAttempt(nextLoading);
+      };
+      loading.cancelButton.onclick = () => {
+        cancelled = true;
+        controller.abort();
+        loading.cancel();
+        setStatus(chatStatus, copy("Analysis cancelled.", "စိစစ်မှုကို ရပ်လိုက်ပါပြီ။"), "pending");
+      };
       const timeout = window.setTimeout(() => controller.abort(), 65_000);
-      const response = await fetch(educationApiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        credentials: "same-origin",
-        signal: controller.signal,
-        body: JSON.stringify({
-          question: userQuestion,
-          evidence_text: evidenceText,
-          scan_type: scanType,
-          image: selectedImage,
-          directory_context: directoryContext,
-          history: previousHistory,
-          language: locale()
-        })
-      });
-      window.clearTimeout(timeout);
-      const result = await response.json().catch(() => ({ error: copy("The API returned an unreadable response.", "API အဖြေကို ဖတ်၍မရပါ။") }));
-      if (!response.ok) throw new Error(result.error || copy("The Scam Coach could not respond.", "Scam Coach က မတုံ့ပြန်နိုင်ပါ။"));
-      const completedAnswer = await appendMessage("assistant", result.answer, result.assessment, true);
-      history.push({ role: "assistant", content: completedAnswer });
-      questionInput.value = "";
-      setStatus(chatStatus, result.response_complete === false
-        ? copy("The model reached its response limit. Ask it to continue if needed.", "အဖြေကန့်သတ်ချက်သို့ ရောက်သွားသည်။ လိုအပ်ပါက ဆက်ရှင်းပြရန် မေးပါ။")
-        : result.directory_match
-          ? copy("Response includes a verified directory match.", "အဖြေတွင် အတည်ပြုမှတ်တမ်းနှင့် ကိုက်ညီမှု ပါဝင်သည်။")
-          : copy("Complete response received.", "အဖြေအပြည့်အစုံ ရရှိပါပြီ။"), result.response_complete === false ? "pending" : "success");
-    } catch (error) {
-      const message = error.name === "AbortError"
-        ? copy("The AI request timed out. Please try again.", "AI တောင်းဆိုမှု အချိန်ကုန်သွားသည်။ ထပ်မံကြိုးစားပါ။")
-        : error.message || copy("I could not complete the analysis. Please try again.", "စိစစ်မှု မပြီးမြောက်နိုင်ပါ။ ထပ်မံကြိုးစားပါ။");
-      await appendMessage("assistant", message);
-      setStatus(chatStatus, message, "error");
-    } finally {
-      submitButton.disabled = false;
-      questionInput.disabled = false;
-      questionInput.focus();
+      try {
+        const response = await fetch(educationApiUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/x-ndjson" },
+          credentials: "same-origin",
+          signal: controller.signal,
+          body: JSON.stringify(requestPayload)
+        });
+        if (!response.ok) {
+          const result = await response.json().catch(() => ({}));
+          throw new Error(result.error || copy("I'm sorry, I couldn't generate an answer. Please try again.", "စိတ်မကောင်းပါ။ အဖြေမထုတ်ပေးနိုင်ပါ။ ထပ်မံကြိုးစားပါ။"));
+        }
+        if (!response.body) throw new Error(copy("The streaming response is unavailable. Please retry.", "အဖြေကို တဖြည်းဖြည်းပြသနိုင်ခြင်း မရှိပါ။ ထပ်မံကြိုးစားပါ။"));
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let streamedText = "";
+        let doneEvent = null;
+        while (true) {
+          const { value, done } = await reader.read();
+          buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
+          const lines = buffer.split(/\r?\n/);
+          buffer = lines.pop() || "";
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            let event;
+            try { event = JSON.parse(line); } catch { continue; }
+            if (event.type === "meta") {
+              lastAssessment = event.assessment || null;
+              loading.beginResponse(lastAssessment);
+            } else if (event.type === "token") {
+              streamedText += event.token || "";
+              loading.setResponse(streamedText);
+            } else if (event.type === "done") {
+              doneEvent = event;
+              streamedText = event.answer || streamedText;
+            } else if (event.type === "error") {
+              throw new Error(event.message || copy("The model stopped responding. Please retry.", "AI အဖြေ ရပ်တန့်သွားသည်။ ထပ်မံကြိုးစားပါ။"));
+            }
+          }
+          if (done) break;
+        }
+        if (!doneEvent?.answer && !streamedText.trim()) throw new Error(copy("I'm sorry, I couldn't generate an answer. Please try again.", "စိတ်မကောင်းပါ။ အဖြေမထုတ်ပေးနိုင်ပါ။ ထပ်မံကြိုးစားပါ။"));
+        const completedAnswer = plainText(doneEvent?.answer || streamedText);
+        loading.finish(completedAnswer);
+        history.push({ role: "assistant", content: completedAnswer });
+        updateFollowUps(doneEvent?.follow_ups || []);
+        questionInput.value = "";
+        setStatus(chatStatus, doneEvent?.response_complete === false
+          ? copy("The response reached its limit. Use a follow-up to continue.", "အဖြေကန့်သတ်ချက်သို့ ရောက်သွားသည်။ ဆက်မေးရန် အောက်ပါမေးခွန်းများကို သုံးပါ။")
+          : copy("Complete response received.", "အဖြေအပြည့်အစုံ ရရှိပါပြီ။"), doneEvent?.response_complete === false ? "pending" : "success");
+      } catch (error) {
+        if (retrying || cancelled) return;
+        const message = error.name === "AbortError"
+          ? copy("The request took too long. Retry when you are ready.", "တောင်းဆိုမှု အချိန်ကြာလွန်းပါသည်။ အဆင်ပြေသည့်အခါ ထပ်မံကြိုးစားပါ။")
+          : error.message || copy("I'm sorry, I couldn't generate an answer. Please try again.", "စိတ်မကောင်းပါ။ အဖြေမထုတ်ပေးနိုင်ပါ။ ထပ်မံကြိုးစားပါ။");
+        loading.finish(message);
+        setStatus(chatStatus, message, "error");
+      } finally {
+        window.clearTimeout(timeout);
+        if (activeRequest === controller) {
+          activeRequest = null;
+          submitButton.disabled = false;
+          questionInput.disabled = false;
+          questionInput.focus();
+        }
+      }
     }
+    void startAttempt(loadingMessage);
   }
 
   fileInput?.addEventListener("change", async () => {
@@ -271,6 +457,13 @@ if (form && chatLog) {
       : button.dataset.educationPrompt;
     questionInput.focus();
   }));
+  document.querySelectorAll("[data-education-empty-action]").forEach((button) => button.addEventListener("click", () => {
+    const action = button.dataset.educationEmptyAction;
+    if (action === "upload") fileInput?.click();
+    else if (action === "link") { evidenceType.value = "link"; evidenceInput.focus(); }
+    else if (action === "paste") evidenceInput.focus();
+    else questionInput.focus();
+  }));
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     if (!submitButton.disabled) void sendQuestion(questionInput.value.trim());
@@ -282,6 +475,9 @@ if (form && chatLog) {
     }
   });
   newChatButton?.addEventListener("click", () => {
+    activeRequest?.abort();
+    activeRequest = null;
+    lastAssessment = null;
     history.length = 0;
     chatLog.innerHTML = initialChat;
     questionInput.value = "";
