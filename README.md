@@ -1,106 +1,147 @@
 # SafeMind
 
-SafeMind includes a Python NLP service that classifies messages as spam/scam or likely safe. It uses spaCy for multilingual tokenization and phrase matching, plus NLTK for Porter stemming and a trained Naive Bayes classifier. It does not require downloading an external spaCy model or NLTK corpus.
+SafeMind is an AI-assisted security platform that helps people investigate suspicious phone numbers, messages, links, and email senders before taking action.
 
-## Supabase setup
+The product combines explainable classification, threat indicators, verified records, and practical safety guidance in a focused bilingual experience. It is designed to make scam analysis understandable without overwhelming the user with technical detail.
 
-1. Create a Supabase project, then open **SQL Editor** and run [`supabase-full-setup.sql`](supabase-full-setup.sql). The script creates the application tables, RPC functions, row-level security policies, and the private `report-screenshots` Storage bucket. It is safe to rerun after updates.
-2. In **Authentication > URL Configuration**, set the production Site URL and add the local and production callback URLs (for example, `http://localhost:5173/**` and `https://your-domain.example/**`) to Redirect URLs.
-3. Create the administrator in **Authentication > Users**. Then run this in SQL Editor with the same lowercase email:
+**Live application:** [safemind-tau.vercel.app](https://safemind-tau.vercel.app)
 
-```sql
-insert into public.admin_accounts (email)
-values ('admin@example.com')
-on conflict (email) do nothing;
+## Product vision
+
+Online scams increasingly rely on urgency, impersonation, credential theft, malicious links, and payment pressure. SafeMind turns these signals into a clear investigation result: what looks suspicious, why it matters, and what the user should do next.
+
+The experience is built around three principles:
+
+- **Clarity** — concise results, readable risk levels, and direct recommendations.
+- **Evidence** — classifications supported by visible warning signals and confidence values.
+- **Safety** — privacy-aware handling, cautious language, and human review for uncertain cases.
+
+## Core capabilities
+
+### Multi-channel scam checking
+
+SafeMind supports four focused investigation modes:
+
+- Phone number checking
+- Suspicious message analysis
+- Link and domain inspection
+- Email sender analysis
+
+Each mode uses validation and threat signals appropriate to the submitted content instead of treating every input as generic text.
+
+### AI security agent
+
+The analysis engine behaves as a coordinated security agent rather than a simple keyword checker. It interprets intent, identifies relevant entities, selects analysis tools, evaluates evidence, and produces an actionable assessment.
+
+An investigation can include:
+
+- Risk score and confidence
+- Scam category and likely intent
+- Detected warning signals
+- Explainable score contributions
+- Recommended next actions
+- Human-review guidance
+- Structured case and investigation timeline data
+
+### Multilingual experience
+
+The interface supports English and Burmese across navigation, forms, scanner controls, analysis states, reports, education content, and safety recommendations. Typography and spacing are adapted for Burmese readability rather than relying on direct word replacement alone.
+
+### Reporting and review
+
+Users can submit suspicious activity for review and attach supporting screenshots. Upload validation limits accepted formats and file size, while report states support a clear review workflow.
+
+### Security education
+
+SafeMind includes educational material that helps users recognize common manipulation patterns such as urgency, impersonation, credential requests, remote-access scams, prize fraud, and payment pressure.
+
+### Browser extension
+
+The companion Manifest V3 extension provides a lightweight path into SafeMind from supported browsers. It uses a minimal-permission design and does not request access to browsing history, passwords, form data, or page content.
+
+## Analysis approach
+
+SafeMind uses a hybrid detection pipeline:
+
+1. The input is normalized and validated for its selected checker type.
+2. Deterministic security rules identify high-confidence indicators.
+3. The NLP layer evaluates language, intent, urgency, impersonation, and social-engineering patterns.
+4. Evidence is combined into an explainable risk assessment.
+5. The decision layer produces a verdict, confidence level, and safe next steps.
+
+The local NLP service uses spaCy-compatible multilingual processing, NLTK stemming, and a trained Naive Bayes classifier. The architecture is modular so additional threat-intelligence providers and model adapters can be introduced without redesigning the user experience.
+
+## Experience and design
+
+The interface uses a restrained security-focused visual system with:
+
+- Accessible light and dark themes
+- Responsive desktop and mobile navigation
+- Wide, readable cards and comfortable text spacing
+- Clear active, loading, success, warning, and error states
+- Keyboard-visible focus treatment
+- Reduced-motion support
+- Compact controls for smaller screens
+
+The scanner intentionally avoids a conventional chat layout. Results are presented as a structured investigation so users can quickly understand the evidence and act safely.
+
+## Technical architecture
+
+SafeMind is organized into distinct product and analysis layers:
+
+| Layer | Responsibility |
+| --- | --- |
+| Web client | Responsive interface, localization, validation, and investigation views |
+| Security API | Unified request validation and explainable analysis responses |
+| NLP service | Classification, intent detection, entity extraction, and security heuristics |
+| Agent runtime | Investigation coordination, evidence evaluation, and decision logic |
+| Extension | Minimal-permission browser entry point |
+| PWA layer | Installable application metadata and offline-ready assets |
+
+The production web application is built with Vite and deployed through Vercel. The analysis API supports message, link, email, and phone inputs through a consistent contract.
+
+## Repository map
+
+```text
+api/                 Production security API endpoints
+docs/                Architecture and engineering documentation
+extension/           Manifest V3 browser extension
+nlp_service/         Python NLP and agent investigation services
+public/              Brand, PWA, icon, and font assets
+scripts/             Development and validation utilities
+src/css/             Shared and page-level visual systems
+src/js/              Application behavior and analysis experiences
+src/pages/           Product pages and authenticated views
+tests/               NLP and security-analysis tests
 ```
 
-4. Copy `.env.example` to `.env`. In **Project Settings > API**, copy the Project URL and the public publishable/anon key. Never use the service-role key in `.env` or any browser code.
+## Security and privacy
 
-```bash
-cp .env.example .env
-```
+SafeMind follows conservative security defaults:
 
-5. Restart Vite after changing `.env`.
+- Submitted content is treated as untrusted input.
+- Browser code never requires privileged server credentials.
+- API responses expose user-facing results rather than internal operational telemetry.
+- Screenshot uploads are restricted by type and size.
+- Security headers limit framing, content sources, browser permissions, and object execution.
+- Automated results are presented as decision support, not a guarantee of safety.
 
-The report page accepts one optional PNG, JPEG, or WebP screenshot up to 5 MB. Screenshots are stored privately at `report-screenshots/<reporter-user-id>/<random-file-name>`; the matching path and safe metadata are stored on `admin_reports`. Users can access only their own folder. Emails listed in `admin_accounts` can read all report rows and screenshot objects.
+Users should independently verify unexpected requests through an organization’s official application, website, or published phone number. Passwords, one-time codes, recovery keys, and payment credentials should never be submitted.
 
-To review a submission, sign in as the administrator and inspect `admin_reports` in **Table Editor**, then use `screenshot_path` to locate the private object in **Storage > report-screenshots**. Set `status` to `reviewing`, `confirmed`, or `dismissed` when appropriate. The Supabase dashboard itself has project-level access; an admin page built with the public client should create a short-lived signed URL only after the included admin RLS check succeeds.
+## Engineering quality
 
-The separate `supabase-*.sql` files remain available for targeted upgrades. [`supabase-threat-directory.sql`](supabase-threat-directory.sql) also includes optional demonstration directory records.
-
-### Agent observability
-
-Operational telemetry remains internal to the API runtime. It is not included in browser responses, displayed by the client, or written by client JavaScript. The optional `agent_runs` schema is available only for a future trusted server-side exporter; never expose service credentials in the browser.
-
-The current analyzer is a local CPU, non-streaming model. Its cost is therefore reported as `$0`, GPU throughput as unavailable, token values as estimates, and TTFT as the complete response latency. These fields can accept real provider or GPU telemetry later without changing the database shape.
-
-## AI Security Agent architecture
-
-SafeMind now coordinates modular Input, Threat Intelligence, ML Classification, Evidence, Reasoning, and Decision agents. Each scan produces a structured case file, investigation timeline, evidence cards, explainable score contributions, relationship data, recommendations, and explicit provider-availability states. The scanner remains a focused security workbench and does not use a chat interface.
-
-Run [`supabase-security-cases.sql`](supabase-security-cases.sql) after the main setup to enable persistent case files, continuous-learning feedback, pgvector-ready case embeddings, and RAG knowledge documents. The full design, API contracts, model adapter requirements, RAG flow, vector search, deployment architecture, and security boundaries are documented in [`docs/AI_SECURITY_AGENT_ARCHITECTURE.md`](docs/AI_SECURITY_AGENT_ARCHITECTURE.md).
-
-The default local service remains lightweight. To run the typed FastAPI adapter after installing updated Python requirements:
-
-```bash
-npm run nlp:fastapi
-```
-
-## Run locally
-
-Create the Python environment once:
-
-```bash
-python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
-```
-
-If you use the absolute virtual-environment path, quote it because the project folder contains an apostrophe:
-
-```bash
-"/Volumes/KXANT'S 1/Web/safemind 2/.venv/bin/python" -m pip install -r requirements.txt
-```
-
-```bash
-npm run dev
-```
-
-`npm run dev` starts both the Python analysis API and Vite. Vite proxies `/api/spam-check` to the Python service at `http://127.0.0.1:5050`. Use `npm run dev:web` only when the API is already running separately. For a separately hosted API, set `VITE_NLP_API_URL` to its complete spam-check endpoint before building the frontend.
-
-Open the website at `http://127.0.0.1:5173`. Port `5050` is the analysis API; its root displays service information and its interactive FastAPI documentation is available at `/docs` when using `npm run nlp:fastapi`. SafeMind avoids port `5000` because macOS commonly reserves it for AirPlay Receiver.
-
-## Deploy online with Vercel
-
-The project includes `api/spam-check.js`, a serverless function. Vercel deploys it automatically at `/api/spam-check`, so the hosted Message Checker does not need `npm run nlp` or a continuously running local computer.
-
-```bash
-npx vercel deploy
-```
-
-Use `npx vercel deploy --prod` when the preview deployment is verified. The frontend and Python function must be deployed as one Vercel project so the default same-origin API path works.
-
-## Unified security API
-
-Send any supported content to `POST /api/spam-check`:
-
-```json
-{
-  "scan_type": "link",
-  "content": "http://secure-account-verify.example.top/login"
-}
-```
-
-Supported scan types are `message`, `link`, `email`, and `phone`. The response contains an explainable `risk_score`, `confidence`, `risk`, `verdict`, `category`, `reason`, detected `indicators`, the analysis model, an agent summary, recommended actions, and a human-review flag. The original `{ "message": "..." }` request remains supported for compatibility. The health check is available at `GET /health` when the local Python service is running.
-
-## Test
+The project includes production build validation, NLP unit tests, browser-extension validation, health checks, responsive layouts, and explicit failure states. Core verification commands are available through the project scripts:
 
 ```bash
 npm run test:nlp
 npm run build:all
+npm run test:extension
 ```
 
-## Browser extension
+## Documentation
 
-The `extension` directory contains a low-permission Manifest V3 WebExtension for Chrome, Edge, Brave, Opera, Vivaldi, Firefox desktop, and Firefox for Android. It stores only the configured SafeMind website address and does not request access to tabs, browsing history, page content, passwords, or form data.
+Detailed agent architecture, investigation contracts, model boundaries, evidence flow, and security considerations are documented in [AI_SECURITY_AGENT_ARCHITECTURE.md](docs/AI_SECURITY_AGENT_ARCHITECTURE.md).
 
-For local development, load `extension` as an unpacked extension and set its website address to the Vite development URL. For production, deploy SafeMind first and set the extension to the deployment root. See [`extension/README.md`](extension/README.md) for Chromium, Firefox, Safari packaging, validation, signing, and store-submission instructions.
+---
+
+SafeMind is built to help users pause, investigate, and make safer decisions before responding to suspicious digital content.
