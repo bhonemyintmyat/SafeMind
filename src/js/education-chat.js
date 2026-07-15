@@ -15,6 +15,7 @@ const fileRemove = document.getElementById("educationFileRemove");
 const submitButton = document.getElementById("educationChatSubmit");
 const chatStatus = document.getElementById("educationChatStatus");
 const newChatButton = document.getElementById("educationNewChat");
+const educationApiUrl = import.meta.env.VITE_EDUCATION_API_URL || "/api/education-chat";
 
 if (form && chatLog) {
   const initialChat = chatLog.innerHTML;
@@ -128,7 +129,50 @@ if (form && chatLog) {
     return { matched: true, verdict: data.verdict, organization: data.organization || "", reason: data.reason || "" };
   }
 
-  function appendMessage(role, text, assessment = null) {
+  function plainText(value) {
+    return String(value || "")
+      .replace(/\*\*([^*]+)\*\*/g, "$1")
+      .replace(/__([^_]+)__/g, "$1")
+      .replace(/`{1,3}/g, "")
+      .replace(/^\s{0,3}#{1,6}\s*/gm, "")
+      .replace(/^\s*[-*+]\s+/gm, "• ")
+      .replace(/\*+/g, "")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+  }
+
+  function tokenizeForDisplay(value) {
+    const text = plainText(value);
+    if (!text) return [];
+    if (typeof Intl.Segmenter === "function") {
+      const segmenter = new Intl.Segmenter(locale() === "my" ? "my" : "en", { granularity: "word" });
+      return Array.from(segmenter.segment(text), ({ segment }) => segment);
+    }
+    return text.match(/\s+|[^\s]+/gu) || [text];
+  }
+
+  function nextFrame() {
+    return new Promise((resolve) => requestAnimationFrame(resolve));
+  }
+
+  async function renderTokenizedOutput(paragraph, value) {
+    const text = plainText(value);
+    const tokens = tokenizeForDisplay(text);
+    const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reducedMotion || tokens.length < 5) {
+      paragraph.textContent = text;
+      return;
+    }
+    paragraph.textContent = "";
+    const batchSize = Math.max(2, Math.ceil(tokens.length / 90));
+    for (let index = 0; index < tokens.length; index += batchSize) {
+      paragraph.append(document.createTextNode(tokens.slice(index, index + batchSize).join("")));
+      chatLog.scrollTop = chatLog.scrollHeight;
+      await nextFrame();
+    }
+  }
+
+  async function appendMessage(role, text, assessment = null, animate = false) {
     const article = document.createElement("article");
     article.className = `education-message is-${role}`;
     const avatar = document.createElement("span");
@@ -144,11 +188,14 @@ if (form && chatLog) {
       content.append(badge);
     }
     const paragraph = document.createElement("p");
-    paragraph.textContent = text;
+    const normalizedText = plainText(text);
+    if (!animate) paragraph.textContent = normalizedText;
     content.append(paragraph);
     article.append(avatar, content);
     chatLog.append(article);
     article.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    if (animate) await renderTokenizedOutput(paragraph, normalizedText);
+    return normalizedText;
   }
 
   async function sendQuestion(question) {
@@ -161,16 +208,20 @@ if (form && chatLog) {
     const selectedType = evidenceType.value;
     const scanType = selectedType === "auto" ? detectType(evidenceText || userQuestion) : selectedType;
     const previousHistory = history.slice(-8);
-    appendMessage("user", userQuestion);
+    await appendMessage("user", userQuestion);
     history.push({ role: "user", content: userQuestion });
     submitButton.disabled = true;
     questionInput.disabled = true;
     setStatus(chatStatus, copy("SafeMind is matching NLP signals and verified records...", "SafeMind သည် NLP လက္ခဏာများနှင့် အတည်ပြုမှတ်တမ်းများကို တိုက်စစ်နေသည်..."), "pending");
     try {
       const directoryContext = await directoryLookup(scanType, evidenceText);
-      const response = await fetch("/api/education-chat", {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 65_000);
+      const response = await fetch(educationApiUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        credentials: "same-origin",
+        signal: controller.signal,
         body: JSON.stringify({
           question: userQuestion,
           evidence_text: evidenceText,
@@ -181,15 +232,23 @@ if (form && chatLog) {
           language: locale()
         })
       });
-      const result = await response.json().catch(() => ({}));
+      window.clearTimeout(timeout);
+      const result = await response.json().catch(() => ({ error: copy("The API returned an unreadable response.", "API အဖြေကို ဖတ်၍မရပါ။") }));
       if (!response.ok) throw new Error(result.error || copy("The Scam Coach could not respond.", "Scam Coach က မတုံ့ပြန်နိုင်ပါ။"));
-      appendMessage("assistant", result.answer, result.assessment);
-      history.push({ role: "assistant", content: result.answer });
+      const completedAnswer = await appendMessage("assistant", result.answer, result.assessment, true);
+      history.push({ role: "assistant", content: completedAnswer });
       questionInput.value = "";
-      setStatus(chatStatus, result.directory_match ? copy("Response includes a verified directory match.", "အဖြေတွင် အတည်ပြုမှတ်တမ်းနှင့် ကိုက်ညီမှု ပါဝင်သည်။") : copy("Analysis complete.", "စိစစ်မှု ပြီးပါပြီ။"), "success");
+      setStatus(chatStatus, result.response_complete === false
+        ? copy("The model reached its response limit. Ask it to continue if needed.", "အဖြေကန့်သတ်ချက်သို့ ရောက်သွားသည်။ လိုအပ်ပါက ဆက်ရှင်းပြရန် မေးပါ။")
+        : result.directory_match
+          ? copy("Response includes a verified directory match.", "အဖြေတွင် အတည်ပြုမှတ်တမ်းနှင့် ကိုက်ညီမှု ပါဝင်သည်။")
+          : copy("Complete response received.", "အဖြေအပြည့်အစုံ ရရှိပါပြီ။"), result.response_complete === false ? "pending" : "success");
     } catch (error) {
-      appendMessage("assistant", error.message || copy("I could not complete the analysis. Please try again.", "စိစစ်မှု မပြီးမြောက်နိုင်ပါ။ ထပ်မံကြိုးစားပါ။"));
-      setStatus(chatStatus, error.message || copy("Unable to complete the analysis.", "စိစစ်မှု မပြီးမြောက်နိုင်ပါ။"), "error");
+      const message = error.name === "AbortError"
+        ? copy("The AI request timed out. Please try again.", "AI တောင်းဆိုမှု အချိန်ကုန်သွားသည်။ ထပ်မံကြိုးစားပါ။")
+        : error.message || copy("I could not complete the analysis. Please try again.", "စိစစ်မှု မပြီးမြောက်နိုင်ပါ။ ထပ်မံကြိုးစားပါ။");
+      await appendMessage("assistant", message);
+      setStatus(chatStatus, message, "error");
     } finally {
       submitButton.disabled = false;
       questionInput.disabled = false;
