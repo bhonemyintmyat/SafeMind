@@ -33,3 +33,7 @@ SafeMind.zip
 *.sln
 *.sw?
 .vercel
+
+# Local Supabase integration and database setup files
+*supabase*
+*Supabase*
