@@ -174,13 +174,13 @@ button:hover,
 .nav-btn{
     background:var(--accent);
     color:#080808;
-    box-shadow:0 0 30px rgba(241,32,57,.35);
+    box-shadow:0 12px 28px rgba(15,23,42,.18);
 }
 
 .nav-btn:hover,
 button:hover,
 .primary-btn:hover{
-    box-shadow:0 0 60px rgba(241,32,57,.55);
+    box-shadow:0 16px 34px rgba(15,23,42,.22);
 }
 
 .hero{
@@ -257,7 +257,7 @@ button:hover,
 .primary-btn{
     background:var(--accent);
     color:#080808;
-    box-shadow:0 0 30px rgba(241,32,57,.35);
+    box-shadow:0 12px 28px rgba(15,23,42,.18);
 }
 
 .secondary-btn{
@@ -301,9 +301,9 @@ button:hover,
     margin:26px auto 0;
     border:1px solid rgba(255,255,255,.08);
     background:
-        radial-gradient(circle at center, rgba(241,32,57,.24), transparent 55%),
+        radial-gradient(circle at center, rgba(90,93,122,.2), transparent 55%),
         rgba(255,255,255,.02);
-    box-shadow:0 0 0 28px rgba(241,32,57,.04);
+    box-shadow:0 0 0 28px rgba(90,93,122,.06);
 }
 
 .scan-animation{
@@ -493,7 +493,7 @@ button:hover,
 .demo-input-card textarea:focus{
     outline:none;
     border-color:var(--accent);
-    box-shadow:0 0 0 3px rgba(241,32,57,.18);
+    box-shadow:0 0 0 3px rgba(90,93,122,.18);
 }
 
 .demo-input-card .primary-btn{

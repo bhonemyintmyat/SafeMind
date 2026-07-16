@@ -774,7 +774,7 @@ html[data-theme="light"] .scanner {
 html[data-theme="light"] .scanner-core {
   border-color: #E5E7EB !important;
   background:
-    radial-gradient(circle at center, rgba(211, 47, 47, 0.16), transparent 55%),
+    radial-gradient(circle at center, rgba(90, 93, 122, 0.12), transparent 55%),
     #FFFFFF !important;
 }
 

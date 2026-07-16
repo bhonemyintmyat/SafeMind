@@ -496,6 +496,24 @@ html[data-theme="dark"] button.primary-action,
 html[data-theme="dark"] .auth-button { color: #303247 !important; }
 html[data-theme="dark"] .navbar .brand { color: #FFFFFF !important; }
 html[data-theme="dark"] .dashboard-sidebar { background: #34364B !important; }
+html[data-theme="dark"] body:not(.splash) {
+  background: linear-gradient(180deg, #202131 0%, #242535 46%, #202131 100%) fixed !important;
+}
+html[data-theme="dark"] .hero {
+  background: linear-gradient(180deg, #303247 0%, #292B3E 38%, #242535 100%) !important;
+}
+html[data-theme="dark"] .scanner {
+  color: var(--text) !important;
+  background: linear-gradient(180deg, #3B3D54 0%, #303247 100%) !important;
+  border-color: #68697C !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, .28) !important;
+}
+html[data-theme="dark"] .dashboard-command-grid .dashboard-focus {
+  background: linear-gradient(135deg, #3B3D54 0%, #303247 58%, #2B2D41 100%) !important;
+}
+html[data-theme="dark"] :where(.auth-card, .content-card, .dashboard-card, .checker-card, .education-chat-card) {
+  background: linear-gradient(180deg, #32344A 0%, #303247 100%) !important;
+}
 
 @media (max-width: 980px) {
   .dashboard-shell { grid-template-columns: 230px minmax(0, 1fr) !important; }

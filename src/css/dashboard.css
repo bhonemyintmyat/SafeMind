@@ -355,7 +355,7 @@ body.dashboard-page p { margin-top: 0; }
 .dashboard-form textarea { min-height: 120px; resize: vertical; }
 .dashboard-form input:focus,
 .dashboard-form textarea:focus,
-.dashboard-form select:focus { border-color: var(--red); box-shadow: 0 0 0 2px #4a1010; }
+.dashboard-form select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb,var(--primary) 18%,transparent); }
 .dashboard-form input[readonly] { color: var(--muted); background: #151515; }
 .dashboard-form .primary-button { width: fit-content; margin-top: 16px; }
 .form-status { min-height: 24px; margin: 4px 0 0; color: var(--muted); }
