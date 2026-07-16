@@ -26,6 +26,9 @@ const copyAnalysis = document.getElementById("copyAnalysis");
 const reportAnalysis = document.getElementById("reportAnalysis");
 const resultActionStatus = document.getElementById("resultActionStatus");
 const agentFeedback = document.getElementById("agentFeedback");
+const resultChecks = document.getElementById("resultChecks");
+const checksPerformed = document.getElementById("checksPerformed");
+const checksUnavailable = document.getElementById("checksUnavailable");
 const investigationDashboard = document.getElementById("investigationDashboard");
 const investigationTimeline = document.getElementById("investigationTimeline");
 const caseIdentity = document.getElementById("caseIdentity");
@@ -158,7 +161,14 @@ function updateResult(result) {
     }
 
     if (riskScore) {
-        riskScore.textContent = result.confidence ? (result.investigation?.status || `${result.risk} RISK`).toUpperCase() : "Ready to scan";
+        const riskLabel = Number(result.risk_score) >= 90
+            ? "Critical Risk"
+            : result.risk === "HIGH"
+                ? "High Risk"
+                : result.risk === "MEDIUM"
+                    ? "Some Warning Signs"
+                    : "Low Risk";
+        riskScore.textContent = result.confidence ? riskLabel : "Ready to scan";
     }
 
     if (riskCategory) {
@@ -186,8 +196,30 @@ function updateResult(result) {
     if (resultModel) {
         resultModel.textContent = result.model ? `Analysis engine: ${result.model}` : "Hybrid analysis ready";
     }
-    updateAgentResponse(result);
     const ready = result.confidence > 0;
+    if (resultChecks) {
+        resultChecks.hidden = !ready;
+        if (!ready) resultChecks.open = false;
+    }
+    if (checksPerformed) {
+        const performed = result.investigation?.checks_performed || [
+            "Input validation and normalization",
+            `${activeMode[0].toUpperCase()}${activeMode.slice(1)} pattern analysis`,
+            "Known scam wording and behavior checks",
+            "Explainable risk scoring",
+            result.investigation?.intelligence?.local_reputation_checked ? "Local reputation directory" : null
+        ].filter(Boolean);
+        checksPerformed.replaceChildren(...performed.map((label) => { const item = document.createElement("li"); item.textContent = label; return item; }));
+    }
+    if (checksUnavailable) {
+        const unavailable = [...(result.investigation?.limitations || [])];
+        if (!result.investigation?.intelligence?.external_feeds_configured) unavailable.push("Live external threat-intelligence feeds");
+        if (!result.investigation?.intelligence?.whois_configured && activeMode === "link") unavailable.push("Domain age and ownership records");
+        if (!result.investigation?.knowledge?.available) unavailable.push("External knowledge-base citations");
+        if (!unavailable.length) unavailable.push("No unavailable checks reported");
+        checksUnavailable.replaceChildren(...[...new Set(unavailable)].map((label) => { const item = document.createElement("li"); item.textContent = label; return item; }));
+    }
+    updateAgentResponse(result);
     if (copyAnalysis) copyAnalysis.disabled = !ready;
     if (reportAnalysis) reportAnalysis.disabled = !ready;
     renderInvestigation(result.investigation || null);
@@ -219,6 +251,7 @@ function startInvestigationAnimation() {
         ["Reasoning Agent", "Scoring explainable evidence"], ["Decision Agent", "Producing risk decision"]
     ];
     investigationDashboard.hidden = false;
+    investigationDashboard.open = false;
     caseIdentity.hidden = true;
     document.getElementById("scoreContributions").replaceChildren();
     document.getElementById("evidenceGrid").replaceChildren();

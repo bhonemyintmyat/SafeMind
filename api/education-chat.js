@@ -7,6 +7,9 @@ const RATE_LIMIT = new Map();
 const WINDOW_MS = 60_000;
 const MAX_REQUESTS = 12;
 const MAX_BODY_BYTES = 3_200_000;
+const OPENROUTER_TIMEOUT_MS = 42_000;
+const OPENROUTER_RETRIES = 2;
+const INTERNAL_AI_METRICS = { requests: 0, failures: 0, fallbacks: 0, duration_ms: 0 };
 
 const SYSTEM_PROMPT = `You are SafeMind Scam Coach, a calm bilingual security education assistant.
 Reply in Burmese when the user writes Burmese or requests Burmese; otherwise reply in English. Use natural, modern Burmese with short sentences. Do not mix in Korean, Hindi, Chinese, Japanese, or other scripts. Keep only familiar technical terms such as OTP, SMS, URL, email, phishing, and SafeMind when a clear Burmese equivalent would be awkward.
@@ -59,6 +62,73 @@ function cleanText(value, max = 8_000) {
   return String(value || "").normalize("NFKC").replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "").trim().slice(0, max);
 }
 
+function openRouterConfig() {
+  const apiKey = String(process.env.OPENROUTER_API_KEY || "").trim();
+  if (!/^sk-or-v1-[A-Za-z0-9_-]{20,}$/.test(apiKey)) return null;
+  const configured = String(process.env.OPENROUTER_MODELS || "")
+    .split(",")
+    .map((model) => cleanText(model, 120))
+    .filter(Boolean);
+  const primary = cleanText(process.env.OPENROUTER_MODEL || "openrouter/free", 120);
+  const fallback = cleanText(process.env.OPENROUTER_FALLBACK_MODEL || "openrouter/free", 120);
+  const models = [...new Set([primary, ...configured, fallback].filter(Boolean))].slice(0, 4);
+  return { apiKey, models };
+}
+
+function wait(milliseconds) {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+function retryDelay(response, attempt) {
+  const retryAfter = Number(response?.headers?.get("retry-after"));
+  if (Number.isFinite(retryAfter) && retryAfter > 0) return Math.min(2_500, retryAfter * 1_000);
+  return Math.min(2_000, 350 * (2 ** attempt));
+}
+
+async function openRouterRequest({ apiKey, models, payload, stream = false }) {
+  let lastError = null;
+  const started = Date.now();
+  const deadline = started + 55_000;
+  INTERNAL_AI_METRICS.requests += 1;
+  for (let modelIndex = 0; modelIndex < models.length; modelIndex += 1) {
+    const model = models[modelIndex];
+    for (let attempt = 0; attempt <= OPENROUTER_RETRIES; attempt += 1) {
+      if (Date.now() >= deadline) break;
+      try {
+        const response = await fetch(OPENROUTER_URL, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+            "HTTP-Referer": process.env.SAFEMIND_SITE_URL || "https://safemind-tau.vercel.app",
+            "X-Title": "SafeMind Scam Education"
+          },
+          body: JSON.stringify({ ...payload, model, stream }),
+          signal: AbortSignal.timeout(Math.max(1_000, Math.min(OPENROUTER_TIMEOUT_MS, deadline - Date.now())))
+        });
+        if (response.ok) {
+          const duration = Date.now() - started;
+          INTERNAL_AI_METRICS.duration_ms += duration;
+          if (modelIndex > 0) INTERNAL_AI_METRICS.fallbacks += 1;
+          console.info(JSON.stringify({ event: "openrouter_complete", model, duration_ms: duration, fallback_used: modelIndex > 0, stream }));
+          return { response, model, fallbackUsed: modelIndex > 0 };
+        }
+        lastError = Object.assign(new Error("Upstream model unavailable."), { status: response.status });
+        const retryable = response.status === 408 || response.status === 409 || response.status === 429 || response.status >= 500;
+        if (!retryable || attempt === OPENROUTER_RETRIES) break;
+        await wait(Math.min(retryDelay(response, attempt), Math.max(0, deadline - Date.now())));
+      } catch (error) {
+        lastError = error;
+        if (attempt === OPENROUTER_RETRIES) break;
+        await wait(Math.min(retryDelay(null, attempt), Math.max(0, deadline - Date.now())));
+      }
+    }
+  }
+  INTERNAL_AI_METRICS.failures += 1;
+  console.warn(JSON.stringify({ event: "openrouter_failure", duration_ms: Date.now() - started, models_attempted: models.length }));
+  throw Object.assign(new Error("The Scam Coach is temporarily unavailable. Please try again shortly."), { statusCode: lastError?.status === 429 ? 429 : 502 });
+}
+
 function detectScanType(text) {
   const value = cleanText(text, 10_000);
   if (/^https?:\/\/\S+$/i.test(value) || /\b(?:https?:\/\/|www\.)\S+/i.test(value)) return "link";
@@ -105,6 +175,31 @@ function publicAssessment(assessment) {
     reason: assessment.reason,
     indicators: Array.isArray(assessment.indicators) ? assessment.indicators.slice(0, 8) : [],
     recommended_actions: Array.isArray(assessment.recommended_actions) ? assessment.recommended_actions.slice(0, 6) : []
+  };
+}
+
+function structuredAnalysis(assessment, directory) {
+  if (!assessment) return {
+    riskLevel: "unknown",
+    confidence: 0,
+    summary: "More evidence is needed before SafeMind can estimate risk.",
+    warningSigns: [],
+    evidence: [],
+    recommendedActions: ["Pause and verify the request through an official channel."],
+    checksPerformed: ["Input validation"],
+    limitations: ["No scannable text evidence was available."]
+  };
+  const riskScore = Number(assessment.risk_score) || 0;
+  const riskLevel = riskScore >= 90 ? "critical" : assessment.risk === "HIGH" ? "high" : assessment.risk === "MEDIUM" ? "warning" : "low";
+  return {
+    riskLevel,
+    confidence: Math.max(0, Math.min(0.99, (Number(assessment.confidence) || 0) / 100)),
+    summary: cleanText(assessment.agent_summary || assessment.reason, 800),
+    warningSigns: (assessment.indicators || []).slice(0, 8).map((item) => cleanText(item, 180)),
+    evidence: directory?.matched ? ["Matched a verified SafeMind directory record."] : [],
+    recommendedActions: (assessment.recommended_actions || []).slice(0, 6).map((item) => cleanText(item, 300)),
+    checksPerformed: (assessment.investigation?.checks_performed || ["Rule and pattern analysis", "Explainable risk scoring"]).slice(0, 8),
+    limitations: (assessment.investigation?.limitations || ["Live external reputation checks may be unavailable.", "This result is guidance, not a guarantee."]).slice(0, 6)
   };
 }
 
@@ -157,7 +252,12 @@ const BURMESE_INDICATORS = new Map([
   ["Requests secrecy", "အခြားသူကို မပြောရန် လျှို့ဝှက်ခိုင်းထားခြင်း"],
   ["Requests remote device access", "စက်ကို အဝေးမှထိန်းချုပ်ခွင့် တောင်းထားခြင်း"],
   ["Uses a prize or reward lure", "ဆု သို့မဟုတ် အကျိုးအမြတ်ဖြင့် ဆွဲဆောင်ထားခြင်း"],
-  ["Uses threats or intimidation", "ခြိမ်းခြောက်မှု သို့မဟုတ် ကြောက်ရွံ့စေမှု အသုံးပြုထားခြင်း"]
+  ["Uses threats or intimidation", "ခြိမ်းခြောက်မှု သို့မဟုတ် ကြောက်ရွံ့စေမှု အသုံးပြုထားခြင်း"],
+  ["Requests a wallet recovery secret", "ဒစ်ဂျစ်တယ်ပိုက်ဆံအိတ်၏ recovery phrase သို့မဟုတ် private key ကို တောင်းထားခြင်း"],
+  ["Requests payment for a job opportunity", "အလုပ်ရရှိရန် အခကြေးငွေ သို့မဟုတ် ငွေပေးချေမှု တောင်းထားခြင်း"],
+  ["Uses a relationship to request money", "ချစ်ရေး သို့မဟုတ် ယုံကြည်မှုကို အသုံးချပြီး ငွေတောင်းထားခြင်း"],
+  ["Promises unrealistic investment returns", "လက်တွေ့မဖြစ်နိုင်သော ရင်းနှီးမြှုပ်နှံမှုအမြတ်ကို အာမခံထားခြင်း"],
+  ["Impersonates support to request remote access", "နည်းပညာအကူအညီအဖြစ် အယောင်ဆောင်ပြီး စက်ကို အဝေးမှထိန်းချုပ်ခွင့် တောင်းထားခြင်း"]
 ]);
 
 function burmeseRiskLabel(risk) {
@@ -167,6 +267,11 @@ function burmeseRiskLabel(risk) {
 function burmeseCategory(category) {
   const value = String(category || "").toLowerCase();
   if (value.includes("credential") || value.includes("phish")) return "အကောင့်အချက်အလက် ခိုးယူရန် ကြိုးစားမှု";
+  if (value.includes("wallet") || value.includes("crypto")) return "ဒစ်ဂျစ်တယ်ပိုက်ဆံအိတ် အချက်အလက်ခိုးယူမှု";
+  if (value.includes("job")) return "အလုပ်အကိုင်အယောင်ဆောင် လိမ်လည်မှု";
+  if (value.includes("romance")) return "ချစ်ရေးယုံကြည်မှုကို အသုံးချသော လိမ်လည်မှု";
+  if (value.includes("investment")) return "ရင်းနှီးမြှုပ်နှံမှု လိမ်လည်မှု";
+  if (value.includes("tech-support")) return "နည်းပညာအကူအညီ အယောင်ဆောင် လိမ်လည်မှု";
   if (value.includes("payment")) return "ငွေပေးချေမှုဆိုင်ရာ လိမ်လည်မှု";
   if (value.includes("remote")) return "စက်ကို အဝေးမှထိန်းချုပ်ရန် ကြိုးစားမှု";
   if (value.includes("prize") || value.includes("reward")) return "ဆုမက်လုံးပေး လိမ်လည်မှု";
@@ -226,30 +331,13 @@ function finishReason(payload) {
   return String(payload?.choices?.[0]?.finish_reason || "").toLowerCase();
 }
 
-async function requestCompletion(apiKey, messages, maxTokens) {
-  const response = await fetch(OPENROUTER_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-      "HTTP-Referer": process.env.SAFEMIND_SITE_URL || "https://safemind-tau.vercel.app",
-      "X-Title": "SafeMind Scam Education"
-    },
-    body: JSON.stringify({
-      model: process.env.OPENROUTER_MODEL || "openrouter/free",
-      messages,
-      temperature: 0.15,
-      max_tokens: maxTokens
-    }),
-    signal: AbortSignal.timeout(30_000)
+async function requestCompletion(config, messages, maxTokens) {
+  const { response } = await openRouterRequest({
+    ...config,
+    payload: { messages, temperature: 0.15, max_tokens: maxTokens }
   });
   const result = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const message = cleanText(result?.error?.message || result?.error, 300) || "The education AI could not respond.";
-    const error = new Error(message);
-    error.statusCode = response.status === 429 ? 429 : 502;
-    throw error;
-  }
+  if (!result || typeof result !== "object") throw Object.assign(new Error("The Scam Coach returned an unreadable response."), { statusCode: 502 });
   return result;
 }
 
@@ -274,7 +362,7 @@ function writeStreamEvent(res, event) {
   res.write(`${JSON.stringify(event)}\n`);
 }
 
-async function streamCompletion({ res, apiKey, messages, assessment, directory, scanType, language }) {
+async function streamCompletion({ res, config, messages, assessment, directory, scanType, language }) {
   if (language === "my" && assessment) {
     res.statusCode = 200;
     res.setHeader("Content-Type", "application/x-ndjson; charset=utf-8");
@@ -282,7 +370,7 @@ async function streamCompletion({ res, apiKey, messages, assessment, directory, 
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("X-Accel-Buffering", "no");
     res.flushHeaders?.();
-    writeStreamEvent(res, { type: "meta", assessment: publicAssessment(assessment), directory_match: directory?.matched || false });
+    writeStreamEvent(res, { type: "meta", assessment: publicAssessment(assessment), analysis: structuredAnalysis(assessment, directory), directory_match: directory?.matched || false });
     const answer = buildBurmeseAssessment(assessment, directory);
     for (const section of answer.split(/(\n\n)/u)) {
       if (section) writeStreamEvent(res, { type: "token", token: section });
@@ -293,31 +381,18 @@ async function streamCompletion({ res, apiKey, messages, assessment, directory, 
       answer,
       model: "safemind-hybrid-nlp",
       response_complete: true,
+      analysis: structuredAnalysis(assessment, directory),
       follow_ups: followUpSuggestions(scanType, assessment, language)
     });
     return res.end();
   }
-  const response = await fetch(OPENROUTER_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-      "HTTP-Referer": process.env.SAFEMIND_SITE_URL || "https://safemind-tau.vercel.app",
-      "X-Title": "SafeMind Scam Education"
-    },
-    body: JSON.stringify({
-      model: process.env.OPENROUTER_MODEL || "openrouter/free",
-      messages,
-      temperature: 0.15,
-      max_tokens: 1_600,
-      stream: true
-    }),
-    signal: AbortSignal.timeout(45_000)
+  const upstream = await openRouterRequest({
+    ...config,
+    payload: { messages, temperature: 0.15, max_tokens: 1_250 },
+    stream: true
   });
-  if (!response.ok || !response.body) {
-    const payload = await response.json().catch(() => ({}));
-    throw Object.assign(new Error(cleanText(payload?.error?.message || payload?.error, 300) || "The Scam Coach is temporarily unavailable."), { statusCode: response.status === 429 ? 429 : 502 });
-  }
+  const response = upstream.response;
+  if (!response.body) throw Object.assign(new Error("The Scam Coach streaming service is temporarily unavailable."), { statusCode: 502 });
 
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/x-ndjson; charset=utf-8");
@@ -325,7 +400,7 @@ async function streamCompletion({ res, apiKey, messages, assessment, directory, 
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("X-Accel-Buffering", "no");
   res.flushHeaders?.();
-  writeStreamEvent(res, { type: "meta", assessment: publicAssessment(assessment), directory_match: directory?.matched || false });
+  writeStreamEvent(res, { type: "meta", assessment: publicAssessment(assessment), analysis: structuredAnalysis(assessment, directory), directory_match: directory?.matched || false });
 
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
@@ -344,7 +419,7 @@ async function streamCompletion({ res, apiKey, messages, assessment, directory, 
       if (!data || data === "[DONE]") continue;
       let chunk;
       try { chunk = JSON.parse(data); } catch { continue; }
-      if (chunk.error) throw new Error(cleanText(chunk.error.message, 300) || "The model stopped responding.");
+      if (chunk.error) throw Object.assign(new Error("The Scam Coach model stopped responding. Please retry."), { statusCode: 502 });
       model = cleanText(chunk.model || model, 120);
       const choice = chunk.choices?.[0];
       const token = typeof choice?.delta?.content === "string" ? choice.delta.content : "";
@@ -362,7 +437,7 @@ async function streamCompletion({ res, apiKey, messages, assessment, directory, 
 
   let completed = finish !== "length";
   if (!completed && rawAnswer) {
-    const continuation = await requestCompletion(apiKey, [
+    const continuation = await requestCompletion(config, [
       ...messages,
       { role: "assistant", content: rawAnswer },
       { role: "user", content: "Continue exactly where you stopped. Finish every remaining section in plain text without repeating earlier content." }
@@ -382,6 +457,7 @@ async function streamCompletion({ res, apiKey, messages, assessment, directory, 
     answer,
     model,
     response_complete: completed,
+    analysis: structuredAnalysis(assessment, directory),
     follow_ups: followUpSuggestions(scanType, assessment, language)
   });
   res.end();
@@ -408,8 +484,8 @@ export default async function handler(req, res) {
     return json(res, 415, { error: "Content-Type must be application/json." });
   }
 
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) return json(res, 503, { error: "The education AI is not configured yet." });
+  const config = openRouterConfig();
+  if (!config) return json(res, 503, { error: "The education AI is not configured correctly." });
 
   try {
     const payload = JSON.parse(await readBody(req) || "{}");
@@ -450,7 +526,7 @@ export default async function handler(req, res) {
     if (payload.stream === true) {
       return await streamCompletion({
         res,
-        apiKey,
+        config,
         messages,
         assessment,
         directory,
@@ -458,11 +534,11 @@ export default async function handler(req, res) {
         language: payload.language === "my" ? "my" : "en"
       });
     }
-    const result = await requestCompletion(apiKey, messages, 1_400);
+    const result = await requestCompletion(config, messages, 1_250);
     let rawAnswer = extractAnswer(result);
     let completed = finishReason(result) !== "length";
     if (!completed && rawAnswer) {
-      const continuation = await requestCompletion(apiKey, [
+      const continuation = await requestCompletion(config, [
         ...messages,
         { role: "assistant", content: rawAnswer },
         { role: "user", content: "Continue exactly where you stopped. Finish the response in plain text without repeating earlier content." }
@@ -479,15 +555,24 @@ export default async function handler(req, res) {
       answer,
       model: cleanText(result.model, 120),
       assessment: publicAssessment(assessment),
+      analysis: structuredAnalysis(assessment, directory),
       directory_match: directory?.matched || false,
       response_complete: completed
     });
   } catch (error) {
     const timedOut = error?.name === "TimeoutError" || error?.name === "AbortError";
+    const upstreamFailure = Number(error?.statusCode) >= 500 || Number(error?.statusCode) === 429;
+    const publicMessage = timedOut
+      ? "The education AI timed out. Please try again."
+      : Number(error?.statusCode) === 429
+        ? "The Scam Coach is busy right now. Please wait a moment and retry."
+        : upstreamFailure
+          ? "The Scam Coach is temporarily unavailable. Your evidence was not lost; please retry shortly."
+          : (error.message || "Unable to process this request.");
     if (res.headersSent) {
-      writeStreamEvent(res, { type: "error", message: timedOut ? "I'm still having trouble completing this analysis. Please retry." : (error.message || "I'm sorry, I couldn't generate an answer. Please try again.") });
+      writeStreamEvent(res, { type: "error", message: publicMessage });
       return res.end();
     }
-    return json(res, timedOut ? 504 : (error.statusCode || 400), { error: timedOut ? "The education AI timed out. Please try again." : (error.message || "Unable to process this request.") });
+    return json(res, timedOut ? 504 : (error.statusCode || 400), { error: publicMessage });
   }
 }

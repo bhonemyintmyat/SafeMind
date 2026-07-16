@@ -2,6 +2,25 @@ import "../css/theme-toggle.css";
 
 const STORAGE_KEY = "safemind-theme";
 
+function ensureAccessibilityFoundation() {
+  const main = document.querySelector("main");
+  if (main && !main.id) main.id = "main-content";
+  if (main && !document.querySelector(".skip-link")) {
+    const link = document.createElement("a");
+    link.className = "skip-link";
+    link.href = `#${main.id}`;
+    link.textContent = "Skip to main content";
+    document.body.prepend(link);
+  }
+  document.querySelectorAll("button:not([type])").forEach((button) => button.type = "button");
+  document.querySelectorAll('a[target="_blank"]').forEach((link) => {
+    const rel = new Set(String(link.rel || "").split(/\s+/).filter(Boolean));
+    rel.add("noopener");
+    rel.add("noreferrer");
+    link.rel = [...rel].join(" ");
+  });
+}
+
 function currentTheme() {
   return document.documentElement.dataset.theme === "light" ? "light" : "dark";
 }
@@ -27,6 +46,8 @@ function setTheme(theme, persist = true) {
     }
   }
 }
+
+ensureAccessibilityFoundation();
 
 function buildThemeSwitcher(extraClass = "") {
   const switcher = document.createElement("div");

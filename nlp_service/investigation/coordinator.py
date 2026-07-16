@@ -56,6 +56,17 @@ class InvestigationCoordinator:
             graph={"nodes": nodes, "edges": edges},
             related_cases={"available": False, "matches": [], "reason": "Vector similarity is ready for pgvector but not configured."},
             knowledge={"available": False, "citations": [], "reason": "RAG providers are not configured; no citation was fabricated."},
+            checks_performed=[
+                "Text normalization and language-aware token analysis",
+                "Behavior, urgency, impersonation, and secret-request detection",
+                "URL, email, phone, and wallet pattern extraction",
+                "Explainable hybrid risk classification",
+            ],
+            limitations=[
+                "No live account ownership or identity verification was performed.",
+                "No external threat-intelligence or WHOIS provider is configured.",
+                "A low score is not a guarantee that content is safe.",
+            ],
         )
         raw["investigation"] = investigation.to_dict()
         return raw

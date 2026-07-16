@@ -362,6 +362,24 @@ body.dashboard-page p { margin-top: 0; }
 .form-status[data-state="error"] { color: var(--danger); }
 .form-status[data-state="success"] { color: var(--success); }
 
+.report-privacy {
+  margin-top: 20px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  background: var(--surface-raised);
+}
+.report-privacy summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--text);
+  font-weight: 700;
+  cursor: pointer;
+}
+.report-privacy p { margin: 8px 0 2px; line-height: 1.7; }
+
 .report-screenshot-field {
   min-width: 0;
   display: grid;

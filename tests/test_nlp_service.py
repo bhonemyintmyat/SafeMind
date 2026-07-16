@@ -51,6 +51,26 @@ class SpamClassifierTests(unittest.TestCase):
         result = self.classifier.predict("ဘဏ်ဝန်ထမ်းပါ OTP ကုဒ်ကို ချက်ချင်း ပို့ပေးပါ")
         self.assertTrue(result["is_spam"])
 
+    def test_detects_crypto_recovery_secret_theft(self):
+        result = self.classifier.predict("Security alert: share your seed phrase to restore your crypto wallet now")
+        self.assertTrue(result["is_spam"])
+        self.assertEqual(result["category"], "Crypto wallet theft")
+
+    def test_detects_fake_job_fee_scam(self):
+        result = self.classifier.predict("You are hired for this work from home job. Pay the training fee in crypto today")
+        self.assertTrue(result["is_spam"])
+        self.assertEqual(result["category"], "Job scam")
+
+    def test_detects_romance_emergency_payment_scam(self):
+        result = self.classifier.predict("Hello sweetheart, our relationship is real. I need you to transfer money for an emergency")
+        self.assertTrue(result["is_spam"])
+        self.assertEqual(result["category"], "Romance scam")
+
+    def test_detects_tech_support_remote_access_scam(self):
+        result = self.classifier.predict("Microsoft support technician says install AnyDesk for remote access now")
+        self.assertTrue(result["is_spam"])
+        self.assertEqual(result["category"], "Tech-support scam")
+
     def test_benign_official_app_message_stays_low_risk(self):
         result = self.classifier.predict("Your monthly statement is ready in the official app")
         self.assertFalse(result["is_spam"])
@@ -93,6 +113,8 @@ class InvestigationCoordinatorTests(unittest.TestCase):
         self.assertEqual(sum(item["score"] for item in case["scoring"]), result["risk_score"])
         self.assertFalse(case["related_cases"]["available"])
         self.assertFalse(case["knowledge"]["available"])
+        self.assertTrue(case["checks_performed"])
+        self.assertTrue(case["limitations"])
 
 
 class SecurityAnalyzerTests(unittest.TestCase):

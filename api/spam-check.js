@@ -40,6 +40,14 @@ const PHRASE_SIGNALS = new Map([
   ["avoid arrest", 0.22],
   ["install this app", 0.16],
   ["share the access code", 0.24],
+  ["recovery phrase", 0.30],
+  ["seed phrase", 0.30],
+  ["private key", 0.30],
+  ["processing fee", 0.18],
+  ["training fee", 0.18],
+  ["work from home", 0.10],
+  ["investment opportunity", 0.16],
+  ["online relationship", 0.10],
   ["ဘဏ်ဝန်ထမ်း", 0.16],
   ["otp ကုဒ်", 0.24],
   ["ငွေလွှဲ", 0.18],
@@ -55,7 +63,13 @@ const CONTEXT_SIGNALS = [
   [/\b(?:secret|confidential|do not tell|keep this between us)\b/i, 0.16, "Requests secrecy"],
   [/\b(?:remote access|screen share|anydesk|teamviewer|access code)\b/i, 0.22, "Requests remote device access"],
   [/\b(?:won|winner|prize|lottery|reward)\b.{0,45}\b(?:fee|pay|claim|bank|card)\b/i, 0.22, "Uses a prize or reward lure"],
-  [/\b(?:arrest|lawsuit|police|warrant|penalty)\b/i, 0.18, "Uses threats or intimidation"]
+  [/\b(?:arrest|lawsuit|police|warrant|penalty)\b/i, 0.18, "Uses threats or intimidation"],
+  [/\b(?:seed phrase|recovery phrase|private key|wallet key)\b/i, 0.30, "Requests a wallet recovery secret"],
+  [/\b(?:job|hiring|recruiter|work from home|employment)\b.{0,70}\b(?:fee|deposit|crypto|gift card|equipment payment)\b/i, 0.24, "Requests payment for a job opportunity"],
+  [/\b(?:love|relationship|fianc[eé]|dear|sweetheart)\b.{0,100}\b(?:money|loan|transfer|crypto|emergency)\b/i, 0.22, "Uses a relationship to request money"],
+  [/\b(?:investment|trading|forex|crypto)\b.{0,70}\b(?:guaranteed|double|profit|return|risk.?free)\b/i, 0.24, "Promises unrealistic investment returns"],
+  [/\b(?:support|technician|security team)\b.{0,70}\b(?:anydesk|teamviewer|screen share|remote access|install)\b/i, 0.24, "Impersonates support to request remote access"],
+  [/\b(?:scan|open)\b.{0,30}\bqr\s*code\b/i, 0.08, "Requests interaction with a QR code"]
 ];
 const BENIGN_SIGNALS = new Map([
   ["official app", 0.14],
@@ -78,7 +92,12 @@ const MESSAGE_SPAM_TERMS = [
   ["money", 3],
   ["payment", 3],
   ["free", 2],
-  ["winner", 3]
+  ["winner", 3],
+  ["wallet", 4],
+  ["seed", 5],
+  ["recovery", 4],
+  ["job", 2],
+  ["investment", 4]
 ];
 const WINDOW_SECONDS = 60;
 const LIMIT = Number(process.env.NLP_RATE_LIMIT || 30);
@@ -239,8 +258,10 @@ function analyzeMessage(value) {
   if (contextual.some(([, boost]) => boost >= 0.22)) benignDiscount = Math.min(benignDiscount, 0.04);
 
   if (/(password|passcode|otp|verification code)/i.test(cleaned)) probability += 0.34;
+  if (/(seed phrase|recovery phrase|private key|wallet key)/i.test(cleaned)) probability += 0.42;
   if (/(urgent|immediately|act now|today only)/i.test(cleaned)) probability += 0.2;
   if (/(gift card|bank details|credit card|payment|money|crypto)/i.test(cleaned)) probability += 0.18;
+  if (/\b(?:bc1[a-z0-9]{25,62}|0x[a-f0-9]{40})\b/i.test(cleaned)) probability += 0.24;
   if (/(https?:\/\/|www\.)/i.test(cleaned)) probability += 0.08;
   if (cleaned.length > 120) probability -= 0.05;
 
@@ -250,17 +271,21 @@ function analyzeMessage(value) {
   const confidence = isSpam ? probability : 1 - probability;
   const risk = probability >= 0.70 ? "HIGH" : probability >= 0.50 ? "MEDIUM" : "LOW";
   const indicatorSet = new Set(indicators);
-  const category = indicatorSet.has("Requests an authentication secret")
-    ? "Credential phishing"
-    : indicatorSet.has("Requests a difficult-to-reverse payment")
-      ? "Payment scam"
-      : indicatorSet.has("Requests remote device access")
-        ? "Remote-access scam"
-        : indicatorSet.has("Uses a prize or reward lure")
-          ? "Prize or reward scam"
-          : indicatorSet.has("Promises unrealistic financial returns")
-            ? "Investment scam"
-            : isSpam ? "Spam / Scam Message" : "Likely Safe Message";
+  let category = isSpam ? "Spam / Scam Message" : "Likely Safe Message";
+  const categoryRules = [
+    ["Requests an authentication secret", "Credential phishing"],
+    ["Requests a wallet recovery secret", "Crypto wallet theft"],
+    ["Requests payment for a job opportunity", "Job scam"],
+    ["Uses a relationship to request money", "Romance scam"],
+    ["Promises unrealistic investment returns", "Investment scam"],
+    ["Impersonates support to request remote access", "Tech-support scam"],
+    ["Requests a difficult-to-reverse payment", "Payment scam"],
+    ["Requests remote device access", "Remote-access scam"],
+    ["Uses a prize or reward lure", "Prize or reward scam"],
+    ["Promises unrealistic financial returns", "Investment scam"]
+  ];
+  const categoryMatch = categoryRules.find(([indicator]) => indicatorSet.has(indicator));
+  if (categoryMatch) category = categoryMatch[1];
   const reason = isSpam
     ? `Spam-like language detected: ${[...new Set(indicators)].slice(0, 4).join(", ")}.`
     : "The NLP model found no strong spam pattern in this message.";
@@ -507,7 +532,11 @@ function buildInvestigation(scanType, content, analysis, investigationTimeMs) {
     [/\b(?:otp|one.?time password|verification code|passcode)\b|otp ကုဒ်/i, "OTP request", "high", 25],
     [/\b(?:password|pin|recovery key|login code)\b|စကားဝှက်/i, "Credential request", "high", 25],
     [/\b(?:pay|payment|transfer|gift card|bitcoin|crypto|bank details)\b|ငွေလွှဲ/i, "Money request", "high", 25],
-    [/\b(?:urgent|immediately|act now|final warning|today only)\b|ချက်ချင်း|အခုပဲ/i, "Urgency language", "medium", 20]
+    [/\b(?:urgent|immediately|act now|final warning|today only)\b|ချက်ချင်း|အခုပဲ/i, "Urgency language", "medium", 20],
+    [/\b(?:seed phrase|recovery phrase|private key|wallet key)\b/i, "Wallet recovery secret request", "high", 30],
+    [/\b(?:job|hiring|recruiter|work from home)\b.{0,70}\b(?:fee|deposit|crypto|gift card)\b/i, "Job fee request", "high", 25],
+    [/\b(?:love|relationship|fianc[eé]|sweetheart)\b.{0,100}\b(?:money|loan|transfer|crypto)\b/i, "Relationship-based money request", "high", 25],
+    [/\b(?:anydesk|teamviewer|screen share|remote access)\b/i, "Remote access request", "high", 25]
   ];
   const scoring = [];
   let allocated = 0;
@@ -549,7 +578,19 @@ function buildInvestigation(scanType, content, analysis, investigationTimeMs) {
     ].map(([agent, label]) => ({ agent, label, status: "completed", duration_ms: 0 })),
     graph: { nodes, edges },
     related_cases: { available: false, matches: [], reason: "Vector similarity is ready for pgvector but not configured." },
-    knowledge: { available: false, citations: [], reason: "RAG providers are not configured; no citation was fabricated." }
+    knowledge: { available: false, citations: [], reason: "RAG providers are not configured; no citation was fabricated." },
+    checks_performed: [
+      "Input validation and Unicode normalization",
+      `${scanType} structure and pattern analysis`,
+      "Known scam phrase and behavior detection",
+      "Entity extraction and explainable risk scoring",
+      "Local reputation capability check"
+    ],
+    limitations: [
+      "Live external reputation feeds are not configured.",
+      ...(scanType === "link" ? ["Domain age, ownership, and redirect-chain checks are unavailable."] : []),
+      "The result is guidance and cannot guarantee safety."
+    ]
   };
 }
 

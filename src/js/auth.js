@@ -47,6 +47,32 @@ function strongPassword(value) {
         && /[A-Z]/.test(value) && /\d/.test(value) && /[^A-Za-z0-9]/.test(value);
 }
 
+function clearFieldError(field) {
+    if (!field) return;
+    field.removeAttribute("aria-invalid");
+    const errorId = `${field.id}Error`;
+    document.getElementById(errorId)?.remove();
+    const describedBy = String(field.getAttribute("aria-describedby") || "").split(/\s+/).filter((id) => id && id !== errorId);
+    if (describedBy.length) field.setAttribute("aria-describedby", describedBy.join(" "));
+    else field.removeAttribute("aria-describedby");
+}
+
+function showFieldError(field, text) {
+    if (!field) return;
+    clearFieldError(field);
+    const error = document.createElement("p");
+    error.id = `${field.id}Error`;
+    error.className = "field-error";
+    error.textContent = text;
+    field.setAttribute("aria-invalid", "true");
+    const describedBy = String(field.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+    field.setAttribute("aria-describedby", [...new Set([...describedBy, error.id])].join(" "));
+    field.insertAdjacentElement("afterend", error);
+    field.focus();
+}
+
+form?.querySelectorAll("input").forEach((field) => field.addEventListener("input", () => clearFieldError(field)));
+
 if (authPage && isSupabaseConfigured) {
     redirectIfAuthenticated(safeReturnTarget());
 } else if (!isSupabaseConfigured) {
@@ -62,19 +88,24 @@ form?.addEventListener("submit", async (event) => {
     }
 
     const isSignup = authPage === "signup";
-    const email = document.getElementById(isSignup ? "newEmail" : "email")?.value.trim();
-    const password = document.getElementById(isSignup ? "newPassword" : "password")?.value;
+    const emailField = document.getElementById(isSignup ? "newEmail" : "email");
+    const passwordField = document.getElementById(isSignup ? "newPassword" : "password");
+    const email = emailField?.value.trim();
+    const password = passwordField?.value;
 
     if (!email || !password) {
         showMessage("Enter both your email and password.");
+        showFieldError(!email ? emailField : passwordField, !email ? "Enter your email address." : "Enter your password.");
         return;
     }
     if (!validEmail(email)) {
         showMessage("Enter a valid email address.");
+        showFieldError(emailField, "Enter a valid email address, such as you@example.com.");
         return;
     }
     if (isSignup && !strongPassword(password)) {
         showMessage("Use 12–128 characters with upper and lowercase letters, a number, and a symbol.");
+        showFieldError(passwordField, "Use upper and lowercase letters, a number, and a symbol.");
         return;
     }
 

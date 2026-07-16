@@ -620,3 +620,35 @@ body.scam-checker-page *{font-family:"Thuriya","Myanmar Sangam MN","Noto Sans My
     .scanner-mobile-nav a.is-active{color:#f2f2f2;border-color:#7f1717;background:#211010}
     .scanner-mobile-nav a.is-active svg{color:#e22b2b;stroke-width:2.2}
 }
+
+/* Progressive, accessible scanner results */
+.checker-input-label { display: block; color: var(--text) !important; font-size: 13px !important; letter-spacing: 0 !important; text-transform: none !important; }
+.agent-response > p { margin: 8px 0 0; color: var(--muted); font-size: 14px; line-height: 1.7; }
+.result-disclosure { margin-top: 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-raised, var(--surface)); }
+.result-disclosure[hidden] { display: none; }
+.result-disclosure summary,
+.investigation-dashboard > summary { min-height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 13px; color: var(--text); cursor: pointer; font-size: 13px; list-style: none; }
+.result-disclosure summary::-webkit-details-marker,
+.investigation-dashboard > summary::-webkit-details-marker { display: none; }
+.result-disclosure summary::after,
+.investigation-dashboard > summary::after { content: "+"; color: var(--primary); font-size: 18px; }
+.result-disclosure[open] summary::after,
+.investigation-dashboard[open] > summary::after { content: "−"; }
+.result-disclosure > div { padding: 12px 14px; border-top: 1px solid var(--border); }
+.result-disclosure strong { display: block; margin-bottom: 6px; font-size: 12px; }
+.result-disclosure ul { display: grid; gap: 5px; margin: 0; padding-left: 18px; color: var(--muted); font-size: 12px; }
+.investigation-dashboard > summary { grid-column: 1 / -1; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+.investigation-dashboard:not([open]) { display: block; }
+.investigation-dashboard[open] > summary { margin-bottom: 0; }
+
+@media (max-width: 620px) {
+  .checker-card { padding: 18px !important; }
+  .checker-mode-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .checker-mode-tabs button { min-height: 46px; padding: 8px !important; overflow-wrap: anywhere; }
+  .result-summary-line { align-items: flex-start; }
+  #riskScore { font-size: 30px; }
+}
+
+@media (max-width: 420px) {
+  .checker-mode-tabs { grid-template-columns: 1fr !important; }
+}

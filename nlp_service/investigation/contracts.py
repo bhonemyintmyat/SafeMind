@@ -44,6 +44,8 @@ class Investigation:
     graph: dict[str, Any] = field(default_factory=dict)
     related_cases: dict[str, Any] = field(default_factory=dict)
     knowledge: dict[str, Any] = field(default_factory=dict)
+    checks_performed: list[str] = field(default_factory=list)
+    limitations: list[str] = field(default_factory=list)
 
     def to_dict(self):
         return asdict(self)

@@ -109,6 +109,13 @@ PHRASE_SIGNALS = {
     "avoid arrest": 0.22,
     "install this app": 0.16,
     "share the access code": 0.24,
+    "recovery phrase": 0.30,
+    "seed phrase": 0.30,
+    "private key": 0.30,
+    "processing fee": 0.18,
+    "training fee": 0.18,
+    "work from home": 0.10,
+    "investment opportunity": 0.16,
     "ဘဏ်ဝန်ထမ်း": 0.16,
     "otp ကုဒ်": 0.24,
     "ငွေလွှဲ": 0.18,
@@ -126,6 +133,11 @@ CONTEXT_SIGNALS = (
     (re.compile(r"\b(?:remote access|screen share|anydesk|teamviewer|access code)\b", re.I), 0.22, "Requests remote device access"),
     (re.compile(r"\b(?:won|winner|prize|lottery|reward)\b.{0,45}\b(?:fee|pay|claim|bank|card)\b", re.I), 0.22, "Uses a prize or reward lure"),
     (re.compile(r"\b(?:arrest|lawsuit|police|warrant|penalty)\b", re.I), 0.18, "Uses threats or intimidation"),
+    (re.compile(r"\b(?:seed phrase|recovery phrase|private key|wallet key)\b", re.I), 0.30, "Requests a wallet recovery secret"),
+    (re.compile(r"\b(?:job|hiring|recruiter|work from home|employment)\b.{0,70}\b(?:fee|deposit|crypto|gift card|equipment payment)\b", re.I), 0.24, "Requests payment for a job opportunity"),
+    (re.compile(r"\b(?:love|relationship|fianc[eé]|dear|sweetheart)\b.{0,100}\b(?:money|loan|transfer|crypto|emergency)\b", re.I), 0.22, "Uses a relationship to request money"),
+    (re.compile(r"\b(?:investment|trading|forex|crypto)\b.{0,70}\b(?:guaranteed|double|profit|return|risk.?free)\b", re.I), 0.24, "Promises unrealistic investment returns"),
+    (re.compile(r"\b(?:support|technician|security team)\b.{0,70}\b(?:anydesk|teamviewer|screen share|remote access|install)\b", re.I), 0.24, "Impersonates support to request remote access"),
 )
 
 BENIGN_SIGNALS = {
@@ -355,6 +367,14 @@ class SpamClassifier:
         indicator_labels = set(indicators)
         if "Requests an authentication secret" in indicator_labels:
             category = "Credential phishing"
+        elif "Requests a wallet recovery secret" in indicator_labels:
+            category = "Crypto wallet theft"
+        elif "Requests payment for a job opportunity" in indicator_labels:
+            category = "Job scam"
+        elif "Uses a relationship to request money" in indicator_labels:
+            category = "Romance scam"
+        elif "Impersonates support to request remote access" in indicator_labels:
+            category = "Tech-support scam"
         elif "Requests a difficult-to-reverse payment" in indicator_labels:
             category = "Payment scam"
         elif "Requests remote device access" in indicator_labels:
