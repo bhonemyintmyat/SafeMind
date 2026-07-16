@@ -210,12 +210,12 @@ if (form && chatLog) {
 
   const RESPONSE_LABELS = [
     ["summary", ["Summary", "အကျဉ်းချုပ်"]],
-    ["threat-level", ["Threat Level", "အန္တရာယ်အဆင့်"]],
+    ["threat-level", ["Risk Level", "Threat Level", "အန္တရာယ်အဆင့်"]],
     ["confidence", ["Confidence", "Confidence Score", "ယုံကြည်မှုအဆင့်"]],
-    ["reasons", ["Reasons", "အကြောင်းရင်းများ"]],
+    ["reasons", ["Reason", "Reasons", "အကြောင်းရင်း", "အကြောင်းရင်းများ"]],
     ["warning-signs", ["Warning Signs", "Indicators", "သတိပေးလက္ခဏာများ"]],
     ["evidence", ["Evidence Found", "Evidence", "တွေ့ရှိသော သက်သေအထောက်အထား", "တွေ့ရှိသောသက်သေ"]],
-    ["recommended-actions", ["Recommended Actions", "အကြံပြု လုပ်ဆောင်ချက်များ", "အကြံပြုလုပ်ဆောင်ချက်များ"]],
+    ["recommended-actions", ["What You Should Do", "Recommended Actions", "သင်လုပ်သင့်သည်", "အကြံပြု လုပ်ဆောင်ချက်များ", "အကြံပြုလုပ်ဆောင်ချက်များ"]],
     ["prevention", ["Prevention Tips", "Prevention Tip", "ကာကွယ်ရေး အကြံပြုချက်", "ကာကွယ်ရေးအကြံပြုချက်"]],
     ["references", ["References", "ကိုးကားချက်များ"]],
     ["related", ["Related Scams", "ဆက်စပ်လိမ်လည်မှုများ"]],
@@ -254,31 +254,6 @@ if (form && chatLog) {
     container.append(time);
   }
 
-  function buildResponseActions(answer) {
-    const actions = document.createElement("div");
-    actions.className = "education-response-actions";
-    const entries = [
-      ["copy", "Copy", "မိတ္တူကူးရန်", "⧉"],
-      ["regenerate", "Regenerate", "ပြန်လည်ဖြေကြားရန်", "↻"],
-      ["helpful", "Helpful", "အသုံးဝင်သည်", "👍"],
-      ["unhelpful", "Not helpful", "အသုံးမဝင်ပါ", "👎"],
-      ["bookmark", "Bookmark", "သိမ်းထားရန်", "☆"],
-      ["share", "Share", "မျှဝေရန်", "↗"]
-    ];
-    for (const [action, english, burmese, icon] of entries) {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.dataset.responseAction = action;
-      button.dataset.answer = answer;
-      button.title = copy(english, burmese);
-      button.setAttribute("aria-label", copy(english, burmese));
-      if (["helpful", "unhelpful", "bookmark"].includes(action)) button.setAttribute("aria-pressed", "false");
-      button.textContent = icon;
-      actions.append(button);
-    }
-    return actions;
-  }
-
   function renderStructuredResponse(container, value) {
     const answer = plainText(value);
     container.querySelector("p")?.remove();
@@ -288,7 +263,33 @@ if (form && chatLog) {
     const sections = parseResponseSections(answer);
     const grid = document.createElement("div");
     grid.className = "education-response-grid";
-    for (const section of sections) {
+    const groupContent = (keys, limit) => [...new Set(sections
+      .filter((section) => keys.includes(section.key))
+      .map((section) => section.content.trim())
+      .filter(Boolean))].join("\n").slice(0, limit);
+    const compactSections = [
+      {
+        key: "threat-level",
+        title: copy("Risk Level", "အန္တရာယ်အဆင့်"),
+        content: groupContent(["threat-level", "confidence"], 260)
+      },
+      {
+        key: "reasons",
+        title: copy("Reason", "အကြောင်းရင်း"),
+        content: groupContent(["summary", "reasons", "warning-signs", "evidence"], 850)
+      },
+      {
+        key: "recommended-actions",
+        title: copy("What You Should Do", "သင်လုပ်သင့်သည်"),
+        content: groupContent(["recommended-actions", "prevention"], 900)
+      }
+    ].filter((section) => section.content);
+    if (!compactSections.length) compactSections.push({
+      key: "summary",
+      title: copy("Assessment", "စိစစ်ချက်"),
+      content: answer.slice(0, 1_200)
+    });
+    for (const section of compactSections) {
       const card = document.createElement("section");
       card.className = "education-response-section";
       card.dataset.section = section.key;
@@ -299,7 +300,7 @@ if (form && chatLog) {
       card.append(heading, paragraph);
       grid.append(card);
     }
-    container.append(grid, buildResponseActions(answer));
+    container.append(grid);
     addMessageTime(container);
   }
 
@@ -399,12 +400,6 @@ if (form && chatLog) {
     return normalizedText;
   }
 
-  function loadingStages() {
-    return locale() === "my"
-      ? ["အကောင့်အချက်အလက် ခိုးယူသည့်ပုံစံများကို ရှာဖွေနေသည်", "ဘာသာစကားပုံစံဖြင့် စာသားကို စိစစ်နေသည်", "အတည်ပြုထားသော လိမ်လည်မှုမှတ်တမ်းနှင့် တိုက်စစ်နေသည်", "လူမှုဆိုင်ရာ လှည့်ဖြားမှုလက္ခဏာများကို သုံးသပ်နေသည်", "နားလည်လွယ်သော အဖြေကို ပြင်ဆင်နေသည်"]
-      : ["Detecting phishing patterns", "Running NLP analysis", "Checking known scam records", "Evaluating social engineering signals", "Preparing a clear explanation"];
-  }
-
   function createLoadingMessage() {
     const article = document.createElement("article");
     article.className = "education-message is-assistant is-loading";
@@ -419,8 +414,6 @@ if (form && chatLog) {
     dots.className = "education-typing-dots";
     dots.setAttribute("aria-hidden", "true");
     dots.innerHTML = "<i></i><i></i><i></i>";
-    const stages = document.createElement("ul");
-    stages.className = "education-analysis-stages";
     const waitPanel = document.createElement("div");
     waitPanel.className = "education-wait-panel";
     waitPanel.hidden = true;
@@ -435,22 +428,15 @@ if (form && chatLog) {
     cancelButton.textContent = copy("Cancel", "မလုပ်တော့ပါ");
     waitActions.append(continueButton, retryButton, cancelButton);
     waitPanel.append(waitText, waitActions);
-    content.append(label, dots, stages, waitPanel);
+    content.append(label, dots, waitPanel);
     article.append(avatar, content);
     chatLog.append(article);
     chatLog.scrollTop = chatLog.scrollHeight;
 
     const timers = [];
-    const stageItems = loadingStages().map((text) => {
-      const item = document.createElement("li");
-      item.textContent = text;
-      stages.append(item);
-      return item;
-    });
-    stageItems.forEach((item, index) => timers.push(window.setTimeout(() => {
-      item.classList.add("is-complete");
-      if (index === 1) label.textContent = copy("Checking scam indicators...", "လိမ်လည်မှုလက္ခဏာများကို စစ်ဆေးနေသည်...");
-    }, 850 + index * 900)));
+    timers.push(window.setTimeout(() => {
+      label.textContent = copy("Checking scam indicators...", "လိမ်လည်မှုလက္ခဏာများကို စစ်ဆေးနေသည်...");
+    }, 1_600));
     timers.push(window.setTimeout(() => {
       waitText.textContent = copy("I'm still analyzing this evidence. You can keep waiting, retry, or cancel.", "ဤသက်သေအထောက်အထားကို ဆက်လက်စိစစ်နေပါသည်။ ဆက်စောင့်နိုင်သလို ထပ်ကြိုးစားခြင်း သို့မဟုတ် မလုပ်တော့ခြင်းကို ရွေးနိုင်ပါသည်။");
       waitPanel.hidden = false;
@@ -520,14 +506,18 @@ if (form && chatLog) {
   }
 
   async function sendQuestion(question) {
-    const evidenceText = evidenceInput.value.trim();
+    const typedQuestion = String(question || "").trim();
+    const selectedType = evidenceType.value;
+    const questionOnly = /^(?:why|what|how|when|where|who|is|are|can|could|should|would|explain|teach|tell|ဘာ|ဘယ်|မည်|ရှင်းပြ|သင်ပေး)/iu.test(typedQuestion)
+      || /[?？]$/.test(typedQuestion);
+    const evidenceText = evidenceInput.value.trim()
+      || (typedQuestion && (selectedType !== "auto" || !questionOnly) ? typedQuestion : "");
     if (!question && !evidenceText && !selectedImage) {
       setStatus(chatStatus, copy("Add evidence or enter a question first.", "သက်သေအထောက်အထား ထည့်ပါ သို့မဟုတ် မေးခွန်းတစ်ခု ရေးပါ။"), "error");
       return;
     }
     const userQuestion = question || copy("Please assess this evidence and explain whether it may be a scam.", "ဤသက်သေအထောက်အထားကို စစ်ဆေးပြီး လိမ်လည်မှုဖြစ်နိုင်ခြေကို ရှင်းပြပါ။");
     lastQuestion = userQuestion;
-    const selectedType = evidenceType.value;
     const scanType = selectedType === "auto" ? detectType(evidenceText || userQuestion) : selectedType;
     const previousHistory = history.slice(-8);
     chatLog.querySelector(".education-empty-actions")?.remove();
@@ -695,10 +685,32 @@ if (form && chatLog) {
     const emptyAction = event.target.closest("[data-education-empty-action]");
     if (emptyAction) {
       const action = emptyAction.dataset.educationEmptyAction;
-      if (action === "upload") { showEvidence("auto"); fileInput?.click(); }
-      else if (["link", "email", "phone"].includes(action)) showEvidence(action, true);
-      else if (action === "paste") showEvidence("message", true);
-      else questionInput.focus();
+      document.querySelectorAll("[data-education-empty-action]").forEach((button) => button.classList.toggle("is-active", button === emptyAction));
+      const type = action === "paste" ? "message" : ["link", "email", "phone"].includes(action) ? action : "auto";
+      evidenceType.value = type;
+      const placeholders = locale() === "my"
+        ? {
+            paste: "သံသယဖြစ်ဖွယ် စာတိုကို ဤနေရာတွင် ထည့်ပါ...",
+            link: "စစ်ဆေးလိုသော ဝဘ်ဆိုက်လင့်ခ်ကို ထည့်ပါ...",
+            email: "သံသယဖြစ်ဖွယ် အီးမေးလ်လိပ်စာ သို့မဟုတ် စာကို ထည့်ပါ...",
+            phone: "စစ်ဆေးလိုသော ဖုန်းနံပါတ်ကို ထည့်ပါ...",
+            upload: "စခရင်ရှော့ထည့်ပြီး လိုအပ်သည့်အကြောင်းကို ရေးပါ...",
+            qr: "QR တွင် ပါသောလင့်ခ်ကို ထည့်ပါ သို့မဟုတ် QR စခရင်ရှော့ကို ပူးတွဲပါ..."
+          }
+        : {
+            paste: "Paste a suspicious message...",
+            link: "Paste the website link to check...",
+            email: "Paste a suspicious email address or message...",
+            phone: "Enter the phone number to check...",
+            upload: "Attach a screenshot and add any useful context...",
+            qr: "Paste the QR destination or attach a QR screenshot..."
+          };
+      questionInput.placeholder = placeholders[action] || placeholders.paste;
+      if (action === "upload") {
+        evidenceTray.hidden = false;
+        fileInput.accept = "image/png,image/jpeg,image/webp";
+        fileInput?.click();
+      } else questionInput.focus();
       return;
     }
 
@@ -726,8 +738,9 @@ if (form && chatLog) {
   });
 
   attachButton?.addEventListener("click", () => {
-    evidenceTray.hidden = !evidenceTray.hidden;
-    if (!evidenceTray.hidden) evidenceInput.focus();
+    evidenceTray.hidden = false;
+    fileInput.accept = "image/png,image/jpeg,image/webp,text/plain,.txt,.eml";
+    fileInput?.click();
   });
   evidenceClose?.addEventListener("click", () => { evidenceTray.hidden = true; questionInput.focus(); });
   cameraButton?.addEventListener("click", () => {

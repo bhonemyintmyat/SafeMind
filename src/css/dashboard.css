@@ -1522,6 +1522,252 @@ body.dashboard-page .empty-state { max-width:58ch; }
   .education-copilot-page .education-empty-actions { grid-template-columns:1fr; }
 }
 
+/* Minimal SafeMind Scam Coach */
+.education-copilot-page .copilot-topbar {
+  min-height: 72px;
+  padding-block: 10px;
+}
+.education-copilot-page .copilot-topbar > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.education-copilot-page .copilot-topbar h1 { margin: 0; }
+.education-copilot-page .copilot-topbar .copilot-ready {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--success) 12%, var(--surface));
+  font-size: 12px;
+}
+.education-copilot-page .copilot-topbar > button {
+  width: auto;
+  min-height: 40px;
+  padding: 8px 13px;
+}
+.education-copilot-page .dashboard-content {
+  width: min(1080px, calc(100% - 48px));
+  padding: 24px 0 32px;
+}
+.education-copilot-page .copilot-workspace {
+  display: block;
+  width: min(100%, 980px);
+  margin-inline: auto;
+}
+.education-copilot-page .education-chat-card {
+  height: calc(100dvh - 136px);
+  min-height: 580px;
+  max-height: 900px;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto auto auto auto;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: 0 12px 34px rgba(15, 23, 42, .08);
+  backdrop-filter: none;
+}
+.education-copilot-page .education-chat-log {
+  gap: 18px;
+  padding: clamp(20px, 4vw, 40px);
+  background: var(--background);
+}
+.education-copilot-page .education-welcome {
+  width: min(100%, 620px);
+  margin: auto auto 4px;
+  padding: 0;
+}
+.education-copilot-page .education-welcome-icon {
+  width: 54px;
+  height: 54px;
+  margin-bottom: 14px;
+  border-radius: 17px;
+}
+.education-copilot-page .education-welcome-icon img {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+.education-copilot-page .education-welcome p { margin-bottom: 5px; }
+.education-copilot-page .education-welcome h2 {
+  margin-bottom: 8px;
+  font-size: clamp(22px, 3vw, 30px);
+}
+.education-copilot-page .education-welcome > span:not(.education-welcome-icon) {
+  max-width: 590px;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.education-copilot-page .education-empty-actions {
+  width: min(100%, 660px);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-self: flex-start;
+  gap: 8px;
+  margin: 0 auto auto;
+}
+.education-copilot-page .education-empty-actions button {
+  min-height: 40px;
+  display: inline-flex;
+  grid-template-columns: none;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: none;
+  font-size: 13px;
+  text-align: center;
+}
+.education-copilot-page .education-empty-actions button span {
+  display: inline;
+  color: currentColor;
+  font-size: inherit;
+}
+.education-copilot-page .education-empty-actions button:hover,
+.education-copilot-page .education-empty-actions button:focus-visible {
+  border-color: var(--primary, var(--red));
+  background: var(--surface-raised);
+  box-shadow: none;
+  transform: translateY(-1px);
+}
+.education-copilot-page .education-empty-actions button.is-active {
+  color: #FFFFFF;
+  background: #5A5D7A;
+  border-color: #5A5D7A;
+}
+.education-copilot-page .education-message {
+  width: auto;
+  max-width: min(70%, 680px);
+  animation: copilot-message-in 200ms ease-out both;
+}
+.education-copilot-page .education-message > div {
+  padding: 12px 15px;
+  border: 1px solid var(--border);
+  border-radius: 6px 18px 18px;
+  background: var(--surface);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, .05);
+}
+.education-copilot-page .education-message.is-user > div {
+  border-color: transparent;
+  border-radius: 18px 6px 18px 18px;
+  background: color-mix(in srgb, #5A5D7A 15%, var(--surface));
+}
+.education-copilot-page .education-response-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+.education-copilot-page .education-response-section,
+.education-copilot-page .education-response-section:first-child,
+.education-copilot-page .education-response-section[data-section="summary"],
+.education-copilot-page .education-response-section[data-section="recommended-actions"] {
+  grid-column: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.education-copilot-page .education-response-section + .education-response-section {
+  padding-top: 11px;
+  border-top: 1px solid var(--border);
+}
+.education-copilot-page .education-response-section h3 {
+  margin-bottom: 4px;
+  color: var(--text);
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.education-copilot-page .education-response-section p {
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.65;
+  white-space: pre-line;
+}
+.education-copilot-page .education-evidence-tray {
+  margin: 8px 16px 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-raised);
+  box-shadow: none;
+}
+.education-copilot-page .education-chat-form {
+  position: sticky;
+  z-index: 2;
+  bottom: 0;
+  min-height: 68px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 8px;
+  margin: 8px 16px 4px;
+  padding: 7px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, .10);
+}
+.education-copilot-page .education-chat-form textarea {
+  min-height: 52px;
+  max-height: 120px;
+  padding: 14px 6px 10px;
+  border: 0;
+  background: transparent;
+  resize: none;
+  box-shadow: none;
+}
+.education-copilot-page .education-chat-form textarea:focus {
+  border: 0;
+  box-shadow: none;
+}
+.education-copilot-page .education-composer-tools button {
+  width: 42px;
+  height: 42px;
+}
+.education-copilot-page .education-chat-form .primary-button {
+  min-width: 92px;
+  height: 46px;
+  padding-inline: 14px;
+}
+.education-copilot-page .education-chat-status {
+  min-height: 20px;
+  margin: 0;
+  padding: 0 22px;
+  font-size: 12px;
+}
+.education-copilot-page .education-disclaimer {
+  margin: 0;
+  padding: 3px 20px 12px;
+  color: var(--quiet);
+  font-size: 10px;
+}
+
+@media (max-width: 720px) {
+  .education-copilot-page { padding-bottom: 0; }
+  .education-copilot-page .copilot-topbar { min-height: 68px; }
+  .education-copilot-page .copilot-topbar > div:first-child { display: grid; gap: 1px; }
+  .education-copilot-page .copilot-topbar .copilot-ready { width: max-content; padding: 0; background: transparent; }
+  .education-copilot-page .dashboard-content { width: 100%; padding: 0; }
+  .education-copilot-page .education-chat-card {
+    height: calc(100dvh - 68px);
+    min-height: 500px;
+    max-height: none;
+    border-inline: 0;
+    border-bottom: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .education-copilot-page .education-chat-log { padding: 22px 14px; }
+  .education-copilot-page .education-empty-actions { gap: 6px; }
+  .education-copilot-page .education-empty-actions button { min-height: 38px; padding: 6px 10px; }
+  .education-copilot-page .education-message { max-width: 90%; }
+  .education-copilot-page .education-chat-form { margin-inline: 8px; }
+  .education-copilot-page .education-chat-form .primary-button { width: 46px; min-width: 46px; padding: 0; }
+  .education-copilot-page .education-chat-form .primary-button span { display: none; }
+}
+
 /* Unified in-dashboard AI investigation */
 .dashboard-content.is-investigating > :not(.dashboard-investigation) { display:none !important; }
 .dashboard-content.is-investigating { max-width:1440px; }

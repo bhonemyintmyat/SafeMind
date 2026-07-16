@@ -33,39 +33,33 @@
             </div>
         </aside>
         <div class="dashboard-main">
-            <header class="dashboard-header copilot-topbar"><div><p>AI Security Copilot</p><h1>SafeMind Scam Coach</h1></div><div class="copilot-topbar-actions"><span class="copilot-ready"><i></i> Ready</span><a class="profile-link" href="profile.html"><span class="avatar" data-avatar>SM</span><span><b class="username">User</b><small>Edit profile</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a></div></header>
+            <header class="dashboard-header copilot-topbar">
+                <div><h1>SafeMind Scam Coach</h1><span class="copilot-ready"><i></i> Online</span></div>
+                <button type="button" class="secondary-action" id="educationNewChat" aria-label="Start new private chat">New chat</button>
+            </header>
             <main class="dashboard-content">
                 <section class="copilot-workspace" aria-labelledby="educationAgentTitle">
                     <section class="education-chat-card" aria-label="SafeMind Scam Coach conversation">
-                        <div class="education-chat-header">
-                            <div><span class="education-agent-avatar" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.6 2.9 8.4 7 10 4.1-1.6 7-5.4 7-10V6Z"/><path d="M9 12h6M12 9v6"/></svg></span><span><strong id="educationAgentTitle">SafeMind Security Agent</strong><small><i class="education-online-dot" aria-hidden="true"></i> Online · History saved on this device</small></span></div>
-                            <button type="button" id="educationNewChat" aria-label="Start new private chat"><span aria-hidden="true">＋</span> New chat</button>
-                        </div>
                         <div class="education-chat-log" id="educationChatLog" aria-live="polite" aria-relevant="additions">
                             <section class="education-welcome" aria-label="Welcome to SafeMind Scam Coach">
-                                <span class="education-welcome-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.6 2.9 8.4 7 10 4.1-1.6 7-5.4 7-10V6Z"/><path d="m9.5 12 1.6 1.6 3.8-4"/></svg></span>
-                                <p>Hello 👋</p><h2>I'm SafeMind Scam Coach.</h2>
-                                <span>I can check suspicious messages, websites, emails, phone numbers, QR codes, investments, relationships, and job offers.</span>
-                                <div class="education-capabilities" aria-label="Scam types SafeMind can help with"><span>Messages</span><span>Websites</span><span>Phone numbers</span><span>Scam questions</span></div>
+                                <span class="education-welcome-icon"><img src="/assets/safemind-logo.png" alt="SafeMind logo"></span>
+                                <p>Hello 👋</p><h2 id="educationAgentTitle">What would you like to check today?</h2>
+                                <span>I can help analyze suspicious messages, websites, phone numbers, emails, QR codes, and screenshots.</span>
                             </section>
-                            <div class="education-empty-actions" aria-label="Start a scam analysis">
-                                <button type="button" data-education-empty-action="upload"><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14.5 5 13 3h-2L9.5 5H5a2 2 0 0 0-2 2v11h18V7a2 2 0 0 0-2-2Z"/><circle cx="12" cy="12" r="3"/></svg></i><strong>Upload Screenshot</strong><span>Analyze visual evidence</span></button>
-                                <button type="button" data-education-empty-action="paste"><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"/><path d="M8 9h8M8 13h5"/></svg></i><strong>Paste Scam Message</strong><span>Check suspicious wording</span></button>
-                                <button type="button" data-education-empty-action="link"><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.2 1.2"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.2-1.2"/></svg></i><strong>Analyze URL</strong><span>Inspect a website</span></button>
-                                <button type="button" data-education-empty-action="phone"><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h3l1.5 5-2 1.5a16 16 0 0 0 5 5l1.5-2L21 14v3a4 4 0 0 1-4 4C9.3 21 3 14.7 3 7a4 4 0 0 1 4-4Z"/></svg></i><strong>Check Phone Number</strong><span>Review caller risk</span></button>
+                            <div class="education-empty-actions" aria-label="Choose what to analyze">
+                                <button type="button" data-education-empty-action="paste">💬 <span>Message</span></button>
+                                <button type="button" data-education-empty-action="link">🌐 <span>Website</span></button>
+                                <button type="button" data-education-empty-action="email">📧 <span>Email</span></button>
+                                <button type="button" data-education-empty-action="phone">📱 <span>Phone</span></button>
+                                <button type="button" data-education-empty-action="upload">📷 <span>Screenshot</span></button>
+                                <button type="button" data-education-empty-action="qr">▦ <span>QR</span></button>
                             </div>
-                        </div>
-                        <div class="education-quick-prompts" aria-label="Suggested questions">
-                            <button type="button" data-education-prompt="Why does this look like a scam?">Why is this suspicious?</button>
-                            <button type="button" data-education-prompt="What should I do immediately after being scammed?">What should I do now?</button>
                         </div>
                         <section class="education-evidence-tray" id="educationEvidenceTray" aria-label="Add evidence" hidden>
-                            <div><strong>Add evidence</strong><button type="button" id="educationEvidenceClose" aria-label="Close evidence panel">×</button></div>
-                            <div class="education-evidence-fields">
-                                <label>Evidence type<select id="educationEvidenceType"><option value="auto">Detect automatically</option><option value="message">Message</option><option value="link">Link</option><option value="email">Email</option><option value="phone">Phone number</option></select></label>
-                                <label>Suspicious content<textarea id="educationEvidence" rows="3" maxlength="10000" placeholder="Paste a message, URL, email address, or phone number..."></textarea></label>
-                            </div>
-                            <label class="education-upload" for="educationEvidenceFile"><span>Upload screenshot or text file</span><small>PNG, JPEG, WebP, TXT, or EML · Maximum 2 MB</small></label>
+                            <div><strong>Attachment</strong><button type="button" id="educationEvidenceClose" aria-label="Close attachment">×</button></div>
+                            <select class="sr-only" id="educationEvidenceType" aria-label="Evidence type"><option value="auto">Detect automatically</option><option value="message">Message</option><option value="link">Link</option><option value="email">Email</option><option value="phone">Phone number</option></select>
+                            <textarea id="educationEvidence" hidden maxlength="10000"></textarea>
+                            <label class="education-upload" for="educationEvidenceFile"><span>Choose screenshot or text file</span><small>PNG, JPEG, WebP, TXT, or EML · Maximum 2 MB</small></label>
                             <input class="sr-only" id="educationEvidenceFile" type="file" accept="image/png,image/jpeg,image/webp,text/plain,.txt,.eml">
                             <div class="education-file-preview" id="educationFilePreview" hidden><img id="educationFileImage" alt="Uploaded scam evidence preview" hidden><div><strong id="educationFileName"></strong><span id="educationFileMeta"></span></div><button type="button" id="educationFileRemove">Remove</button></div>
                             <p class="education-file-status" id="educationFileStatus" role="status" aria-live="polite"></p>
@@ -73,20 +67,14 @@
                         <form class="education-chat-form" id="educationChatForm">
                             <label class="sr-only" for="educationQuestion">Ask SafeMind about this scam</label>
                             <div class="education-composer-tools">
-                                <button type="button" id="educationAttach" aria-label="Add evidence" title="Add evidence"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 11.5-8.4 8.4a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg></button>
-                                <button type="button" id="educationCamera" aria-label="Upload a screenshot" title="Upload screenshot"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5 13 3h-2L9.5 5H5a2 2 0 0 0-2 2v11h18V7a2 2 0 0 0-2-2Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                                <button type="button" id="educationAttach" aria-label="Attach evidence" title="Attach evidence"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 11.5-8.4 8.4a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg></button>
                             </div>
-                            <textarea id="educationQuestion" rows="1" maxlength="4000" placeholder="Paste a suspicious message or ask anything about scams..."></textarea>
-                            <button class="primary-button" type="submit" id="educationChatSubmit" aria-label="Send message"><span>Send</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button>
+                            <textarea id="educationQuestion" rows="1" maxlength="4000" placeholder="Paste a suspicious message, link, email, or phone number..."></textarea>
+                            <button class="primary-button" type="submit" id="educationChatSubmit" aria-label="Analyze content"><span>Analyze</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button>
                         </form>
                         <p class="education-chat-status" id="educationChatStatus" role="status" aria-live="polite"></p>
                         <p class="education-disclaimer">AI guidance can be wrong. Never share credentials or send money based only on this chat.</p>
                     </section>
-                    <aside class="copilot-insights" aria-label="Risk analysis and learning path">
-                        <section class="copilot-panel copilot-protection"><div class="copilot-panel-title"><span>Trust score</span><small id="educationProtectionLabel">No analysis</small></div><div class="copilot-score-ring" id="educationProtectionScore" style="--score: 0"><strong>—</strong><span>risk</span></div><p id="educationCurrentAnalysis">Add evidence to start a private security analysis.</p></section>
-                        <section class="copilot-panel coach-learning-path"><div class="copilot-panel-title"><span>Learning path</span><small>Short lessons</small></div><button type="button" data-education-prompt="Teach me the beginner warning signs of a scam."><strong>Beginner</strong><span>Warning signs · 5 min</span></button><button type="button" data-education-prompt="Teach me how to verify a suspicious sender safely."><strong>Intermediate</strong><span>Verify senders · 7 min</span></button><button type="button" data-education-prompt="Teach me what to do after I have been scammed."><strong>Advanced</strong><span>Recovery steps · 9 min</span></button></section>
-                        <section class="copilot-panel copilot-learning"><div class="copilot-panel-title"><span>Safety tip</span><small>25 sec</small></div><strong>Pause before you act</strong><p>Urgency is a common scam tactic. Verify unexpected requests through an official app or phone number.</p><button type="button" data-education-prompt="Teach me how urgency is used in scams.">Learn why</button></section>
-                    </aside>
                 </section>
             </main>
         </div>
