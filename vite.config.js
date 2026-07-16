@@ -28,7 +28,6 @@ export default defineConfig({
 				education: resolve(__dirname, "src/pages/education.html"),
 				educationArticle: resolve(__dirname, "src/pages/education-article.html"),
 				profile: resolve(__dirname, "src/pages/profile.html"),
-				scamChecker: resolve(__dirname, "src/pages/scam-checker.html"),
 				onboarding: resolve(__dirname, "src/pages/onboarding.html")
 			}
 		}

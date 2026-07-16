@@ -2,6 +2,9 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "redirects": [
+    { "source": "/src/pages/scam-checker.html", "destination": "/src/pages/dashboard.html?view=investigation", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/(.*)",

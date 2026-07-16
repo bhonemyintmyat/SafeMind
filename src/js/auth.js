@@ -14,7 +14,7 @@ function safeReturnTarget() {
     if (!requested) return "dashboard.html";
     try {
         const target = new URL(requested, window.location.origin);
-        const allowedPages = ["dashboard.html", "scam-checker.html", "reports.html", "education.html", "education-article.html", "profile.html"];
+        const allowedPages = ["dashboard.html", "reports.html", "education.html", "education-article.html", "profile.html"];
         const page = target.pathname.split("/").pop();
         if (target.origin === window.location.origin && allowedPages.includes(page)) {
             return `${target.pathname}${target.search}${target.hash}`;

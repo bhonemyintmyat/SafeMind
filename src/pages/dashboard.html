@@ -27,15 +27,14 @@
                 <a class="nav-link is-active" href="dashboard.html" aria-current="page">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1Z"/></svg><span>Overview</span>
                 </a>
-                <a class="nav-link" href="scam-checker.html">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4M11 8v6M8 11h6"/></svg><span>Scanner</span>
-                </a>
                 <a class="nav-link" href="reports.html">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4m0 1h11l-2 4 2 4H5"/></svg><span>Reports</span>
                 </a>
                 <a class="nav-link" href="education.html">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H11v17H7.5A3.5 3.5 0 0 0 4 22Zm16 0A3.5 3.5 0 0 0 16.5 2H13v17h3.5A3.5 3.5 0 0 1 20 22Z"/></svg><span>Education</span>
                 </a>
+                <a class="nav-link" href="profile.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Profile</span></a>
+                <a class="nav-link" href="profile.html#settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21h-4v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3.1 14H3v-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V3h4v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.1v4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg><span>Settings</span></a>
             </nav>
             <div class="sidebar-system-status"><i aria-hidden="true"></i><span><strong>Scam Coach</strong><small>Online and ready</small></span></div>
             <button class="mobile-nav-more" type="button" aria-expanded="false" aria-controls="dashboardUtilities" aria-label="More options"><span></span><span></span><span></span></button>
@@ -51,7 +50,7 @@
             <header class="dashboard-header">
                 <div><p>SafeMind</p><h1>Dashboard</h1></div>
                 <div class="dashboard-header-tools">
-                    <a class="header-search" href="scam-checker.html" aria-label="Search or check suspicious content"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><span>Search or check content</span></a>
+                    <a class="header-search" href="#investigation" data-open-investigation aria-label="Search or check suspicious content"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><span>Search or check content</span></a>
                     <a class="header-icon-button" href="reports.html" aria-label="Open reports and notifications"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></a>
                     <a class="profile-link" href="profile.html" aria-label="Edit profile">
                         <span class="avatar" data-avatar>SM</span>
@@ -74,25 +73,57 @@
                         <p id="dashboardRiskAdvice">Run a check to get a clear, explainable risk assessment.</p>
                     </article>
 
-                    <article class="dashboard-focus" aria-labelledby="dashboardFocusTitle">
+                    <article class="dashboard-focus dashboard-quick-scan" aria-labelledby="dashboardFocusTitle">
                         <span class="dashboard-focus-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.6 2.9 8.4 7 10 4.1-1.6 7-5.4 7-10V6Z"/><path d="m9.5 12 1.6 1.6 3.8-4"/></svg></span>
-                        <div><p class="eyebrow">SafeMind Coach</p><h2 id="dashboardFocusTitle">What would you like to check?</h2><p>Start with the content that made you suspicious.</p></div>
-                        <div class="dashboard-coach-actions">
-                            <a href="education.html#upload">Upload screenshot</a><a href="scam-checker.html#message">Paste message</a><a href="scam-checker.html#link">Check website</a><a href="scam-checker.html#phone">Check phone</a>
-                        </div>
-                        <a class="primary-button dashboard-focus-action" href="education.html">Ask Scam Coach</a>
+                        <div><p class="eyebrow">Quick AI Scan</p><h2 id="dashboardFocusTitle">Check something suspicious</h2><p>Paste a message, website, phone number, or email. You can add a screenshot in the investigation workspace.</p></div>
+                        <label class="sr-only" for="quickScanInput">Suspicious content</label>
+                        <textarea id="quickScanInput" rows="3" maxlength="10000" placeholder="Paste suspicious content here..."></textarea>
+                        <div class="quick-scan-actions"><button type="button" class="secondary-action" id="quickScanUpload">Upload</button><button type="button" class="secondary-action" id="quickScanVoice">Voice</button><button type="button" class="primary-button" id="quickScanInvestigate">Investigate</button></div>
                         <p class="dashboard-focus-note">Never share passwords, OTP codes, recovery phrases, or payment details.</p>
                     </article>
                 </section>
 
+                <section class="dashboard-investigation" id="dashboardInvestigation" aria-labelledby="investigationTitle" hidden>
+                    <button class="investigation-back" id="investigationBack" type="button">← Back to Dashboard Overview</button>
+                    <div class="investigation-heading"><div><p class="eyebrow">AI security workspace</p><h2 id="investigationTitle">AI Investigation</h2><span>Your input and latest result stay available until you clear them.</span></div><button class="secondary-action" id="investigationClear" type="button">Clear investigation</button></div>
+                    <form class="unified-scanner" id="dashboardScannerForm">
+                        <fieldset class="scanner-type-picker"><legend>Choose input type</legend><div role="radiogroup" aria-label="Scanner input type">
+                            <label><input type="radio" name="dashboardScanType" value="message" checked><span>Message</span></label><label><input type="radio" name="dashboardScanType" value="link"><span>Website</span></label><label><input type="radio" name="dashboardScanType" value="phone"><span>Phone</span></label><label><input type="radio" name="dashboardScanType" value="email"><span>Email</span></label><label><input type="radio" name="dashboardScanType" value="qr"><span>QR</span></label><label><input type="radio" name="dashboardScanType" value="screenshot"><span>Screenshot</span></label>
+                        </div></fieldset>
+                        <label for="dashboardScanInput" id="dashboardScanLabel">Suspicious message</label>
+                        <textarea id="dashboardScanInput" rows="7" maxlength="10000" placeholder="Paste the suspicious message exactly as received..."></textarea>
+                        <label class="scanner-upload-area" for="dashboardScanFile" id="dashboardScanUploadArea"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0L7 9m5-5 5 5M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/></svg><strong>Upload evidence</strong><span>PNG, JPEG, WebP up to 2 MB · TXT or EML up to 5 MB</span></label>
+                        <input class="sr-only" id="dashboardScanFile" type="file" accept="image/png,image/jpeg,image/webp,text/plain,.txt,.eml">
+                        <div class="scanner-file-preview" id="dashboardScanFilePreview" hidden><img id="dashboardScanFileImage" alt="Selected investigation evidence" hidden><div><strong id="dashboardScanFileName"></strong><span id="dashboardScanFileMeta"></span></div><button type="button" id="dashboardScanFileRemove">Remove</button></div>
+                        <p class="scanner-form-status" id="dashboardScanStatus" role="status" aria-live="polite"></p>
+                        <button class="primary-button scanner-analyze" id="dashboardScanAnalyze" type="submit">Analyze with SafeMind</button>
+                    </form>
+
+                    <section class="scanner-progress" id="dashboardScanProgress" aria-labelledby="scanProgressTitle" hidden><div><h3 id="scanProgressTitle">Analyzing...</h3><span id="dashboardScanProgressLabel">Preparing investigation</span></div><ol><li>Normalizing Input</li><li>Extracting Entities</li><li>Checking Threat Patterns</li><li>Calculating Risk</li><li>Generating Recommendations</li></ol></section>
+
+                    <section class="scanner-findings" id="dashboardScanResults" aria-live="polite" hidden>
+                        <article class="finding-risk"><p>Risk score</p><strong id="dashboardFindingScore">0</strong><span id="dashboardFindingRisk">Awaiting analysis</span></article>
+                        <article><p>Confidence</p><strong id="dashboardFindingConfidence">0%</strong><span>Automated assessment confidence</span></article>
+                        <article class="finding-wide"><p>AI summary</p><h3 id="dashboardFindingHeadline">Waiting for content</h3><span id="dashboardFindingSummary">Add evidence and run an investigation.</span></article>
+                        <article><p>Warning signs</p><ul id="dashboardFindingWarnings"></ul></article>
+                        <article><p>Recommendations</p><ol id="dashboardFindingActions"></ol></article>
+                        <article class="finding-wide"><p>Similar scam pattern</p><strong id="dashboardFindingPattern">No pattern available</strong><span id="dashboardFindingReason"></span></article>
+                        <div class="finding-actions"><button class="danger-action" id="dashboardReportScam" type="button" disabled>Report scam</button><button class="secondary-action" id="dashboardCopyFinding" type="button" disabled>Copy result</button></div>
+                    </section>
+                    <dialog class="app-modal" id="investigationReportDialog" aria-labelledby="investigationReportTitle">
+                        <button class="modal-close" id="investigationReportClose" type="button" aria-label="Close report dialog">×</button>
+                        <div class="modal-content"><p class="eyebrow">Manual review</p><h2 id="investigationReportTitle">Report this investigation</h2><p>Send only the evidence required for review. Remove passwords, OTP codes, recovery phrases, and payment information.</p><form id="investigationReportForm"><label for="investigationReportNotes">Additional context</label><textarea id="investigationReportNotes" rows="5" maxlength="2000" placeholder="Where did you receive this?"></textarea><p id="investigationReportStatus" role="status" aria-live="polite"></p><button class="danger-action" type="submit">Send report</button></form></div>
+                    </dialog>
+                </section>
+
                 <section class="dashboard-summary-grid" aria-label="Account summary">
-                    <article class="dashboard-summary-card"><span class="summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg></span><div><p>Latest scan</p><strong id="dashboardLatestScan">No checks yet</strong><small id="dashboardLatestScanTime">Your latest result will appear here.</small></div><a href="scam-checker.html">Run scan</a></article>
+                    <article class="dashboard-summary-card"><span class="summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg></span><div><p>Latest scan</p><strong id="dashboardLatestScan">No checks yet</strong><small id="dashboardLatestScanTime">Your latest result will appear here.</small></div><a href="#investigation" data-open-investigation>Run scan</a></article>
                     <article class="dashboard-summary-card"><span class="summary-icon is-lime" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19V5m0 14h16M8 16v-4m4 4V8m4 8v-6"/></svg></span><div><p>Learning progress</p><strong><span id="badgeCount">0</span> milestones</strong><small><span id="userStreak">0</span> day safety streak</small></div><a href="education.html">Keep learning</a></article>
                     <article class="dashboard-summary-card"><span class="summary-icon is-cream" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v18M7 7.5h7a3 3 0 0 1 0 6H9.5a3 3 0 0 0 0 6H17"/></svg></span><div><p>Your activity</p><strong><span id="totalScans">0</span> scans</strong><small><span id="userCredits">0</span> safety credits earned</small></div><a href="#recentAlerts">View activity</a></article>
                 </section>
 
                 <section class="content-card activity-card" id="recentAlerts">
-                    <div class="section-title"><div><p>Recent alerts</p><h2>Your latest checks</h2></div><a href="scam-checker.html">Check something</a></div>
+                    <div class="section-title"><div><p>Recent alerts</p><h2>Your latest checks</h2></div><a href="#investigation" data-open-investigation>Check something</a></div>
                     <div class="activity-list" id="activityList"><p class="empty-state">Your completed checks will appear here.</p></div>
                 </section>
 
@@ -108,7 +139,7 @@
                 <section class="content-card scam-category-section" aria-labelledby="categoryTitle">
                     <div class="section-title"><div><p>Scam library</p><h2 id="categoryTitle">Common scam categories</h2></div></div>
                     <div class="scam-category-grid">
-                        <a href="scam-checker.html#message"><strong>SMS</strong><span>Urgent links and OTP theft</span></a><a href="scam-checker.html#email"><strong>Email</strong><span>Fake invoices and support</span></a><a href="education.html?prompt=investment"><strong>Investment</strong><span>Guaranteed-return claims</span></a><a href="scam-checker.html#phone"><strong>Phone</strong><span>Impersonation calls</span></a><a href="education.html?prompt=job"><strong>Job</strong><span>Upfront fees and fake roles</span></a><a href="education.html?prompt=romance"><strong>Romance</strong><span>Trust followed by money requests</span></a><a href="education.html?prompt=qr"><strong>QR</strong><span>Hidden payment and login links</span></a><a href="education.html?prompt=marketplace"><strong>Marketplace</strong><span>Fake buyers and delivery fees</span></a><a href="education.html?prompt=bank"><strong>Bank</strong><span>Account verification pressure</span></a><a href="education.html?prompt=crypto"><strong>Crypto</strong><span>Wallet and recovery scams</span></a>
+                        <a href="#investigation" data-investigation-type="message"><strong>SMS</strong><span>Urgent links and OTP theft</span></a><a href="#investigation" data-investigation-type="email"><strong>Email</strong><span>Fake invoices and support</span></a><a href="education.html?prompt=investment"><strong>Investment</strong><span>Guaranteed-return claims</span></a><a href="#investigation" data-investigation-type="phone"><strong>Phone</strong><span>Impersonation calls</span></a><a href="education.html?prompt=job"><strong>Job</strong><span>Upfront fees and fake roles</span></a><a href="education.html?prompt=romance"><strong>Romance</strong><span>Trust followed by money requests</span></a><a href="#investigation" data-investigation-type="qr"><strong>QR</strong><span>Hidden payment and login links</span></a><a href="education.html?prompt=marketplace"><strong>Marketplace</strong><span>Fake buyers and delivery fees</span></a><a href="education.html?prompt=bank"><strong>Bank</strong><span>Account verification pressure</span></a><a href="education.html?prompt=crypto"><strong>Crypto</strong><span>Wallet and recovery scams</span></a>
                     </div>
                 </section>
 
@@ -120,5 +151,6 @@
         </div>
     </div>
     <script type="module" src="../js/dashboard.js"></script>
+    <script type="module" src="../js/dashboard-investigation.js"></script>
 </body>
 </html>

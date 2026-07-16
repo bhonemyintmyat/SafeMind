@@ -11,6 +11,8 @@ const educationForm = document.getElementById("educationForm");
 const educationFeed = document.getElementById("educationFeed");
 const mobileNavMore = document.querySelector(".mobile-nav-more");
 const dashboardUtilities = document.querySelector(".dashboard-utilities");
+const dashboardSidebar = document.querySelector(".dashboard-sidebar");
+const dashboardHeader = document.querySelector(".dashboard-header");
 const reportScreenshotInput = document.getElementById("reportScreenshot");
 const reportScreenshotPreview = document.getElementById("reportScreenshotPreview");
 const reportScreenshotImage = document.getElementById("reportScreenshotImage");
@@ -30,6 +32,46 @@ let educationRows = [];
 let activeEducationFilter = "all";
 let latestResult = null;
 let reportScreenshotUrl = "";
+
+function setupMobileDrawer() {
+    if (!dashboardSidebar || !dashboardHeader || document.querySelector(".dashboard-drawer-toggle")) return;
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "dashboard-drawer-toggle";
+    toggle.setAttribute("aria-label", "Open navigation");
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.innerHTML = "<span></span><span></span><span></span>";
+    const overlay = document.createElement("button");
+    overlay.type = "button";
+    overlay.className = "dashboard-drawer-overlay";
+    overlay.setAttribute("aria-label", "Close navigation");
+    document.body.append(overlay);
+    dashboardHeader.prepend(toggle);
+    const setOpen = (open) => {
+        dashboardSidebar.classList.toggle("is-drawer-open", open);
+        document.body.classList.toggle("dashboard-drawer-open", open);
+        toggle.setAttribute("aria-expanded", String(open));
+        toggle.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+    };
+    toggle.addEventListener("click", () => setOpen(!dashboardSidebar.classList.contains("is-drawer-open")));
+    overlay.addEventListener("click", () => setOpen(false));
+    dashboardSidebar.addEventListener("click", (event) => { if (event.target.closest("a")) setOpen(false); });
+    document.addEventListener("keydown", (event) => { if (event.key === "Escape") setOpen(false); });
+}
+
+setupMobileDrawer();
+
+function syncProfileNavigation() {
+    if (page !== "profile") return;
+    const settingsActive = window.location.hash === "#settings";
+    document.querySelectorAll('.dashboard-nav a[href="profile.html"], .dashboard-nav a[href="profile.html#settings"]').forEach((link) => {
+        const active = settingsActive ? link.getAttribute("href")?.endsWith("#settings") : link.getAttribute("href") === "profile.html";
+        link.classList.toggle("is-active", active);
+        if (active) link.setAttribute("aria-current", "page"); else link.removeAttribute("aria-current");
+    });
+}
+syncProfileNavigation();
+window.addEventListener("hashchange", syncProfileNavigation);
 
 function closeMobileUtilities() {
     dashboardUtilities?.classList.remove("is-open");
