@@ -444,34 +444,399 @@ body.landing-page::before { display: none !important; }
 .demo-tab.is-active {
   color: #303247 !important;
   background: #A9D35E !important;
-  border-color: #A9D35E !im…54234 tokens truncated…pan>QR</span></button>
-                            </div>
-                        </div>
-                        <section class="education-evidence-tray" id="educationEvidenceTray" aria-label="Add evidence" hidden>
-                            <div><strong>Attachment</strong><button type="button" id="educationEvidenceClose" aria-label="Close attachment">×</button></div>
-                            <select class="sr-only" id="educationEvidenceType" aria-label="Evidence type"><option value="auto">Detect automatically</option><option value="message">Message</option><option value="link">Link</option><option value="email">Email</option><option value="phone">Phone number</option></select>
-                            <textarea id="educationEvidence" hidden maxlength="10000"></textarea>
-                            <label class="education-upload" for="educationEvidenceFile"><span>Choose screenshot or text file</span><small>PNG, JPEG, WebP, TXT, or EML · Maximum 2 MB</small></label>
-                            <input class="sr-only" id="educationEvidenceFile" type="file" accept="image/png,image/jpeg,image/webp,text/plain,.txt,.eml">
-                            <div class="education-file-preview" id="educationFilePreview" hidden><img id="educationFileImage" alt="Uploaded scam evidence preview" hidden><div><strong id="educationFileName"></strong><span id="educationFileMeta"></span></div><button type="button" id="educationFileRemove">Remove</button></div>
-                            <p class="education-file-status" id="educationFileStatus" role="status" aria-live="polite"></p>
-                        </section>
-                        <form class="education-chat-form" id="educationChatForm">
-                            <label class="sr-only" for="educationQuestion">Ask SafeMind about this scam</label>
-                            <div class="education-composer-tools">
-                                <button type="button" id="educationAttach" aria-label="Attach evidence" title="Attach evidence"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 11.5-8.4 8.4a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg></button>
-                            </div>
-                            <textarea id="educationQuestion" rows="1" maxlength="4000" placeholder="Paste a suspicious message, link, email, or phone number..."></textarea>
-                            <button class="primary-button" type="submit" id="educationChatSubmit" aria-label="Analyze content"><span>Analyze</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button>
-                        </form>
-                        <p class="education-chat-status" id="educationChatStatus" role="status" aria-live="polite"></p>
-                        <p class="education-disclaimer">AI guidance can be wrong. Never share credentials or send money based only on this chat.</p>
-                    </section>
-                </section>
-            </main>
-        </div>
-    </div>
-    <script type="module" src="../js/dashboard.js"></script>
-    <script type="module" src="../js/education-chat.js"></script>
-</body>
-</html>
+  border-color: #A9D35E !important;
+}
+
+.education-copilot-page {
+  --background: #F8F8F8 !important;
+  --sidebar: #5A5D7A !important;
+  --surface: #FFFFFF !important;
+  --surface-raised: #F3F3F5 !important;
+  --border: #BBB7BC !important;
+  --border-red: #9894A1 !important;
+  --red: #5A5D7A !important;
+  --red-dark: #484B65 !important;
+  --text: #303247 !important;
+  --muted: #555769 !important;
+  --quiet: #6A6873 !important;
+  background: var(--background) !important;
+}
+html[data-theme="dark"] .education-copilot-page {
+  --background: #242535 !important;
+  --sidebar: #34364B !important;
+  --surface: #303247 !important;
+  --surface-raised: #3B3D54 !important;
+  --border: #68697C !important;
+  --border-red: #9894A1 !important;
+  --red: #A9D35E !important;
+  --red-dark: #88B244 !important;
+  --text: #F8F8FA !important;
+  --muted: #E2E0E5 !important;
+  --quiet: #C9C6CE !important;
+}
+.education-agent-avatar,
+.education-welcome-icon,
+.education-copilot-page .education-message-avatar { color: #303247 !important; background: #A9D35E !important; box-shadow: none !important; }
+.education-copilot-page .education-message.is-user .education-message-avatar { color: #FFFFFF !important; background: #5A5D7A !important; }
+.education-copilot-page .education-message > div { border-radius: 20px 20px 20px 6px !important; background: var(--surface) !important; border: 1px solid var(--border) !important; }
+.education-copilot-page .education-message.is-user > div { color: #303247 !important; border: 0 !important; border-radius: 20px 20px 6px 20px !important; background: #A9D35E !important; }
+.education-copilot-page .education-message.is-user > div :where(p, li, h3, span) { color: #303247 !important; }
+.education-copilot-page .education-chat-card { border: 1px solid var(--border) !important; box-shadow: var(--shadow-card) !important; backdrop-filter: none !important; }
+.education-copilot-page .education-chat-log { background: var(--background) !important; }
+.education-copilot-page .education-empty-actions button { border: 1px solid var(--border) !important; background: var(--surface) !important; }
+.education-copilot-page .education-empty-actions button:hover { background: var(--cream) !important; }
+.education-capabilities span { color: #303247 !important; background: #F7EDC2 !important; }
+.education-copilot-page .education-response-section h3 { color: var(--primary) !important; }
+.copilot-ready i, .copilot-panel-title i, .education-online-dot { background: #A9D35E !important; }
+
+html[data-theme="dark"] .primary-btn,
+html[data-theme="dark"] .primary-button,
+html[data-theme="dark"] .primary-link,
+html[data-theme="dark"] button.primary-action,
+html[data-theme="dark"] .auth-button { color: #303247 !important; }
+html[data-theme="dark"] .navbar .brand { color: #FFFFFF !important; }
+html[data-theme="dark"] .dashboard-sidebar { background: #34364B !important; }
+
+@media (max-width: 980px) {
+  .dashboard-shell { grid-template-columns: 230px minmax(0, 1fr) !important; }
+}
+
+@media (max-width: 720px) {
+  .dashboard-shell { display: block !important; }
+  .dashboard-sidebar {
+    grid-template-columns: minmax(0, 1fr) 54px !important;
+    height: 76px !important;
+    padding: 6px 8px max(6px, env(safe-area-inset-bottom)) !important;
+    background: color-mix(in srgb, #5A5D7A 97%, transparent) !important;
+    box-shadow: 0 -8px 28px rgba(48, 50, 71, .18) !important;
+  }
+  .dashboard-nav { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; }
+  .dashboard-sidebar .nav-link { min-height: 62px !important; }
+  .dashboard-utilities { background: #5A5D7A !important; }
+  .dashboard-content { width: min(100% - 24px, 700px) !important; padding-top: 24px !important; }
+  .navbar { min-height: 64px; }
+}
+
+.dashboard-drawer-toggle,.dashboard-drawer-overlay { display:none; }
+@media (max-width:720px) {
+  body.dashboard-page { padding-bottom:0 !important; }
+  .dashboard-drawer-toggle { width:44px; height:44px; flex:0 0 auto; display:grid; align-content:center; gap:4px; padding:10px !important; border-color:var(--border) !important; }
+  .dashboard-drawer-toggle span { display:block; width:20px; height:2px; margin:auto; border-radius:2px; background:currentColor; }
+  .dashboard-drawer-overlay { position:fixed; z-index:79; inset:0; width:100%; height:100%; border:0 !important; border-radius:0 !important; background:rgba(23,24,35,.58) !important; backdrop-filter:blur(3px); opacity:0; pointer-events:none; transition:opacity 200ms ease-out !important; }
+  body.dashboard-drawer-open { overflow:hidden; }
+  body.dashboard-drawer-open .dashboard-drawer-overlay { display:block; opacity:1; pointer-events:auto; }
+  .dashboard-sidebar {
+    position:fixed !important;
+    z-index:80 !important;
+    top:0 !important;
+    right:auto !important;
+    bottom:0 !important;
+    left:0 !important;
+    width:min(86vw,300px) !important;
+    height:100dvh !important;
+    display:flex !important;
+    padding:24px 16px !important;
+    border:0 !important;
+    transform:translateX(-105%);
+    transition:transform 220ms ease-out !important;
+    overflow-y:auto;
+  }
+  .dashboard-sidebar.is-drawer-open { transform:translateX(0); }
+  .dashboard-sidebar .dashboard-brand { display:flex !important; }
+  .dashboard-sidebar .dashboard-nav { display:grid !important; grid-template-columns:1fr !important; gap:8px !important; margin:32px 0 auto !important; }
+  .dashboard-sidebar .nav-link { min-height:52px !important; flex-direction:row !important; justify-content:flex-start !important; gap:14px !important; padding:10px 14px !important; border-radius:14px !important; font-size:15px !important; }
+  .dashboard-sidebar .nav-link svg { width:24px !important; height:24px !important; }
+  .dashboard-sidebar .mobile-nav-more { display:none !important; }
+  .dashboard-sidebar .dashboard-utilities { position:static !important; display:grid !important; width:100% !important; margin-top:16px; padding:0 !important; border:0 !important; background:transparent !important; box-shadow:none !important; }
+  .dashboard-sidebar .theme-switcher { width:100% !important; margin:0 0 8px !important; }
+  .dashboard-sidebar .sidebar-control { display:flex !important; width:100% !important; min-height:48px !important; flex-direction:row !important; margin:4px 0 !important; font-size:13px !important; }
+  .dashboard-header { gap:10px !important; }
+  .dashboard-header > div:first-of-type { margin-right:auto; }
+}
+
+/* Dedicated premium light theme
+   Kept at the end of the cascade so legacy page palettes cannot reduce contrast. */
+html[data-theme="light"] {
+  color-scheme: light;
+  --background: #F7F8FA !important;
+  --bg: #F7F8FA !important;
+  --sidebar: #FFFFFF !important;
+  --surface: #FFFFFF !important;
+  --surface-2: #F2F4F7 !important;
+  --surface-raised: #FFFFFF !important;
+  --heading: #1F2937 !important;
+  --text: #1F2937 !important;
+  --muted: #4B5563 !important;
+  --quiet: #6B7280 !important;
+  --border: #E5E7EB !important;
+  --border-red: #E5E7EB !important;
+  --divider: #ECECEC !important;
+  --hover: #EEF3F8 !important;
+  --primary: #5A5D7A !important;
+  --secondary: #A9D35E !important;
+  --accent: #5A5D7A !important;
+  --accent-strong: #6B6E8C !important;
+  --red: #5A5D7A !important;
+  --red-dark: #484B65 !important;
+  --success: #557A18 !important;
+  --warning: #8A5700 !important;
+  --danger: #C64040 !important;
+  --info: #2F6FAE !important;
+  --cream: #F7EDC2 !important;
+  --lime: #5A5D7A !important;
+  --shadow-card: 0 8px 24px rgba(31, 41, 55, .06) !important;
+  --shadow-hover: 0 12px 30px rgba(31, 41, 55, .10) !important;
+}
+
+html[data-theme="light"],
+html[data-theme="light"] body:not(.splash),
+html[data-theme="light"] body.landing-page,
+html[data-theme="light"] .auth-page,
+html[data-theme="light"] .onboarding-shell,
+html[data-theme="light"] .dashboard-main,
+html[data-theme="light"] .education-chat-log {
+  color: #1F2937 !important;
+  background: #F7F8FA !important;
+}
+
+html[data-theme="light"] :where(h1, h2, h3, h4, h5, h6, strong, legend) {
+  color: #1F2937 !important;
+}
+html[data-theme="light"] :where(p, li, dd, label, .description, .intro, .subcopy) {
+  color: #4B5563;
+}
+html[data-theme="light"] :where(small, .quiet, .field-guidance, .form-hint) {
+  color: #6B7280 !important;
+  opacity: 1 !important;
+}
+
+/* Navigation is opaque and remains visually separate while scrolling. */
+html[data-theme="light"] .navbar,
+html[data-theme="light"] .dashboard-header,
+html[data-theme="light"] .checker-header,
+html[data-theme="light"] .app-header {
+  color: #1F2937 !important;
+  background: #FFFFFF !important;
+  border-color: #E5E7EB !important;
+  border-bottom: 1px solid #E5E7EB !important;
+  box-shadow: 0 4px 16px rgba(31, 41, 55, .06) !important;
+  backdrop-filter: none !important;
+}
+html[data-theme="light"] .navbar :where(.brand, nav a, .nav-actions a) {
+  color: #1F2937 !important;
+}
+html[data-theme="light"] .navbar nav a:hover,
+html[data-theme="light"] .navbar nav a:focus-visible,
+html[data-theme="light"] .nav-actions a:hover,
+html[data-theme="light"] .nav-actions a:focus-visible {
+  color: #484B65 !important;
+  background: #EEF3F8 !important;
+}
+
+/* The application sidebar is intentionally independent from the dark theme. */
+html[data-theme="light"] .dashboard-sidebar {
+  color: #1F2937 !important;
+  background: #FFFFFF !important;
+  border-right: 1px solid #E5E7EB !important;
+  box-shadow: 6px 0 24px rgba(31, 41, 55, .04) !important;
+}
+html[data-theme="light"] .dashboard-sidebar :where(.dashboard-brand, .nav-link, .sidebar-control) {
+  color: #4B5563 !important;
+}
+html[data-theme="light"] .dashboard-sidebar :where(.nav-link, .sidebar-control) svg {
+  color: #6B7280 !important;
+  opacity: 1 !important;
+}
+html[data-theme="light"] .dashboard-sidebar .nav-link:hover,
+html[data-theme="light"] .dashboard-sidebar .nav-link:focus-visible {
+  color: #1F2937 !important;
+  background: #EEF3F8 !important;
+  border-color: transparent !important;
+}
+html[data-theme="light"] .dashboard-sidebar .nav-link.is-active {
+  color: #FFFFFF !important;
+  background: #5A5D7A !important;
+  border-color: #5A5D7A !important;
+}
+html[data-theme="light"] .dashboard-sidebar .nav-link.is-active svg { color: #FFFFFF !important; }
+html[data-theme="light"] .dashboard-sidebar .sidebar-control {
+  color: #4B5563 !important;
+  background: #FFFFFF !important;
+  border-color: #D1D5DB !important;
+}
+html[data-theme="light"] .dashboard-sidebar .sidebar-control:hover {
+  color: #1F2937 !important;
+  background: #EEF3F8 !important;
+}
+html[data-theme="light"] .dashboard-sidebar .theme-switcher {
+  background: #F2F4F7 !important;
+  border-color: #E5E7EB !important;
+}
+html[data-theme="light"] .dashboard-sidebar .theme-switcher button { color: #6B7280 !important; }
+html[data-theme="light"] .dashboard-sidebar .theme-switcher button[aria-pressed="true"] {
+  color: #FFFFFF !important;
+  background: #5A5D7A !important;
+  border-color: #5A5D7A !important;
+}
+
+/* Sections and cards use clear elevation instead of gray-on-gray tinting. */
+html[data-theme="light"] :where(.demo-section, .features-section, .trust-section,
+.faq-section, .contact-section, #features, .dashboard-investigation) {
+  color: #1F2937 !important;
+  background: #F7F8FA !important;
+}
+html[data-theme="light"] :where(.verified-section, .how-section, .about-section,
+.built-by-strip, .scanner-progress) {
+  color: #1F2937 !important;
+  background: #F2F4F7 !important;
+  border-color: #E5E7EB !important;
+}
+html[data-theme="light"] :where(.content-card, .dashboard-card, .stat-card, .welcome-panel,
+.dashboard-risk-card, .dashboard-quick-scan, .dashboard-summary-card, .card, .how-card,
+.trust-card, .contact-card, .faq-item, .verified-card, .demo-input-card, .demo-result-card,
+.auth-card, .checker-card, .checker-result, .education-item, .education-chat-card,
+.copilot-panel, .profile-card, .activity-list, .activity-row, .scanner-findings article,
+.scanner-file-preview, .report-screenshot-field, .education-evidence-tray) {
+  color: #1F2937 !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E5E7EB !important;
+  box-shadow: 0 8px 24px rgba(31, 41, 55, .06) !important;
+}
+html[data-theme="light"] :where(.content-card, .dashboard-card, .stat-card, .card,
+.how-card, .trust-card, .faq-item, .education-item, .copilot-panel, .dashboard-summary-card):hover {
+  box-shadow: 0 12px 30px rgba(31, 41, 55, .10) !important;
+}
+
+/* Controls have explicit foregrounds for every state. */
+html[data-theme="light"] body:not(.splash) :where(button, .secondary-btn, .secondary-link, .secondary-action) {
+  color: #5A5D7A !important;
+  background: #FFFFFF !important;
+  border-color: #D1D5DB !important;
+}
+html[data-theme="light"] body:not(.splash) :where(button, .secondary-btn, .secondary-link, .secondary-action):hover:not(:disabled) {
+  color: #303247 !important;
+  background: #F7EDC2 !important;
+  border-color: #C9C5AC !important;
+}
+html[data-theme="light"] body:not(.splash) :where(.primary-btn, .primary-button, .primary-link,
+.nav-btn, .auth-button, button.primary-action, .report-form button[type="submit"],
+.education-chat-form button[type="submit"]) {
+  color: #FFFFFF !important;
+  background: #5A5D7A !important;
+  border-color: #5A5D7A !important;
+}
+html[data-theme="light"] body:not(.splash) :where(.primary-btn, .primary-button, .primary-link,
+.nav-btn, .auth-button, button.primary-action):hover:not(:disabled) {
+  color: #FFFFFF !important;
+  background: #6B6E8C !important;
+  border-color: #6B6E8C !important;
+}
+html[data-theme="light"] body:not(.splash) .danger-action {
+  color: #FFFFFF !important;
+  background: #E35A5A !important;
+  border-color: #E35A5A !important;
+}
+html[data-theme="light"] body:not(.splash) .success-action {
+  color: #1F2937 !important;
+  background: #A9D35E !important;
+  border-color: #8DB547 !important;
+}
+html[data-theme="light"] body:not(.splash) button:disabled {
+  color: #FFFFFF !important;
+  background: #777A82 !important;
+  border-color: #777A82 !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="light"] :where(input, textarea, select) {
+  color: #1F2937 !important;
+  background: #FFFFFF !important;
+  border-color: #D1D5DB !important;
+  caret-color: #5A5D7A;
+}
+html[data-theme="light"] :where(input, textarea, select)::placeholder {
+  color: #6B7280 !important;
+  opacity: 1 !important;
+}
+html[data-theme="light"] :where(input, textarea, select):focus {
+  border-color: #5A5D7A !important;
+  box-shadow: 0 0 0 4px rgba(90, 93, 122, .16) !important;
+  outline: none;
+}
+html[data-theme="light"] input[readonly] { background: #F2F4F7 !important; }
+
+/* Tabs, upload areas, AI findings, and status treatments. */
+html[data-theme="light"] :where(.demo-tab, .checker-mode-tabs button,
+.scanner-type-picker label > span, .education-empty-actions button,
+.education-quick-prompts button, .education-upload) {
+  color: #4B5563 !important;
+  background: #FFFFFF !important;
+  border-color: #D1D5DB !important;
+}
+html[data-theme="light"] :where(.demo-tab, .checker-mode-tabs button,
+.scanner-type-picker label > span):hover {
+  color: #1F2937 !important;
+  background: #EEF3F8 !important;
+}
+html[data-theme="light"] :where(.demo-tab.is-active, .checker-mode-tabs button.is-active,
+.scanner-type-picker input:checked + span) {
+  color: #FFFFFF !important;
+  background: #5A5D7A !important;
+  border-color: #5A5D7A !important;
+}
+html[data-theme="light"] :where(.scanner-upload-area, .report-screenshot-field,
+.education-upload, .education-file-preview) {
+  color: #4B5563 !important;
+  background: #F7F8FA !important;
+  border-color: #D1D5DB !important;
+}
+html[data-theme="light"] .scanner-upload-area:hover { background: #EEF3F8 !important; border-color: #5A5D7A !important; }
+html[data-theme="light"] :where(.eyebrow, .tag, .education-category,
+.section-heading > p, .dashboard-header > div > p, .section-title > div > p) {
+  color: #5A5D7A !important;
+  opacity: 1 !important;
+}
+html[data-theme="light"] :where(.header-icon-button, .summary-icon, .dashboard-focus-icon) {
+  color: #5A5D7A !important;
+  background: #EEF3F8 !important;
+  border-color: #E5E7EB !important;
+}
+html[data-theme="light"] :where(svg, .education-empty-actions i) { opacity: 1; }
+html[data-theme="light"] .result-pill[data-risk="low"] { color: #365314 !important; background: #ECFCCB !important; border-color: #A9D35E !important; }
+html[data-theme="light"] .result-pill[data-risk="medium"] { color: #7C4A03 !important; background: #FFF4D6 !important; border-color: #F2B84B !important; }
+html[data-theme="light"] .result-pill[data-risk="high"] { color: #991B1B !important; background: #FEE2E2 !important; border-color: #E35A5A !important; }
+html[data-theme="light"] :where(.finding-risk, .dashboard-risk-card) { border-top-color: #5A5D7A !important; }
+html[data-theme="light"] :where(.scanner-progress, .demo-loading-bar) { background-color: #F2F4F7 !important; }
+
+/* Tables remain readable even where a page supplies its own legacy colors. */
+html[data-theme="light"] table { color: #1F2937 !important; background: #FFFFFF; }
+html[data-theme="light"] thead { background: #F7F8FA !important; }
+html[data-theme="light"] :where(th, td) { color: #1F2937 !important; border-color: #E5E7EB !important; }
+html[data-theme="light"] tbody tr:hover { background: #EEF3F8 !important; }
+
+/* Compact authentication remains centered and avoids viewport overflow. */
+html[data-theme="light"] .auth-page { background: #F7F8FA !important; }
+html[data-theme="light"] .auth-shell { width: min(100%, 1440px); }
+html[data-theme="light"] .auth-card {
+  width: min(100%, 460px) !important;
+  max-width: 460px !important;
+  padding: 40px !important;
+  background: #FFFFFF !important;
+  border-color: #E5E7EB !important;
+  box-shadow: 0 20px 60px rgba(31, 41, 55, .08) !important;
+}
+html[data-theme="light"] .auth-form label { color: #4B5563 !important; }
+html[data-theme="light"] .auth-footer a { color: #484B65 !important; text-decoration: underline; text-underline-offset: 3px; }
+
+html[data-theme="light"] :where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline-color: #5A5D7A !important;
+}
+
+@media (max-width: 720px) {
+  html[data-theme="light"] .dashboard-sidebar,
+  html[data-theme="light"] .dashboard-utilities {
+    background: #FFFFFF !important;
+  }
+  html[data-theme="light"] .dashboard-sidebar { border-right: 1px solid #E5E7EB !important; }
+  html[data-theme="light"] .auth-card { padding: 24px !important; }
+}

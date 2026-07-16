@@ -1,4 +1,4 @@
-import { supabase } from "./supabase.js";
+import { supabase } from "./backend-client.js";
 
 export async function getActiveUser() {
     if (!supabase) {

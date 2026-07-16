@@ -1,4 +1,4 @@
-import { supabase, isSupabaseConfigured } from "./supabase.js";
+import { supabase, isSupabaseConfigured } from "./backend-client.js";
 import { redirectIfAuthenticated } from "./router.js";
 import { initLanguage } from "./language.js";
 import "./theme-toggle.js";

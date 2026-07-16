@@ -1,4 +1,4 @@
-import { supabase } from "./supabase.js";
+import { supabase } from "./backend-client.js";
 
 const form = document.getElementById("educationChatForm");
 const chatLog = document.getElementById("educationChatLog");

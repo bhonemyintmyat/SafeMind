@@ -1,4 +1,4 @@
-import { supabase } from "./supabase.js";
+import { supabase } from "./backend-client.js";
 import { requireAuth, formatDisplayName, getInitials, pageReady, logoutToMain } from "./router.js";
 import { initLanguage } from "./language.js";
 import "./theme-toggle.js";

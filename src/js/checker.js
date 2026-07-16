@@ -1,4 +1,4 @@
-import { supabase } from "./supabase.js";
+import { supabase } from "./backend-client.js";
 
 const phoneInput = document.getElementById("phoneInput");
 const notesInput = document.getElementById("notesInput");

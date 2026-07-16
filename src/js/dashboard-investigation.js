@@ -1,4 +1,4 @@
-import { supabase } from "./supabase.js";
+import { supabase } from "./backend-client.js";
 
 const main = document.querySelector("main.dashboard-content");
 const workspace = document.getElementById("dashboardInvestigation");

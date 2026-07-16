@@ -1,4 +1,4 @@
-import { supabase } from "./supabase.js";
+import { supabase } from "./backend-client.js";
 import { initLanguage } from "./language.js";
 import "./theme-toggle.js";
 
