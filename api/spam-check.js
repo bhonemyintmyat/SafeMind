@@ -55,8 +55,10 @@ const PHRASE_SIGNALS = new Map([
 ]);
 const CONTEXT_SIGNALS = [
   [/\b(?:send|share|tell|enter)\b.{0,35}\b(?:otp|pin|password|passcode|verification code)\b/i, 0.25, "Requests an authentication secret"],
+  [/(?:otp|အတည်ပြုကုဒ်|လျှို့ဝှက်ကုဒ်).{0,35}(?<!မ)(?:ပို့|ပေး|မျှဝေ|ပြော|ထည့်)(?:ပါ|ပေးပါ)/iu, 0.32, "Requests an authentication secret"],
   [/\b(?:pay|transfer|send)\b.{0,40}\b(?:money|crypto|bitcoin|gift card|fee|deposit)\b/i, 0.22, "Requests a difficult-to-reverse payment"],
   [/\b(?:urgent|immediately|final warning|act now|today only)\b/i, 0.12, "Uses urgency or pressure"],
+  [/(?:ချက်ချင်း|အခုပဲ|မလုပ်ရင်|မပို့ရင်|အကောင့်ပိတ်|ပိတ်မယ်)/u, 0.16, "Uses urgency or pressure"],
   [/\b(?:guaranteed|double|risk.?free)\b.{0,30}\b(?:profit|return|investment|money)\b/i, 0.22, "Promises unrealistic financial returns"],
   [/(https?:\/\/|\bwww\.)/i, 0.06, "Contains a link requiring independent verification"],
   [/\b(?:bank|police|government|support|ceo|manager)\b.{0,45}\b(?:send|share|pay|install|transfer)\b/i, 0.20, "Claims authority while requesting action"],
