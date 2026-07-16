@@ -32,6 +32,9 @@ let educationRows = [];
 let activeEducationFilter = "all";
 let latestResult = null;
 let reportScreenshotUrl = "";
+let recentActivityRows = [];
+let activitySearchTerm = "";
+let activityRisk = "all";
 
 function setupMobileDrawer() {
     if (!dashboardSidebar || !dashboardHeader || document.querySelector(".dashboard-drawer-toggle")) return;
@@ -212,17 +215,60 @@ async function loadProgress() {
     renderProgress(data || {});
 }
 
-async function loadRecentActivity() {
+function buildActivityRow(row, compact = false) {
+    const item = document.createElement("article");
+    item.className = compact ? "home-activity-row" : "activity-row";
+    const details = document.createElement("div");
+    const type = document.createElement("strong");
+    const date = document.createElement("span");
+    const risk = document.createElement("span");
+    const credits = document.createElement("strong");
+    type.textContent = String(row.scan_type || "scan");
+    const createdAt = new Date(row.created_at);
+    date.textContent = Number.isNaN(createdAt.getTime()) ? "Recently" : createdAt.toLocaleString();
+    risk.className = "activity-risk";
+    risk.dataset.risk = ["low", "medium", "high"].includes(row.risk) ? row.risk : "low";
+    risk.textContent = String(row.risk || "unknown");
+    credits.textContent = `+${Number(row.credits_earned) || 0}`;
+    details.append(type, date);
+    item.append(details, risk);
+    if (!compact) item.append(credits);
+    return item;
+}
+
+function renderActivityLists() {
     const list = document.getElementById("activityList");
-    if (!list || !user || !supabase) return;
+    const homeList = document.getElementById("homeActivityList");
+    const recent = recentActivityRows.slice(0, 3);
+    if (homeList && recent.length) homeList.replaceChildren(...recent.map((row) => buildActivityRow(row, true)));
+    if (!list) return;
+    const filtered = recentActivityRows.filter((row) => {
+        const matchesRisk = activityRisk === "all" || row.risk === activityRisk;
+        const matchesSearch = !activitySearchTerm || String(row.scan_type || "scan").toLowerCase().includes(activitySearchTerm);
+        return matchesRisk && matchesSearch;
+    });
+    if (!filtered.length) {
+        const empty = document.createElement("p");
+        empty.className = "empty-state";
+        empty.textContent = recentActivityRows.length ? "No checks match these filters." : "Your completed checks will appear here.";
+        list.replaceChildren(empty);
+        return;
+    }
+    list.replaceChildren(...filtered.map((row) => buildActivityRow(row)));
+}
+
+async function loadRecentActivity() {
+    if (!document.getElementById("activityList") || !user || !supabase) return;
     const { data } = await supabase
         .from("user_scan_history")
         .select("scan_type,risk,credits_earned,created_at")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
-        .limit(6);
-    if (!data?.length) return;
-    const latest = data[0];
+        .limit(20);
+    recentActivityRows = data || [];
+    renderActivityLists();
+    if (!recentActivityRows.length) return;
+    const latest = recentActivityRows[0];
     const latestRisk = ["low", "medium", "high"].includes(latest.risk) ? latest.risk : "low";
     const riskPresentation = {
         low: { score: 18, label: "Low risk", advice: "Few warning signs were found. Keep verifying unexpected requests.", color: "var(--lime)" },
@@ -240,26 +286,42 @@ async function loadRecentActivity() {
     setText("dashboardLatestScan", `${String(latest.scan_type || "scan")} · ${riskPresentation.label}`);
     const latestCreatedAt = new Date(latest.created_at);
     setText("dashboardLatestScanTime", Number.isNaN(latestCreatedAt.getTime()) ? "Recently" : latestCreatedAt.toLocaleString());
+}
+
+async function loadThreatNumbers() {
+    const list = document.getElementById("threatNumberList");
+    if (!list || !supabase) return;
+    const { data, error } = await supabase.from("threat_directory")
+        .select("normalized_value,organization,created_at")
+        .eq("entry_type", "phone")
+        .eq("verdict", "scam")
+        .order("created_at", { ascending: false })
+        .limit(5);
+    if (error || !data?.length) {
+        const empty = document.createElement("p");
+        empty.textContent = "No verified scam numbers are available right now.";
+        list.replaceChildren(empty);
+        return;
+    }
     list.replaceChildren(...data.map((row) => {
-        const item = document.createElement("article");
-        item.className = "activity-row";
-        const details = document.createElement("div");
-        const type = document.createElement("strong");
-        const date = document.createElement("span");
-        const risk = document.createElement("span");
-        const credits = document.createElement("strong");
-        type.textContent = String(row.scan_type || "scan");
-        const createdAt = new Date(row.created_at);
-        date.textContent = Number.isNaN(createdAt.getTime()) ? "Recently" : createdAt.toLocaleString();
-        risk.className = "activity-risk";
-        risk.dataset.risk = ["low", "medium", "high"].includes(row.risk) ? row.risk : "low";
-        risk.textContent = String(row.risk || "unknown");
-        credits.textContent = `+${Number(row.credits_earned) || 0}`;
-        details.append(type, date);
-        item.append(details, risk, credits);
+        const item = document.createElement("div");
+        const number = document.createElement("strong");
+        const source = document.createElement("span");
+        number.textContent = row.normalized_value || "Unknown number";
+        source.textContent = row.organization || "Community report";
+        item.append(number, source);
         return item;
     }));
 }
+
+document.getElementById("activitySearch")?.addEventListener("input", (event) => {
+    activitySearchTerm = event.target.value.trim().toLowerCase();
+    renderActivityLists();
+});
+document.getElementById("activityRiskFilter")?.addEventListener("change", (event) => {
+    activityRisk = event.target.value;
+    renderActivityLists();
+});
 
 function educationExcerpt(content) {
     const value = String(content || "").replace(/\s+/g, " ").trim();
@@ -378,7 +440,7 @@ async function initializePage(activeUser) {
     }
     const name = renderIdentity(user);
     if (page === "overview") {
-        await Promise.all([loadProgress(), loadRecentActivity()]);
+        await Promise.all([loadProgress(), loadRecentActivity(), loadThreatNumbers()]);
     }
     if (page === "education") {
         const admin = await checkAdminAccess();

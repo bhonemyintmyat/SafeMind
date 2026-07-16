@@ -42,7 +42,7 @@ if (main && workspace && form) {
 
   function saveState() {
     try {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ type: currentType(), input: input.value, quick: quickInput.value, result: activeResult, investigating: !workspace.hidden, overviewScroll }));
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ type: currentType(), input: input.value, quick: quickInput.value, result: activeResult, investigating: window.SafeMindDashboardSections?.current() === "investigation" || !workspace.hidden, overviewScroll }));
     } catch { /* The scanner remains usable when storage is blocked. */ }
   }
 
@@ -68,18 +68,16 @@ if (main && workspace && form) {
 
   function openInvestigation(type = currentType(), preserveScroll = false) {
     if (!preserveScroll) overviewScroll = window.scrollY;
-    workspace.hidden = false;
-    main.classList.add("is-investigating");
     updateType(type);
-    history.replaceState(null, "", "#investigation");
-    workspace.scrollIntoView({ block: "start" });
+    if (window.SafeMindDashboardSections) window.SafeMindDashboardSections.activate("investigation", { scroll: false });
+    else { workspace.hidden = false; main.classList.add("is-investigating"); history.replaceState(null, "", "#investigation"); }
+    workspace.scrollIntoView({ behavior: "smooth", block: "start" });
     saveState();
   }
 
   function closeInvestigation() {
-    main.classList.remove("is-investigating");
-    workspace.hidden = true;
-    history.replaceState(null, "", window.location.pathname);
+    if (window.SafeMindDashboardSections) window.SafeMindDashboardSections.activate("home", { scroll: false });
+    else { main.classList.remove("is-investigating"); workspace.hidden = true; history.replaceState(null, "", window.location.pathname); }
     window.scrollTo({ top: overviewScroll, behavior: "smooth" });
     saveState();
   }
@@ -240,6 +238,7 @@ if (main && workspace && form) {
     recognition.start();
   });
   document.getElementById("investigationBack").addEventListener("click", closeInvestigation);
+  window.addEventListener("dashboard:sectionchange", () => saveState());
   document.getElementById("investigationClear").addEventListener("click", () => { input.value = ""; quickInput.value = ""; activeResult = null; results.hidden = true; progress.hidden = true; clearFile(); setStatus(""); saveState(); });
   form.addEventListener("change", (event) => { if (event.target.name === "dashboardScanType") updateType(event.target.value); });
   input.addEventListener("input", saveState); quickInput.addEventListener("input", saveState);
@@ -279,7 +278,10 @@ if (main && workspace && form) {
 
   try {
     const saved = JSON.parse(sessionStorage.getItem(STORAGE_KEY) || "null");
-    if (saved) { quickInput.value = saved.quick || ""; input.value = saved.input || ""; overviewScroll = Number(saved.overviewScroll) || 0; updateType(saved.type || "message"); if (saved.result) renderResult(saved.result); if (saved.investigating || window.location.hash === "#investigation" || new URLSearchParams(window.location.search).get("view") === "investigation") openInvestigation(saved.type, true); }
+    const sectionController = window.SafeMindDashboardSections;
+    const sectionRequestsInvestigation = sectionController?.current?.() === "investigation";
+    const locationRequestsInvestigation = window.location.hash === "#investigation" || new URLSearchParams(window.location.search).get("view") === "investigation";
+    if (saved) { quickInput.value = saved.quick || ""; input.value = saved.input || ""; overviewScroll = Number(saved.overviewScroll) || 0; updateType(saved.type || "message"); if (saved.result) renderResult(saved.result); if (sectionRequestsInvestigation || locationRequestsInvestigation || (!sectionController && saved.investigating)) openInvestigation(saved.type, true); }
     else if (window.location.hash === "#investigation" || new URLSearchParams(window.location.search).get("view") === "investigation") openInvestigation("message");
   } catch { updateType("message"); }
 }

@@ -61,12 +61,26 @@
             </header>
 
             <main class="dashboard-content">
-                <section class="dashboard-welcome" aria-labelledby="dashboardWelcomeTitle">
+                <nav class="dashboard-section-nav" aria-label="Dashboard sections">
+                    <div role="tablist" aria-label="Dashboard sections">
+                        <button type="button" role="tab" aria-selected="true" data-dashboard-tab="home">Home</button>
+                        <button type="button" role="tab" aria-selected="false" data-dashboard-tab="investigation">AI Investigation</button>
+                        <button type="button" role="tab" aria-selected="false" data-dashboard-tab="activity">Activity</button>
+                        <button type="button" role="tab" aria-selected="false" data-dashboard-tab="learn">Learn</button>
+                        <button type="button" role="tab" aria-selected="false" data-dashboard-tab="threats">Threat Center</button>
+                    </div>
+                    <label for="dashboardSectionSelect">Dashboard section</label>
+                    <select id="dashboardSectionSelect" aria-label="Dashboard section">
+                        <option value="home">Home</option><option value="investigation">AI Investigation</option><option value="activity">Activity</option><option value="learn">Learn</option><option value="threats">Threat Center</option>
+                    </select>
+                </nav>
+
+                <section class="dashboard-welcome" data-dashboard-section="home" aria-labelledby="dashboardWelcomeTitle">
                     <div><p class="eyebrow">Welcome back</p><h2 id="dashboardWelcomeTitle">Your safety command center</h2><p>Check suspicious content, understand the result, and take the safest next step.</p></div>
                     <span class="dashboard-status"><i aria-hidden="true"></i>Protection ready</span>
                 </section>
 
-                <section class="dashboard-command-grid" aria-label="Safety overview">
+                <section class="dashboard-command-grid" data-dashboard-section="home" aria-label="Safety overview">
                     <article class="dashboard-risk-card">
                         <div><p>Risk score</p><span>Based on your latest check</span></div>
                         <div class="dashboard-risk-ring" id="dashboardRiskRing" style="--risk-score:0"><strong id="dashboardRiskScore">—</strong><span id="dashboardRiskLabel">No scan yet</span></div>
@@ -83,7 +97,7 @@
                     </article>
                 </section>
 
-                <section class="dashboard-investigation" id="dashboardInvestigation" aria-labelledby="investigationTitle" hidden>
+                <section class="dashboard-investigation" id="dashboardInvestigation" data-dashboard-section="investigation" aria-labelledby="investigationTitle" hidden>
                     <button class="investigation-back" id="investigationBack" type="button">← Back to Dashboard Overview</button>
                     <div class="investigation-heading"><div><p class="eyebrow">AI security workspace</p><h2 id="investigationTitle">AI Investigation</h2><span>Your input and latest result stay available until you clear them.</span></div><button class="secondary-action" id="investigationClear" type="button">Clear investigation</button></div>
                     <form class="unified-scanner" id="dashboardScannerForm">
@@ -116,18 +130,35 @@
                     </dialog>
                 </section>
 
-                <section class="dashboard-summary-grid" aria-label="Account summary">
+                <section class="dashboard-summary-grid dashboard-home-summary" data-dashboard-section="home" aria-label="Home summary">
                     <article class="dashboard-summary-card"><span class="summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg></span><div><p>Latest scan</p><strong id="dashboardLatestScan">No checks yet</strong><small id="dashboardLatestScanTime">Your latest result will appear here.</small></div><a href="#investigation" data-open-investigation>Run scan</a></article>
-                    <article class="dashboard-summary-card"><span class="summary-icon is-lime" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19V5m0 14h16M8 16v-4m4 4V8m4 8v-6"/></svg></span><div><p>Learning progress</p><strong><span id="badgeCount">0</span> milestones</strong><small><span id="userStreak">0</span> day safety streak</small></div><a href="education.html">Keep learning</a></article>
-                    <article class="dashboard-summary-card"><span class="summary-icon is-cream" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v18M7 7.5h7a3 3 0 0 1 0 6H9.5a3 3 0 0 0 0 6H17"/></svg></span><div><p>Your activity</p><strong><span id="totalScans">0</span> scans</strong><small><span id="userCredits">0</span> safety credits earned</small></div><a href="#recentAlerts">View activity</a></article>
+                    <article class="dashboard-summary-card dashboard-alert-card"><span class="summary-icon is-cream" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 2.5 20h19Z"/><path d="M12 9v4m0 3h.01"/></svg></span><div><p>Today's alert</p><strong>OTP requests are never routine</strong><small>Do not share verification codes, even with someone claiming to be support.</small></div><button type="button" data-dashboard-target="threats">View alert</button></article>
+                    <article class="dashboard-summary-card dashboard-home-activity"><span class="summary-icon is-lime" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19V5m0 14h16M8 16v-4m4 4V8m4 8v-6"/></svg></span><div><p>Recent activity</p><div class="home-activity-list" id="homeActivityList"><small>Your last three checks will appear here.</small></div></div><button type="button" data-dashboard-target="activity">View all</button></article>
                 </section>
 
-                <section class="content-card activity-card" id="recentAlerts">
-                    <div class="section-title"><div><p>Recent alerts</p><h2>Your latest checks</h2></div><a href="#investigation" data-open-investigation>Check something</a></div>
+                <section class="dashboard-shortcuts" data-dashboard-section="home" aria-labelledby="dashboardShortcutsTitle">
+                    <div class="section-title"><div><p>Quick actions</p><h2 id="dashboardShortcutsTitle">Choose your next task</h2></div></div>
+                    <div>
+                        <button type="button" data-dashboard-target="investigation"><span aria-hidden="true">🛡</span><strong>Investigate</strong><small>Check suspicious content</small></button>
+                        <button type="button" data-dashboard-target="learn"><span aria-hidden="true">📚</span><strong>Learn</strong><small>Build scam awareness</small></button>
+                        <button type="button" data-dashboard-target="activity"><span aria-hidden="true">📊</span><strong>Activity</strong><small>Review checks and credits</small></button>
+                        <button type="button" data-dashboard-target="threats"><span aria-hidden="true">🚨</span><strong>Threat Center</strong><small>See current warnings</small></button>
+                    </div>
+                </section>
+
+                <section class="dashboard-summary-grid dashboard-activity-stats" data-dashboard-section="activity" aria-label="Activity statistics" hidden>
+                    <article class="dashboard-summary-card"><span class="summary-icon" aria-hidden="true">✓</span><div><p>Total checks</p><strong><span id="totalScans">0</span> scans</strong><small>All completed investigations</small></div></article>
+                    <article class="dashboard-summary-card"><span class="summary-icon is-lime" aria-hidden="true">★</span><div><p>Safety credits</p><strong id="userCredits">0</strong><small>Earned through safer decisions</small></div></article>
+                    <article class="dashboard-summary-card"><span class="summary-icon is-cream" aria-hidden="true">↗</span><div><p>Learning streak</p><strong><span id="userStreak">0</span> days</strong><small><span id="badgeCount">0</span> milestones reached</small></div></article>
+                </section>
+
+                <section class="content-card activity-card dashboard-activity-panel" id="recentAlerts" data-dashboard-section="activity" hidden>
+                    <div class="section-title"><div><p>Investigation history</p><h2>Your recent checks</h2></div><a href="#investigation" data-open-investigation>New investigation</a></div>
+                    <div class="activity-toolbar"><label><span>Search</span><input id="activitySearch" type="search" placeholder="Search by type..."></label><label><span>Risk</span><select id="activityRiskFilter"><option value="all">All risks</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></label></div>
                     <div class="activity-list" id="activityList"><p class="empty-state">Your completed checks will appear here.</p></div>
                 </section>
 
-                <section class="content-card dashboard-learning" aria-labelledby="learningTitle">
+                <section class="content-card dashboard-learning" data-dashboard-section="learn" aria-labelledby="learningTitle" hidden>
                     <div class="section-title"><div><p>Education</p><h2 id="learningTitle">Build your scam awareness</h2></div><a href="education.html">Ask the coach</a></div>
                     <div class="learning-levels">
                         <article><span>Beginner · 5 min</span><h3>Spot the pressure</h3><p>Learn how urgency and fear are used to rush decisions.</p><a href="education.html?prompt=urgency">Start lesson</a></article>
@@ -136,21 +167,34 @@
                     </div>
                 </section>
 
-                <section class="content-card scam-category-section" aria-labelledby="categoryTitle">
-                    <div class="section-title"><div><p>Scam library</p><h2 id="categoryTitle">Common scam categories</h2></div></div>
+                <section class="content-card scam-category-section" data-dashboard-section="learn" aria-labelledby="categoryTitle" hidden>
+                    <div class="section-title"><div><p>Scam library</p><h2 id="categoryTitle">Common scam categories</h2></div><a href="education.html">See more</a></div>
                     <div class="scam-category-grid">
-                        <a href="#investigation" data-investigation-type="message"><strong>SMS</strong><span>Urgent links and OTP theft</span></a><a href="#investigation" data-investigation-type="email"><strong>Email</strong><span>Fake invoices and support</span></a><a href="education.html?prompt=investment"><strong>Investment</strong><span>Guaranteed-return claims</span></a><a href="#investigation" data-investigation-type="phone"><strong>Phone</strong><span>Impersonation calls</span></a><a href="education.html?prompt=job"><strong>Job</strong><span>Upfront fees and fake roles</span></a><a href="education.html?prompt=romance"><strong>Romance</strong><span>Trust followed by money requests</span></a><a href="#investigation" data-investigation-type="qr"><strong>QR</strong><span>Hidden payment and login links</span></a><a href="education.html?prompt=marketplace"><strong>Marketplace</strong><span>Fake buyers and delivery fees</span></a><a href="education.html?prompt=bank"><strong>Bank</strong><span>Account verification pressure</span></a><a href="education.html?prompt=crypto"><strong>Crypto</strong><span>Wallet and recovery scams</span></a>
+                        <a href="#investigation" data-investigation-type="message"><strong>SMS</strong><span>Urgent links and OTP theft</span></a><a href="#investigation" data-investigation-type="email"><strong>Email</strong><span>Fake invoices and support</span></a><a href="education.html?prompt=investment"><strong>Investment</strong><span>Guaranteed-return claims</span></a><a href="#investigation" data-investigation-type="phone"><strong>Phone</strong><span>Impersonation calls</span></a>
                     </div>
                 </section>
 
-                <section class="content-card safety-timeline" aria-labelledby="timelineTitle">
+                <section class="content-card safety-timeline" data-dashboard-section="activity" aria-labelledby="timelineTitle" hidden>
                     <div class="section-title"><div><p>Safe response</p><h2 id="timelineTitle">From suspicion to protection</h2></div></div>
                     <ol><li><span>1</span><strong>Receive</strong><small>Pause before acting</small></li><li><span>2</span><strong>Analyze</strong><small>Check the content</small></li><li><span>3</span><strong>Verify</strong><small>Use an official channel</small></li><li><span>4</span><strong>Report</strong><small>Share useful evidence</small></li><li><span>5</span><strong>Block</strong><small>Stop further contact</small></li></ol>
+                </section>
+
+                <section class="dashboard-threat-center" data-dashboard-section="threats" aria-labelledby="threatCenterTitle" hidden>
+                    <div class="section-title"><div><p>Security information hub</p><h2 id="threatCenterTitle">Threat Center</h2></div><button type="button" data-dashboard-target="investigation">Check suspicious content</button></div>
+                    <div class="threat-center-grid">
+                        <article class="threat-featured"><span>Safety notice</span><h3>Never share an OTP or recovery code</h3><p>Legitimate support teams do not need your private verification code. End the conversation and verify through the official app.</p></article>
+                        <article><span>Trending scam</span><h3>Account closure pressure</h3><p>Messages threatening immediate account suspension are commonly used to steal credentials.</p></article>
+                        <article><span>Community reports</span><h3>Impersonation remains active</h3><p>Verify bank, delivery, marketplace, and support contacts through independently found channels.</p></article>
+                        <article><span>Threat intelligence</span><h3>Short links hide destinations</h3><p>Do not open shortened links from unexpected senders. Check the destination first.</p></article>
+                        <article><span>Recovery guide</span><h3>Act quickly after payment</h3><p>Contact your financial provider, preserve evidence, change exposed credentials, and report the incident.</p></article>
+                        <article class="known-number-card"><span>Known scam numbers</span><h3>Verified directory</h3><div id="threatNumberList"><p>Loading verified numbers…</p></div><a href="main.html#verified-contacts">View directory</a></article>
+                    </div>
                 </section>
             </main>
         </div>
     </div>
     <script type="module" src="../js/dashboard.js"></script>
+    <script type="module" src="../js/dashboard-sections.js"></script>
     <script type="module" src="../js/dashboard-investigation.js"></script>
 </body>
 </html>
