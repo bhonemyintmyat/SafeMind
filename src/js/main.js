@@ -171,12 +171,13 @@ function renderResult(result) {
 }
 
 async function loadContacts() {
+    const list = document.getElementById("verifiedEmailList");
+    if (!list) return;
     let rows = officialContacts;
     if (supabase) {
         const response = await supabase.from("verified_organization_emails").select("organization,email,purpose,source_url").order("organization");
         if (!response.error && response.data?.length) rows = response.data;
     }
-    const list = document.getElementById("verifiedEmailList");
     rows.forEach((row) => {
         const card = document.createElement("article");
         card.className = "verified-card";
@@ -233,29 +234,12 @@ document.querySelectorAll("[data-counter]").forEach((element) => {
 
 if (typingTarget) {
     const headings = { en: "Your AI Shield Against Scams", my: "လိမ်လည်မှုများမှ ကာကွယ်ပေးမည့် သင့် AI ဒိုင်းလွှာ" };
-    let typingTimer;
-    let character = 0;
-    const typeHeading = () => {
+    const updateHeading = () => {
         const language = localStorage.getItem("safemindLanguage") === "my" ? "my" : "en";
-        const heading = headings[language];
-        typingTarget.textContent = heading.slice(0, character += 1);
-        if (character < heading.length) {
-            typingTimer = window.setTimeout(typeHeading, language === "my" ? 90 : 65);
-        } else {
-            typingTimer = window.setTimeout(() => {
-                character = 0;
-                typingTarget.textContent = "";
-                typingTimer = window.setTimeout(typeHeading, 550);
-            }, 1800);
-        }
+        typingTarget.textContent = headings[language];
     };
-    window.addEventListener("safemind:language-change", () => {
-        window.clearTimeout(typingTimer);
-        character = 0;
-        typingTarget.textContent = "";
-        typeHeading();
-    });
-    typeHeading();
+    window.addEventListener("safemind:language-change", updateHeading);
+    updateHeading();
 }
 setMode(activeDemoMode);
 loadContacts();

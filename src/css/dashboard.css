@@ -1253,3 +1253,158 @@ body.dashboard-page button {
     font-size: 8px;
   }
 }
+
+/* Simple Education chat */
+.education-copilot-page .dashboard-content {
+  width:min(1040px, calc(100% - 40px));
+  padding:24px 0 36px;
+}
+.education-copilot-page .copilot-workspace { display:block; }
+.education-copilot-page .education-chat-card {
+  width:100%;
+  height:calc(100dvh - 150px);
+  min-height:600px;
+  max-height:860px;
+  grid-template-rows:auto minmax(0, 1fr) auto auto auto auto auto;
+  border:1px solid var(--border);
+  border-radius:16px;
+  background:var(--surface);
+  box-shadow:0 12px 36px rgba(15,23,42,.08);
+  backdrop-filter:none;
+}
+.education-copilot-page .education-chat-header {
+  min-height:64px;
+  padding:10px 16px;
+  background:var(--surface);
+}
+.education-copilot-page .education-agent-avatar {
+  width:38px;
+  height:38px;
+  border-radius:11px;
+  background:var(--primary);
+  box-shadow:none;
+}
+.education-copilot-page .education-chat-log {
+  gap:14px;
+  padding:24px clamp(14px, 4vw, 40px);
+  background:var(--background);
+}
+.education-copilot-page .education-welcome {
+  width:min(100%, 600px);
+  margin:auto auto 8px;
+  padding:4px;
+}
+.education-copilot-page .education-welcome-icon {
+  width:52px;
+  height:52px;
+  margin-bottom:12px;
+  border-radius:15px;
+  background:var(--primary);
+  box-shadow:none;
+}
+.education-copilot-page .education-welcome h2 { font-size:clamp(24px, 3vw, 30px); }
+.education-copilot-page .education-welcome > span:not(.education-welcome-icon) { max-width:520px; font-size:14px; }
+.education-copilot-page .education-empty-actions {
+  width:min(100%, 660px);
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:10px;
+  margin:0 auto auto;
+}
+.education-copilot-page .education-empty-actions button {
+  min-height:82px;
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--surface);
+  box-shadow:none;
+}
+.education-copilot-page .education-empty-actions button:hover,
+.education-copilot-page .education-empty-actions button:focus-visible {
+  transform:none;
+  border-color:var(--primary);
+  background:color-mix(in srgb, var(--primary) 5%, var(--surface));
+  box-shadow:none;
+}
+.education-copilot-page .education-quick-prompts {
+  padding:10px 16px 2px;
+  border-top:1px solid var(--border);
+}
+.education-copilot-page .education-quick-prompts button {
+  min-height:34px;
+  border:1px solid var(--border);
+  background:var(--surface);
+}
+.education-copilot-page .education-evidence-tray {
+  margin:8px 16px 0;
+  padding:14px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--surface-raised);
+  box-shadow:none;
+}
+.education-copilot-page .education-chat-form {
+  grid-template-columns:auto minmax(0, 1fr) auto;
+  align-items:end;
+  gap:8px;
+  margin:8px 16px 4px;
+  padding:6px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:var(--surface);
+  box-shadow:none;
+}
+.education-copilot-page .education-composer-tools { display:block; }
+.education-copilot-page .education-composer-tools button {
+  width:42px;
+  height:42px;
+  border-radius:10px;
+}
+.education-copilot-page .education-chat-form textarea {
+  min-height:42px;
+  max-height:124px;
+  padding:9px 5px;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  resize:none;
+}
+.education-copilot-page .education-chat-form .primary-button {
+  min-width:74px;
+  width:auto;
+  height:42px;
+  margin:0;
+  padding:0 13px;
+  border-radius:10px;
+}
+.education-copilot-page .education-analysis-stages { display:none; }
+.education-copilot-page .education-message { width:min(94%, 760px); max-width:none; }
+.education-copilot-page .education-message > div {
+  border:1px solid var(--border);
+  box-shadow:none;
+}
+.education-copilot-page .education-response-grid { grid-template-columns:1fr; }
+.education-copilot-page .education-response-section,
+.education-copilot-page .education-response-section:first-child,
+.education-copilot-page .education-response-section[data-section="summary"],
+.education-copilot-page .education-response-section[data-section="recommended-actions"] { grid-column:auto; }
+.education-copilot-page [data-response-action]:not([data-response-action="copy"]) { display:none; }
+.education-copilot-page .education-chat-status { padding:0 20px; }
+.education-copilot-page .education-disclaimer { padding:5px 20px 12px; }
+
+@media (max-width:720px) {
+  .education-copilot-page .dashboard-content { width:100%; padding:0; }
+  .education-copilot-page .education-chat-card {
+    height:calc(100dvh - 130px);
+    min-height:520px;
+    max-height:none;
+    border-inline:0;
+    border-radius:0;
+  }
+  .education-copilot-page .education-empty-actions { grid-template-columns:1fr; max-width:420px; }
+  .education-copilot-page .education-empty-actions button { min-height:58px; }
+  .education-copilot-page .education-empty-actions span { display:none; }
+  .education-copilot-page .education-chat-form { margin-inline:8px; }
+  .education-copilot-page .education-chat-form .primary-button { width:42px; min-width:42px; padding:0; }
+  .education-copilot-page .education-chat-form .primary-button span { display:none; }
+  .education-copilot-page .education-quick-prompts { padding-inline:10px; }
+}
