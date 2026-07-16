@@ -26,6 +26,7 @@ const protectionLabel = document.getElementById("educationProtectionLabel");
 const currentAnalysis = document.getElementById("educationCurrentAnalysis");
 const recentAnalyses = document.getElementById("educationRecentAnalyses");
 const educationApiUrl = import.meta.env.VITE_EDUCATION_API_URL || "/api/education-chat";
+const CHAT_HISTORY_PREFIX = "safemind-education-chat-v1";
 
 if (form && chatLog) {
   const initialChat = chatLog.innerHTML;
@@ -35,6 +36,7 @@ if (form && chatLog) {
   let activeRequest = null;
   let lastAssessment = null;
   let lastQuestion = "";
+  let chatStorageKey = "";
 
   const locale = () => document.documentElement.lang === "my" ? "my" : "en";
   const copy = (english, burmese) => locale() === "my" ? burmese : english;
@@ -47,6 +49,54 @@ if (form && chatLog) {
     if (!element) return;
     element.textContent = message;
     element.dataset.state = state;
+  }
+
+  function persistChatHistory() {
+    if (!chatStorageKey) return;
+    try {
+      const messages = history.slice(-12).map((entry) => ({
+        role: entry.role === "assistant" ? "assistant" : "user",
+        content: plainText(entry.content).slice(0, 1_500)
+      })).filter((entry) => entry.content);
+      localStorage.setItem(chatStorageKey, JSON.stringify({
+        version: 1,
+        updated_at: new Date().toISOString(),
+        messages,
+        last_assessment: lastAssessment || null
+      }));
+    } catch {
+      // Chat continues normally when private storage is unavailable or full.
+    }
+  }
+
+  async function restoreChatHistory() {
+    if (!supabase) return;
+    try {
+      const { data } = await supabase.auth.getSession();
+      const userId = String(data?.session?.user?.id || "").trim();
+      if (!userId) return;
+      chatStorageKey = `${CHAT_HISTORY_PREFIX}:${userId}`;
+      const saved = JSON.parse(localStorage.getItem(chatStorageKey) || "null");
+      const messages = Array.isArray(saved?.messages) ? saved.messages.slice(-12) : [];
+      if (!messages.length || history.length) return;
+      const safeMessages = messages.map((entry) => ({
+        role: entry?.role === "assistant" ? "assistant" : "user",
+        content: plainText(entry?.content).slice(0, 1_500)
+      })).filter((entry) => entry.content);
+      if (!safeMessages.length) return;
+      chatLog.querySelector(".education-empty-actions")?.remove();
+      chatLog.querySelector(".education-welcome")?.remove();
+      history.push(...safeMessages);
+      lastAssessment = saved?.last_assessment && typeof saved.last_assessment === "object" ? saved.last_assessment : null;
+      for (const entry of safeMessages) await appendMessage(entry.role, entry.content);
+      const latestQuestion = [...safeMessages].reverse().find((entry) => entry.role === "user")?.content || "";
+      lastQuestion = latestQuestion;
+      if (latestQuestion) addRecentAnalysis(latestQuestion, lastAssessment);
+      updateProtection(lastAssessment);
+      setStatus(chatStatus, copy("Your previous chat was restored on this device.", "ဤစက်တွင် သိမ်းထားသော ယခင်စကားဝိုင်းကို ပြန်လည်ဖွင့်ပြီးပါပြီ။"), "success");
+    } catch {
+      // A malformed or blocked local history must never prevent the chat from opening.
+    }
   }
 
   function formatBytes(bytes) {
@@ -484,6 +534,7 @@ if (form && chatLog) {
     chatLog.querySelector(".education-welcome")?.remove();
     await appendMessage("user", userQuestion);
     history.push({ role: "user", content: userQuestion });
+    persistChatHistory();
     submitButton.disabled = true;
     questionInput.disabled = true;
     setStatus(chatStatus, copy("SafeMind is matching NLP signals and verified records...", "SafeMind သည် NLP လက္ခဏာများနှင့် အတည်ပြုမှတ်တမ်းများကို တိုက်စစ်နေသည်..."), "pending");
@@ -571,6 +622,7 @@ if (form && chatLog) {
         const completedAnswer = plainText(doneEvent?.answer || streamedText);
         loading.finish(completedAnswer);
         history.push({ role: "assistant", content: completedAnswer });
+        persistChatHistory();
         addRecentAnalysis(userQuestion, lastAssessment);
         updateFollowUps(doneEvent?.follow_ups || []);
         questionInput.value = "";
@@ -723,6 +775,9 @@ if (form && chatLog) {
     lastAssessment = null;
     lastQuestion = "";
     history.length = 0;
+    if (chatStorageKey) {
+      try { localStorage.removeItem(chatStorageKey); } catch { /* Storage may be blocked. */ }
+    }
     chatLog.innerHTML = initialChat;
     questionInput.value = "";
     evidenceInput.value = "";
@@ -731,4 +786,5 @@ if (form && chatLog) {
     clearFile();
     setStatus(chatStatus, copy("New private chat started.", "သီးသန့်စကားဝိုင်းအသစ် စတင်ပါပြီ။"), "success");
   });
+  void restoreChatHistory();
 }

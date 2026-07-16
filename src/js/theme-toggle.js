@@ -2,6 +2,21 @@ import "../css/theme-toggle.css";
 
 const STORAGE_KEY = "safemind-theme";
 
+function storedTheme() {
+  try {
+    const value = localStorage.getItem(STORAGE_KEY);
+    return value === "light" || value === "dark" ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+const initialStoredTheme = storedTheme();
+if (initialStoredTheme) {
+  document.documentElement.dataset.theme = initialStoredTheme;
+  document.documentElement.style.colorScheme = initialStoredTheme;
+}
+
 function ensureAccessibilityFoundation() {
   const main = document.querySelector("main");
   if (main && !main.id) main.id = "main-content";
@@ -24,7 +39,7 @@ function ensureAccessibilityFoundation() {
 }
 
 function currentTheme() {
-  return document.documentElement.dataset.theme === "light" ? "light" : "dark";
+  return storedTheme() || (document.documentElement.dataset.theme === "light" ? "light" : "dark");
 }
 
 function setTheme(theme, persist = true) {
@@ -48,6 +63,12 @@ function setTheme(theme, persist = true) {
     }
   }
 }
+
+window.addEventListener("storage", (event) => {
+  if (event.key === STORAGE_KEY && (event.newValue === "light" || event.newValue === "dark")) {
+    setTheme(event.newValue, false);
+  }
+});
 
 ensureAccessibilityFoundation();
 

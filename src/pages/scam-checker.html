@@ -192,26 +192,33 @@
         </details>
 
         <section class="checker-directory reveal">
-            <div class="section-heading section-heading-left">
-                <p>Live Lists</p>
-                <h2>Shared scam directory</h2>
-                <span>Verified phone numbers, messages, links, and email records from Supabase appear here.</span>
+            <div class="directory-heading-row">
+                <div class="section-heading section-heading-left">
+                    <p>Verified directory</p>
+                    <h2>Scam number scoreboard</h2>
+                    <span>Confirmed scam phone numbers are ranked by the latest verified directory records.</span>
+                </div>
+                <button class="directory-export" id="exportScamNumbers" type="button" disabled>Download XLSX</button>
             </div>
 
-            <div class="list-columns">
-                <article>
-                    <h4>Scam</h4>
-                    <ul id="scamList"></ul>
-                </article>
-                <article>
-                    <h4>Safe</h4>
-                    <ul id="safeList"></ul>
-                </article>
-                <article>
-                    <h4>Pending classification</h4>
-                    <ul id="otherList"></ul>
-                </article>
+            <div class="scoreboard-summary"><strong id="scamNumberCount">0</strong><span>confirmed scam numbers</span></div>
+            <div class="scoreboard-table-wrap" tabindex="0" role="region" aria-label="Confirmed scam phone number scoreboard">
+                <table class="scoreboard-table">
+                    <thead><tr><th scope="col">Rank</th><th scope="col">Phone number</th><th scope="col">Organization</th><th scope="col">Added</th></tr></thead>
+                    <tbody id="scamScoreboardBody"><tr><td colspan="4">Loading verified numbers…</td></tr></tbody>
+                </table>
             </div>
+            <p class="directory-export-status" id="directoryExportStatus" role="status" aria-live="polite"></p>
+
+            <details class="directory-all-records">
+                <summary>View all directory categories</summary>
+
+                <div class="list-columns">
+                    <article><h4>Scam</h4><ul id="scamList"></ul></article>
+                    <article><h4>Safe</h4><ul id="safeList"></ul></article>
+                    <article><h4>Pending classification</h4><ul id="otherList"></ul></article>
+                </div>
+            </details>
         </section>
     </main>
 

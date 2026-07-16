@@ -36,6 +36,10 @@ const scanInputMeta = document.getElementById("scanInputMeta");
 const emailFileInput = document.getElementById("emailFileInput");
 const emailFileMeta = document.getElementById("emailFileMeta");
 const logoutButtons = document.querySelectorAll("[data-logout]");
+const scamScoreboardBody = document.getElementById("scamScoreboardBody");
+const scamNumberCount = document.getElementById("scamNumberCount");
+const exportScamNumbers = document.getElementById("exportScamNumbers");
+const directoryExportStatus = document.getElementById("directoryExportStatus");
 const directoryState = {
     scam: document.getElementById("scamList"),
     safe: document.getElementById("safeList"),
@@ -49,6 +53,7 @@ let selectedEmailFile = null;
 let selectedEmailContext = null;
 let activeCaseId = null;
 let timelineTimer = null;
+let scamNumberRows = [];
 const persistedCaseIds = new Set();
 const nlpApiUrl = import.meta.env.VITE_NLP_API_URL || "/api/spam-check";
 const inputIds = { phone: "phoneInput", message: "messageInput", link: "linkInput", email: "emailInput" };
@@ -556,10 +561,12 @@ async function investigateWithDirectory(scanType, value, directoryValue = value)
 
 async function loadDirectoryLists() {
     if (!supabase) throw new Error("Supabase is not configured.");
-    const { data, error } = await supabase.from("threat_directory").select("entry_type,normalized_value,verdict,organization,reason,created_at").order("created_at", { ascending: false }).limit(18);
+    const { data, error } = await supabase.from("threat_directory").select("entry_type,normalized_value,verdict,organization,reason,created_at").order("created_at", { ascending: false }).limit(100);
     if (error) throw error;
     const rows = { scam: [], safe: [], other: [] };
     (data || []).forEach((row) => rows[row.verdict]?.push(row));
+    scamNumberRows = rows.scam.filter((row) => row.entry_type === "phone");
+    renderScamScoreboard();
 
     Object.entries(directoryState).forEach(([key, list]) => {
         if (!list) {
@@ -588,6 +595,75 @@ async function loadDirectoryLists() {
         });
     });
 }
+
+function formatDirectoryDate(value) {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? "Recently" : date.toLocaleDateString();
+}
+
+function renderScamScoreboard() {
+    if (!scamScoreboardBody) return;
+    scamNumberCount.textContent = String(scamNumberRows.length);
+    exportScamNumbers.disabled = scamNumberRows.length === 0;
+    if (!scamNumberRows.length) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 4;
+        cell.textContent = "No confirmed scam phone numbers yet.";
+        row.append(cell);
+        scamScoreboardBody.replaceChildren(row);
+        return;
+    }
+    scamScoreboardBody.replaceChildren(...scamNumberRows.map((entry, index) => {
+        const row = document.createElement("tr");
+        const rank = document.createElement("td");
+        const phone = document.createElement("td");
+        const organization = document.createElement("td");
+        const added = document.createElement("td");
+        rank.textContent = String(index + 1);
+        phone.textContent = entry.normalized_value;
+        organization.textContent = entry.organization || "Community report";
+        added.textContent = formatDirectoryDate(entry.created_at);
+        row.append(rank, phone, organization, added);
+        return row;
+    }));
+}
+
+function excelSafeText(value) {
+    const text = String(value || "");
+    return /^[=+\-@]/.test(text) ? `'${text}` : text;
+}
+
+exportScamNumbers?.addEventListener("click", async () => {
+    if (!scamNumberRows.length) return;
+    exportScamNumbers.disabled = true;
+    directoryExportStatus.textContent = "Preparing XLSX file…";
+    try {
+        const { default: writeExcelFile } = await import("write-excel-file/browser");
+        const header = (value) => ({ value, fontWeight: "bold", color: "#FFFFFF", backgroundColor: "#5A5D7A" });
+        const sheetData = [
+            [header("Rank"), header("Phone number"), header("Organization"), header("Reason"), header("Added")],
+            ...scamNumberRows.map((entry, index) => [
+                index + 1,
+                excelSafeText(entry.normalized_value),
+                excelSafeText(entry.organization || "Community report"),
+                excelSafeText(entry.reason || "Verified scam directory record"),
+                formatDirectoryDate(entry.created_at)
+            ])
+        ];
+        const date = new Date().toISOString().slice(0, 10);
+        await writeExcelFile(sheetData, {
+            sheet: "Scam Numbers",
+            stickyRowsCount: 1,
+            columns: [{ width: 8 }, { width: 24 }, { width: 24 }, { width: 52 }, { width: 16 }]
+        }).toFile(`safemind-scam-numbers-${date}.xlsx`);
+        directoryExportStatus.textContent = "XLSX scoreboard downloaded.";
+    } catch {
+        directoryExportStatus.textContent = "Could not create the XLSX file. Please retry.";
+    } finally {
+        exportScamNumbers.disabled = scamNumberRows.length === 0;
+    }
+});
 
 async function inspectPhone() {
     const phoneInput = document.getElementById("phoneInput");
@@ -748,6 +824,17 @@ if (user) {
     try {
         await loadDirectoryLists();
     } catch (error) {
+        scamNumberRows = [];
+        if (scamNumberCount) scamNumberCount.textContent = "0";
+        if (exportScamNumbers) exportScamNumbers.disabled = true;
+        if (scamScoreboardBody) {
+            const row = document.createElement("tr");
+            const cell = document.createElement("td");
+            cell.colSpan = 4;
+            cell.textContent = "The verified directory is temporarily unavailable.";
+            row.append(cell);
+            scamScoreboardBody.replaceChildren(row);
+        }
         updateResult(buildResult("LOW", 0, "Directory Error", error.message));
     }
     setActiveMode(activeMode);

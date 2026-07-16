@@ -652,3 +652,45 @@ body.scam-checker-page *{font-family:"Thuriya","Myanmar Sangam MN","Noto Sans My
 @media (max-width: 420px) {
   .checker-mode-tabs { grid-template-columns: 1fr !important; }
 }
+
+/* Verified scam phone scoreboard */
+.directory-heading-row { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; }
+.directory-heading-row .section-heading { margin-bottom:18px; }
+.directory-export {
+  min-height:44px;
+  margin-bottom:18px;
+  padding:9px 14px;
+  border:1px solid var(--primary);
+  border-radius:10px;
+  color:#FFFFFF;
+  background:var(--primary);
+  font-weight:700;
+  white-space:nowrap;
+}
+.directory-export:disabled { opacity:.55; cursor:not-allowed; }
+.scoreboard-summary { display:flex; align-items:baseline; gap:9px; margin-bottom:12px; color:var(--muted); }
+.scoreboard-summary strong { color:var(--text); font-size:30px; }
+.scoreboard-table-wrap { width:100%; overflow-x:auto; border:1px solid var(--border); border-radius:14px; background:var(--surface); }
+.scoreboard-table { width:100%; min-width:680px; border-collapse:collapse; text-align:left; }
+.scoreboard-table th,
+.scoreboard-table td { padding:13px 16px; border-bottom:1px solid var(--border); vertical-align:middle; }
+.scoreboard-table th { color:var(--muted); background:var(--surface-raised); font-size:12px; letter-spacing:.04em; text-transform:uppercase; }
+.scoreboard-table td { color:var(--text); font-size:14px; }
+.scoreboard-table th:first-child,
+.scoreboard-table td:first-child { width:72px; text-align:center; }
+.scoreboard-table tbody tr:last-child td { border-bottom:0; }
+.scoreboard-table tbody tr:hover { background:color-mix(in srgb, var(--primary) 5%, transparent); }
+.directory-export-status { min-height:22px; margin:8px 0 0; color:var(--muted); font-size:13px; }
+.directory-all-records { margin-top:18px; border:1px solid var(--border); border-radius:12px; background:var(--surface); }
+.directory-all-records > summary { min-height:48px; display:flex; align-items:center; justify-content:space-between; padding:10px 14px; color:var(--text); cursor:pointer; list-style:none; }
+.directory-all-records > summary::-webkit-details-marker { display:none; }
+.directory-all-records > summary::after { content:"+"; color:var(--primary); font-size:20px; }
+.directory-all-records[open] > summary::after { content:"−"; }
+.directory-all-records .list-columns { padding:0 14px 14px; }
+
+@media (max-width:620px) {
+  .directory-heading-row { align-items:stretch; flex-direction:column; gap:0; }
+  .directory-export { width:100%; margin-bottom:16px; }
+  .scoreboard-table th,
+  .scoreboard-table td { padding:11px 12px; }
+}
