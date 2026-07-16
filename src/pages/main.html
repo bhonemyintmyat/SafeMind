@@ -30,9 +30,11 @@
         </button>
 
         <nav id="mainNavigation">
-            <a href="#demo">Check a scam</a>
-            <a href="#features">How it helps</a>
-            <a href="#trust">Safety</a>
+            <a href="#features">Features</a>
+            <a href="#demo">Demo</a>
+            <a href="#verified-contacts">Contacts</a>
+            <a href="#trust">Trust</a>
+            <a href="#contact">Contact us</a>
             <a href="#faq">FAQ</a>
             <div class="mobile-nav-actions">
                 <button class="language-toggle" type="button" data-language-toggle aria-label="Switch language">မြန်မာ</button>
@@ -49,10 +51,10 @@
     <main>
         <section class="hero reveal" id="home" data-hero>
             <div class="hero-content">
-                <p class="tag">Scam protection, made simple</p>
+                <p class="tag">AI Powered Security</p>
                 <h1><span id="typingHeading" aria-hidden="true"></span><span class="sr-only">Your AI Shield Against Scams</span></h1>
                 <p class="description">
-                    Check a suspicious message, link, email, or phone number. SafeMind explains the warning signs and what to do next.
+                    Analyze suspicious phone numbers, messages and links before they become a threat.
                 </p>
 
                 <div class="hero-buttons">
@@ -61,21 +63,12 @@
                 </div>
 
                 <ul class="hero-features">
-                    <li>No technical knowledge needed</li>
-                    <li>English + မြန်မာ</li>
-                    <li>Clear next steps</li>
+                    <li>Phone intelligence</li>
+                    <li>Message analysis</li>
+                    <li>Link inspection</li>
                 </ul>
             </div>
-            <aside class="hero-preview" aria-label="Example SafeMind analysis">
-                <div class="hero-preview-top"><span class="hero-preview-dot"></span><strong>SafeMind check</strong><span>Example</span></div>
-                <div class="hero-preview-message">“Your account will close today. Send your OTP now.”</div>
-                <div class="hero-preview-result">
-                    <span>High risk</span>
-                    <strong>Credential phishing</strong>
-                    <p>Urgency and a request for a private verification code were detected.</p>
-                </div>
-                <div class="hero-preview-action">Do not reply or share the code. Contact the organization using its official app.</div>
-            </aside>
+
         </section>
 
         <section class="demo-section reveal" id="demo">
@@ -119,6 +112,15 @@
             </div>
         </section>
 
+        <section class="verified-section reveal" id="verified-contacts">
+            <div class="section-heading">
+                <p>Verified reporting contacts</p>
+                <h2>Official phishing-report email addresses</h2>
+                <span>These are organization-published abuse contacts, not general customer-support inboxes.</span>
+            </div>
+            <div class="verified-grid" id="verifiedEmailList" aria-live="polite"></div>
+        </section>
+
         <section class="features-section reveal" id="features">
             <div class="section-heading">
                 <p>Features</p>
@@ -140,6 +142,34 @@
                 <article class="card">
                     <h3>Link Safety</h3>
                     <p>Inspect suspicious domains, impersonation paths and phishing markers before clicking.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="how-section reveal" id="how-it-works">
+            <div class="section-heading">
+                <p>How It Works</p>
+                <h2>From check to action in three steps</h2>
+                <span>SafeMind keeps the product flow focused so users can move quickly from suspicion to clarity.</span>
+            </div>
+
+            <div class="how-grid">
+                <article class="how-card">
+                    <strong>1</strong>
+                    <h3>Paste or scan</h3>
+                    <p>Add a phone number, message or URL to inspect it.</p>
+                </article>
+
+                <article class="how-card">
+                    <strong>2</strong>
+                    <h3>Analyze instantly</h3>
+                    <p>SafeMind classifies signals, confidence and category in real time.</p>
+                </article>
+
+                <article class="how-card">
+                    <strong>3</strong>
+                    <h3>Protect your account</h3>
+                    <p>Save trusted or suspicious numbers to your security dashboard.</p>
                 </article>
             </div>
         </section>
@@ -171,6 +201,18 @@
                     <strong>Bilingual</strong>
                     <span>English and မြန်မာ guidance</span>
                 </article>
+            </div>
+        </section>
+
+        <section class="contact-section reveal" id="contact">
+            <div class="section-heading">
+                <p>Contact us</p>
+                <h2>Need help staying safe?</h2>
+                <span>Questions, feedback, or a scam you are unsure about? Get in touch with the SafeMind team.</span>
+            </div>
+            <div class="contact-card">
+                <div><strong>Email SafeMind</strong><span>We will help point you in the right direction.</span></div>
+                <a class="primary-btn" href="mailto:support@safemind.app">support@safemind.app</a>
             </div>
         </section>
 

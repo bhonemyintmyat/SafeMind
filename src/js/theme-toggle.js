@@ -5,7 +5,9 @@ const STORAGE_KEY = "safemind-theme";
 function ensureAccessibilityFoundation() {
   const main = document.querySelector("main");
   if (main && !main.id) main.id = "main-content";
-  if (main && !document.querySelector(".skip-link")) {
+  const isPublicMainPage = document.body.dataset.page === "main";
+  if (isPublicMainPage) document.querySelector(".skip-link")?.remove();
+  if (main && !isPublicMainPage && !document.querySelector(".skip-link")) {
     const link = document.createElement("a");
     link.className = "skip-link";
     link.href = `#${main.id}`;
