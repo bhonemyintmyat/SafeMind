@@ -137,12 +137,24 @@ input::placeholder, textarea::placeholder { color: var(--quiet) !important; opac
 }
 
 html[data-theme="light"] .navbar nav a,
-html[data-theme="light"] .nav-actions a,
+html[data-theme="light"] .nav-actions a { color: #303247 !important; }
 html[data-theme="light"] .nav-link,
 html[data-theme="light"] .sidebar-control { color: #FFFFFF !important; }
 
 html[data-theme="light"] .navbar nav a:hover,
-html[data-theme="light"] .nav-actions a:hover { color: var(--primary) !important; }
+html[data-theme="light"] .navbar nav a:focus-visible,
+html[data-theme="light"] .nav-actions a:hover,
+html[data-theme="light"] .nav-actions a:focus-visible { color: #484B65 !important; }
+
+body.landing-page .tag,
+body.landing-page .section-heading > p {
+  width: 100%;
+  margin-inline: auto;
+  color: #5A5D7A !important;
+  font-weight: 700;
+  text-align: center !important;
+}
+body.landing-page .section-heading > :where(h2, span) { margin-inline:auto; text-align:center !important; }
 
 html[data-theme="light"] .mobile-menu-button,
 html[data-theme="light"] .language-toggle,
