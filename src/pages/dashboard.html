@@ -48,7 +48,7 @@
 
         <div class="dashboard-main">
             <header class="dashboard-header">
-                <div><p>Dashboard</p><h1>Security overview</h1></div>
+                <div><p>SafeMind</p><h1>Dashboard</h1></div>
                 <a class="profile-link" href="profile.html" aria-label="Edit profile">
                     <span class="avatar" data-avatar>SM</span>
                     <span><b class="username">User</b><small>Edit profile</small></span>
@@ -57,25 +57,30 @@
             </header>
 
             <main class="dashboard-content">
-                <section class="welcome-panel">
+                <section class="dashboard-focus" aria-labelledby="dashboardFocusTitle">
+                    <span class="dashboard-focus-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4M11 8v6M8 11h6"/></svg></span>
                     <div>
-                        <p class="eyebrow">Protection center</p>
-                        <h2>Welcome, <span class="username">User</span></h2>
-                        <p>Review your latest checks or scan suspicious content before you act.</p>
+                        <p class="eyebrow">Start here</p>
+                        <h2 id="dashboardFocusTitle">Check something suspicious</h2>
+                        <p>Paste a message, link, email address, or phone number and get clear safety guidance.</p>
                     </div>
-                    <a class="primary-button" href="scam-checker.html">Open scanner</a>
+                    <a class="primary-button dashboard-focus-action" href="scam-checker.html">Check a scam</a>
+                    <p class="dashboard-focus-note">Never share passwords, OTP codes, recovery phrases, or payment details.</p>
                 </section>
 
-                <section class="stat-grid" aria-label="Account statistics">
-                    <article class="stat-card"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><p>Total scans</p><strong id="totalScans">0</strong></article>
-                    <article class="stat-card"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M7 7.5h7a3 3 0 0 1 0 6H9.5a3 3 0 0 0 0 6H17"/></svg><p>Credits</p><strong id="userCredits">0</strong></article>
-                    <article class="stat-card"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3s5 5 5 10a5 5 0 0 1-10 0c0-3 2-5 3-7 0 3 2 4 2 4Z"/></svg><p>Current streak</p><strong id="userStreak">0</strong></article>
-                    <article class="stat-card"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9Z"/></svg><p>Milestones</p><strong id="badgeCount">0</strong></article>
-                </section>
+                <details class="dashboard-progress">
+                    <summary><span><strong>Your progress</strong><small>Scans, credits, streak, and milestones</small></span></summary>
+                    <section class="stat-grid" aria-label="Account statistics">
+                        <article class="stat-card"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><p>Total scans</p><strong id="totalScans">0</strong></article>
+                        <article class="stat-card"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M7 7.5h7a3 3 0 0 1 0 6H9.5a3 3 0 0 0 0 6H17"/></svg><p>Credits</p><strong id="userCredits">0</strong></article>
+                        <article class="stat-card"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3s5 5 5 10a5 5 0 0 1-10 0c0-3 2-5 3-7 0 3 2 4 2 4Z"/></svg><p>Current streak</p><strong id="userStreak">0</strong></article>
+                        <article class="stat-card"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9Z"/></svg><p>Milestones</p><strong id="badgeCount">0</strong></article>
+                    </section>
+                </details>
 
                 <section class="content-card activity-card">
-                    <div class="section-title"><div><p>Activity</p><h2>Recent security checks</h2></div><a href="scam-checker.html">New scan</a></div>
-                    <div class="activity-list" id="activityList"><p class="empty-state">No scan activity yet.</p></div>
+                    <div class="section-title"><div><p>Activity</p><h2>Recent checks</h2></div></div>
+                    <div class="activity-list" id="activityList"><p class="empty-state">Your completed checks will appear here.</p></div>
                 </section>
             </main>
         </div>

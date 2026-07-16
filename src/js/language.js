@@ -171,6 +171,15 @@ const translations = {
 };
 
 Object.assign(translations, {
+  "Start here": "ဤနေရာမှ စတင်ပါ",
+  "Check something suspicious": "သံသယဖြစ်ဖွယ်အရာကို စစ်ဆေးပါ",
+  "Paste a message, link, email address, or phone number and get clear safety guidance.": "စာတို၊ လင့်ခ်၊ အီးမေးလ်လိပ်စာ သို့မဟုတ် ဖုန်းနံပါတ်ကို ထည့်ပြီး ရှင်းလင်းသော လုံခြုံရေးလမ်းညွှန်ချက် ရယူပါ။",
+  "Check a scam": "လိမ်လည်မှု စစ်ဆေးရန်",
+  "Never share passwords, OTP codes, recovery phrases, or payment details.": "စကားဝှက်၊ OTP ကုဒ်၊ recovery phrase သို့မဟုတ် ငွေပေးချေမှုအချက်အလက်ကို မမျှဝေပါနှင့်။",
+  "Your progress": "သင့်တိုးတက်မှု",
+  "Scans, credits, streak, and milestones": "စစ်ဆေးမှု၊ ခရက်ဒစ်၊ ဆက်တိုက်အသုံးပြုမှုနှင့် မှတ်တိုင်များ",
+  "Recent checks": "လတ်တလော စစ်ဆေးမှုများ",
+  "Your completed checks will appear here.": "ပြီးစီးသော စစ်ဆေးမှုများကို ဤနေရာတွင် ပြပါမည်။",
   "Skip to main content": "ပင်မအကြောင်းအရာသို့ သွားရန်",
   "Trust and safety": "ယုံကြည်မှုနှင့် လုံခြုံရေး",
   "Designed for safer decisions": "ပိုမိုလုံခြုံသော ဆုံးဖြတ်ချက်များအတွက်",

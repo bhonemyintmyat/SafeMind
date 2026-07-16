@@ -269,3 +269,9 @@ table { width: 100%; border-collapse: collapse; }
     transition-duration: .01ms !important;
   }
 }
+
+/* Consistent alignment semantics across public and application pages. */
+:where(.section-heading, .education-welcome) { text-align:center; }
+:where(.content-card, .dashboard-card, .checker-panel, .checker-result, .education-item, .faq-answer) { text-align:start; }
+:where(.primary-btn, .secondary-btn, .primary-button, .nav-link, .demo-tab, .checker-mode-tabs button) { text-align:center; }
+html[lang="my"] :where(p, li, h1, h2, h3, h4, button, label) { word-break:normal; }
