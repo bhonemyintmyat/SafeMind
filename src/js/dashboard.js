@@ -64,18 +64,6 @@ function setupMobileDrawer() {
 
 setupMobileDrawer();
 
-function syncProfileNavigation() {
-    if (page !== "profile") return;
-    const settingsActive = window.location.hash === "#settings";
-    document.querySelectorAll('.dashboard-nav a[href="profile.html"], .dashboard-nav a[href="profile.html#settings"]').forEach((link) => {
-        const active = settingsActive ? link.getAttribute("href")?.endsWith("#settings") : link.getAttribute("href") === "profile.html";
-        link.classList.toggle("is-active", active);
-        if (active) link.setAttribute("aria-current", "page"); else link.removeAttribute("aria-current");
-    });
-}
-syncProfileNavigation();
-window.addEventListener("hashchange", syncProfileNavigation);
-
 function closeMobileUtilities() {
     dashboardUtilities?.classList.remove("is-open");
     mobileNavMore?.setAttribute("aria-expanded", "false");
