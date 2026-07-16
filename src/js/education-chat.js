@@ -786,5 +786,24 @@ if (form && chatLog) {
     clearFile();
     setStatus(chatStatus, copy("New private chat started.", "သီးသန့်စကားဝိုင်းအသစ် စတင်ပါပြီ။"), "success");
   });
-  void restoreChatHistory();
+  function applyLaunchIntent() {
+    const intent = new URLSearchParams(window.location.search).get("prompt");
+    const prompts = {
+      urgency: "Teach me how urgency is used in scams.",
+      verify: "Teach me how to verify a suspicious sender safely.",
+      recovery: "Teach me what to do after I have been scammed.",
+      investment: "Explain investment scams and their warning signs.",
+      job: "Explain fake job scams and upfront fee warning signs.",
+      romance: "Explain romance scams and how to respond safely.",
+      qr: "Explain malicious QR code scams and how to check them.",
+      marketplace: "Explain marketplace scams involving fake buyers or delivery fees.",
+      bank: "Explain bank impersonation scams and account verification pressure.",
+      crypto: "Explain crypto wallet and recovery phrase scams."
+    };
+    if (prompts[intent]) questionInput.value = prompts[intent];
+    if (window.location.hash === "#upload") showEvidence("auto");
+    if (prompts[intent] || window.location.hash === "#upload") questionInput.focus();
+  }
+
+  void restoreChatHistory().finally(applyLaunchIntent);
 }

@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
     <link rel="manifest" href="/manifest.webmanifest">
-    <meta name="theme-color" content="#050505">
+    <meta name="theme-color" content="#5A5D7A">
     <script>(()=>{let t="";try{t=localStorage.getItem("safemind-theme")||""}catch{}if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t})()</script>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -37,6 +37,7 @@
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H11v17H7.5A3.5 3.5 0 0 0 4 22Zm16 0A3.5 3.5 0 0 0 16.5 2H13v17h3.5A3.5 3.5 0 0 1 20 22Z"/></svg><span>Education</span>
                 </a>
             </nav>
+            <div class="sidebar-system-status"><i aria-hidden="true"></i><span><strong>Scam Coach</strong><small>Online and ready</small></span></div>
             <button class="mobile-nav-more" type="button" aria-expanded="false" aria-controls="dashboardUtilities" aria-label="More options"><span></span><span></span><span></span></button>
             <div class="dashboard-utilities" id="dashboardUtilities">
                 <button class="sidebar-control language-toggle" type="button" data-language-toggle>မြန်မာ</button>
@@ -49,38 +50,71 @@
         <div class="dashboard-main">
             <header class="dashboard-header">
                 <div><p>SafeMind</p><h1>Dashboard</h1></div>
-                <a class="profile-link" href="profile.html" aria-label="Edit profile">
-                    <span class="avatar" data-avatar>SM</span>
-                    <span><b class="username">User</b><small>Edit profile</small></span>
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-                </a>
+                <div class="dashboard-header-tools">
+                    <a class="header-search" href="scam-checker.html" aria-label="Search or check suspicious content"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><span>Search or check content</span></a>
+                    <a class="header-icon-button" href="reports.html" aria-label="Open reports and notifications"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg></a>
+                    <a class="profile-link" href="profile.html" aria-label="Edit profile">
+                        <span class="avatar" data-avatar>SM</span>
+                        <span><b class="username">User</b><small>Edit profile</small></span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                    </a>
+                </div>
             </header>
 
             <main class="dashboard-content">
-                <section class="dashboard-focus" aria-labelledby="dashboardFocusTitle">
-                    <span class="dashboard-focus-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4M11 8v6M8 11h6"/></svg></span>
-                    <div>
-                        <p class="eyebrow">Start here</p>
-                        <h2 id="dashboardFocusTitle">Check something suspicious</h2>
-                        <p>Paste a message, link, email address, or phone number and get clear safety guidance.</p>
-                    </div>
-                    <a class="primary-button dashboard-focus-action" href="scam-checker.html">Check a scam</a>
-                    <p class="dashboard-focus-note">Never share passwords, OTP codes, recovery phrases, or payment details.</p>
+                <section class="dashboard-welcome" aria-labelledby="dashboardWelcomeTitle">
+                    <div><p class="eyebrow">Welcome back</p><h2 id="dashboardWelcomeTitle">Your safety command center</h2><p>Check suspicious content, understand the result, and take the safest next step.</p></div>
+                    <span class="dashboard-status"><i aria-hidden="true"></i>Protection ready</span>
                 </section>
 
-                <details class="dashboard-progress">
-                    <summary><span><strong>Your progress</strong><small>Scans, credits, streak, and milestones</small></span></summary>
-                    <section class="stat-grid" aria-label="Account statistics">
-                        <article class="stat-card"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg><p>Total scans</p><strong id="totalScans">0</strong></article>
-                        <article class="stat-card"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M7 7.5h7a3 3 0 0 1 0 6H9.5a3 3 0 0 0 0 6H17"/></svg><p>Credits</p><strong id="userCredits">0</strong></article>
-                        <article class="stat-card"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3s5 5 5 10a5 5 0 0 1-10 0c0-3 2-5 3-7 0 3 2 4 2 4Z"/></svg><p>Current streak</p><strong id="userStreak">0</strong></article>
-                        <article class="stat-card"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9Z"/></svg><p>Milestones</p><strong id="badgeCount">0</strong></article>
-                    </section>
-                </details>
+                <section class="dashboard-command-grid" aria-label="Safety overview">
+                    <article class="dashboard-risk-card">
+                        <div><p>Risk score</p><span>Based on your latest check</span></div>
+                        <div class="dashboard-risk-ring" id="dashboardRiskRing" style="--risk-score:0"><strong id="dashboardRiskScore">—</strong><span id="dashboardRiskLabel">No scan yet</span></div>
+                        <p id="dashboardRiskAdvice">Run a check to get a clear, explainable risk assessment.</p>
+                    </article>
 
-                <section class="content-card activity-card">
-                    <div class="section-title"><div><p>Activity</p><h2>Recent checks</h2></div></div>
+                    <article class="dashboard-focus" aria-labelledby="dashboardFocusTitle">
+                        <span class="dashboard-focus-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.6 2.9 8.4 7 10 4.1-1.6 7-5.4 7-10V6Z"/><path d="m9.5 12 1.6 1.6 3.8-4"/></svg></span>
+                        <div><p class="eyebrow">SafeMind Coach</p><h2 id="dashboardFocusTitle">What would you like to check?</h2><p>Start with the content that made you suspicious.</p></div>
+                        <div class="dashboard-coach-actions">
+                            <a href="education.html#upload">Upload screenshot</a><a href="scam-checker.html#message">Paste message</a><a href="scam-checker.html#link">Check website</a><a href="scam-checker.html#phone">Check phone</a>
+                        </div>
+                        <a class="primary-button dashboard-focus-action" href="education.html">Ask Scam Coach</a>
+                        <p class="dashboard-focus-note">Never share passwords, OTP codes, recovery phrases, or payment details.</p>
+                    </article>
+                </section>
+
+                <section class="dashboard-summary-grid" aria-label="Account summary">
+                    <article class="dashboard-summary-card"><span class="summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 4 4"/></svg></span><div><p>Latest scan</p><strong id="dashboardLatestScan">No checks yet</strong><small id="dashboardLatestScanTime">Your latest result will appear here.</small></div><a href="scam-checker.html">Run scan</a></article>
+                    <article class="dashboard-summary-card"><span class="summary-icon is-lime" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 19V5m0 14h16M8 16v-4m4 4V8m4 8v-6"/></svg></span><div><p>Learning progress</p><strong><span id="badgeCount">0</span> milestones</strong><small><span id="userStreak">0</span> day safety streak</small></div><a href="education.html">Keep learning</a></article>
+                    <article class="dashboard-summary-card"><span class="summary-icon is-cream" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v18M7 7.5h7a3 3 0 0 1 0 6H9.5a3 3 0 0 0 0 6H17"/></svg></span><div><p>Your activity</p><strong><span id="totalScans">0</span> scans</strong><small><span id="userCredits">0</span> safety credits earned</small></div><a href="#recentAlerts">View activity</a></article>
+                </section>
+
+                <section class="content-card activity-card" id="recentAlerts">
+                    <div class="section-title"><div><p>Recent alerts</p><h2>Your latest checks</h2></div><a href="scam-checker.html">Check something</a></div>
                     <div class="activity-list" id="activityList"><p class="empty-state">Your completed checks will appear here.</p></div>
+                </section>
+
+                <section class="content-card dashboard-learning" aria-labelledby="learningTitle">
+                    <div class="section-title"><div><p>Education</p><h2 id="learningTitle">Build your scam awareness</h2></div><a href="education.html">Ask the coach</a></div>
+                    <div class="learning-levels">
+                        <article><span>Beginner · 5 min</span><h3>Spot the pressure</h3><p>Learn how urgency and fear are used to rush decisions.</p><a href="education.html?prompt=urgency">Start lesson</a></article>
+                        <article><span>Intermediate · 7 min</span><h3>Verify the sender</h3><p>Check identities through official apps, numbers, and domains.</p><a href="education.html?prompt=verify">Start lesson</a></article>
+                        <article><span>Advanced · 9 min</span><h3>Protect your accounts</h3><p>Respond safely after sharing information or sending money.</p><a href="education.html?prompt=recovery">Start lesson</a></article>
+                    </div>
+                </section>
+
+                <section class="content-card scam-category-section" aria-labelledby="categoryTitle">
+                    <div class="section-title"><div><p>Scam library</p><h2 id="categoryTitle">Common scam categories</h2></div></div>
+                    <div class="scam-category-grid">
+                        <a href="scam-checker.html#message"><strong>SMS</strong><span>Urgent links and OTP theft</span></a><a href="scam-checker.html#email"><strong>Email</strong><span>Fake invoices and support</span></a><a href="education.html?prompt=investment"><strong>Investment</strong><span>Guaranteed-return claims</span></a><a href="scam-checker.html#phone"><strong>Phone</strong><span>Impersonation calls</span></a><a href="education.html?prompt=job"><strong>Job</strong><span>Upfront fees and fake roles</span></a><a href="education.html?prompt=romance"><strong>Romance</strong><span>Trust followed by money requests</span></a><a href="education.html?prompt=qr"><strong>QR</strong><span>Hidden payment and login links</span></a><a href="education.html?prompt=marketplace"><strong>Marketplace</strong><span>Fake buyers and delivery fees</span></a><a href="education.html?prompt=bank"><strong>Bank</strong><span>Account verification pressure</span></a><a href="education.html?prompt=crypto"><strong>Crypto</strong><span>Wallet and recovery scams</span></a>
+                    </div>
+                </section>
+
+                <section class="content-card safety-timeline" aria-labelledby="timelineTitle">
+                    <div class="section-title"><div><p>Safe response</p><h2 id="timelineTitle">From suspicion to protection</h2></div></div>
+                    <ol><li><span>1</span><strong>Receive</strong><small>Pause before acting</small></li><li><span>2</span><strong>Analyze</strong><small>Check the content</small></li><li><span>3</span><strong>Verify</strong><small>Use an official channel</small></li><li><span>4</span><strong>Report</strong><small>Share useful evidence</small></li><li><span>5</span><strong>Block</strong><small>Stop further contact</small></li></ol>
                 </section>
             </main>
         </div>

@@ -67,9 +67,11 @@
 }
 
 .theme-switcher button:focus-visible {
-  outline: 3px solid #ff7384;
+  outline: 3px solid var(--lime, #A9D35E);
   outline-offset: 2px;
 }
+
+html[data-theme="dark"] .theme-switcher button[aria-pressed="true"] { color: #303247; }
 
 html[data-theme="light"] .theme-switcher {
   box-shadow: 0 10px 28px rgba(33, 33, 33, .13);

@@ -53,7 +53,7 @@ function setTheme(theme, persist = true) {
   });
 
   const themeColor = document.querySelector('meta[name="theme-color"]');
-  themeColor?.setAttribute("content", nextTheme === "light" ? "#F7F8FA" : "#08090B");
+  themeColor?.setAttribute("content", nextTheme === "light" ? "#F8F8F8" : "#242535");
 
   if (persist) {
     try {

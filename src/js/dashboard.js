@@ -180,6 +180,24 @@ async function loadRecentActivity() {
         .order("created_at", { ascending: false })
         .limit(6);
     if (!data?.length) return;
+    const latest = data[0];
+    const latestRisk = ["low", "medium", "high"].includes(latest.risk) ? latest.risk : "low";
+    const riskPresentation = {
+        low: { score: 18, label: "Low risk", advice: "Few warning signs were found. Keep verifying unexpected requests.", color: "var(--lime)" },
+        medium: { score: 55, label: "Caution", advice: "Several warning signs need verification through an official channel.", color: "var(--warning)" },
+        high: { score: 86, label: "High risk", advice: "Do not respond, click, pay, or share information. Report and block it.", color: "var(--danger)" }
+    }[latestRisk];
+    const ring = document.getElementById("dashboardRiskRing");
+    if (ring) {
+        ring.style.setProperty("--risk-score", String(riskPresentation.score));
+        ring.style.setProperty("--ring-color", riskPresentation.color);
+    }
+    setText("dashboardRiskScore", `${riskPresentation.score}%`);
+    setText("dashboardRiskLabel", riskPresentation.label);
+    setText("dashboardRiskAdvice", riskPresentation.advice);
+    setText("dashboardLatestScan", `${String(latest.scan_type || "scan")} · ${riskPresentation.label}`);
+    const latestCreatedAt = new Date(latest.created_at);
+    setText("dashboardLatestScanTime", Number.isNaN(latestCreatedAt.getTime()) ? "Recently" : latestCreatedAt.toLocaleString());
     list.replaceChildren(...data.map((row) => {
         const item = document.createElement("article");
         item.className = "activity-row";
