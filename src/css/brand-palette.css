@@ -840,3 +840,32 @@ html[data-theme="light"] :where(a, button, input, textarea, select, summary, [ta
   html[data-theme="light"] .dashboard-sidebar { border-right: 1px solid #E5E7EB !important; }
   html[data-theme="light"] .auth-card { padding: 24px !important; }
 }
+
+/* Authentication uses one centered card after the side copy was removed. */
+body.auth-page {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: clamp(16px, 4vw, 40px) !important;
+}
+
+.auth-page .auth-shell {
+  width: min(100%, 520px) !important;
+  min-height: calc(100dvh - clamp(32px, 8vw, 80px)) !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  align-items: center !important;
+  justify-items: center !important;
+  margin: auto !important;
+}
+
+.auth-page .auth-card {
+  width: 100% !important;
+  max-width: 520px !important;
+  margin: auto !important;
+  justify-self: center !important;
+}
+
+@media (max-width: 480px) {
+  body.auth-page { padding: 16px !important; }
+  .auth-page .auth-shell { min-height: calc(100dvh - 32px) !important; }
+}
