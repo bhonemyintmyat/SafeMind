@@ -1,6 +1,9 @@
 import { runAgent } from "./spam-check.js";
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
+const DEFAULT_OPENROUTER_MODEL = "openai/gpt-5.6-luna-pro";
+const DEFAULT_OPENROUTER_FALLBACK_MODEL = "google/gemini-2.5-flash";
+const PRIVATE_REASONING = Object.freeze({ enabled: true, effort: "low", exclude: true });
 const SUPPORTED_TYPES = new Set(["auto", "message", "link", "email", "phone"]);
 const ALLOWED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
 const RATE_LIMIT = new Map();
@@ -70,8 +73,8 @@ function openRouterConfig() {
     .split(",")
     .map((model) => cleanText(model, 120))
     .filter(Boolean);
-  const primary = cleanText(process.env.OPENROUTER_MODEL || "openrouter/free", 120);
-  const fallback = cleanText(process.env.OPENROUTER_FALLBACK_MODEL || "openrouter/free", 120);
+  const primary = cleanText(process.env.OPENROUTER_MODEL || DEFAULT_OPENROUTER_MODEL, 120);
+  const fallback = cleanText(process.env.OPENROUTER_FALLBACK_MODEL || DEFAULT_OPENROUTER_FALLBACK_MODEL, 120);
   const models = [...new Set([primary, ...configured, fallback].filter(Boolean))].slice(0, 4);
   return { apiKey, models };
 }
@@ -80,8 +83,8 @@ function configForLanguage(config, language) {
   const configuredModel = language === "my"
     ? process.env.OPENROUTER_BURMESE_MODEL
     : process.env.OPENROUTER_AGENT_MODEL;
-  const gemini = cleanText(configuredModel || "google/gemini-2.5-flash", 120);
-  const models = [...new Set([gemini, ...config.models].filter(Boolean))].slice(0, 4);
+  const preferred = cleanText(configuredModel || config.models[0] || DEFAULT_OPENROUTER_MODEL, 120);
+  const models = [...new Set([preferred, ...config.models].filter(Boolean))].slice(0, 4);
   return { ...config, models };
 }
 
@@ -118,7 +121,12 @@ async function openRouterRequest({ apiKey, models, payload, stream = false }) {
             "HTTP-Referer": process.env.SAFEMIND_SITE_URL || "https://safemind-tau.vercel.app",
             "X-Title": "SafeMind Scam Education"
           },
-          body: JSON.stringify({ ...payload, model, stream }),
+          body: JSON.stringify({
+            ...payload,
+            model,
+            stream,
+            reasoning: payload.reasoning || PRIVATE_REASONING
+          }),
           signal: AbortSignal.timeout(Math.max(1_000, Math.min(OPENROUTER_TIMEOUT_MS, deadline - Date.now())))
         });
         if (response.ok) {
