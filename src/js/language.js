@@ -748,6 +748,7 @@ Object.assign(translations, {
   "Analyzing...": "စိစစ်နေသည်...",
   "Analysis copied.": "စိစစ်မှုကို ကူးယူပြီးပါပြီ။",
   "Investigation complete": "စုံစမ်းစစ်ဆေးမှု ပြီးစီးပါပြီ",
+  "Your latest result stays available while you use the dashboard.": "Dashboard ကို အသုံးပြုနေစဉ် နောက်ဆုံးရလဒ်ကို ဆက်လက်ကြည့်နိုင်သည်။",
   "Close investigation result": "စုံစမ်းစစ်ဆေးမှု ရလဒ်ကို ပိတ်ရန်",
   "SafeMind audit result": "SafeMind စစ်ဆေးမှတ်တမ်း ရလဒ်",
   "Review the risk and take the safest next step.": "အန္တရာယ်ကို ကြည့်ပြီး အလုံခြုံဆုံး နောက်တစ်ဆင့်ကို လုပ်ဆောင်ပါ။",

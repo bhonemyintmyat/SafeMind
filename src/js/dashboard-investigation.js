@@ -101,13 +101,6 @@ if (main && workspace && form) {
     saveState();
   }
 
-  function closeInvestigation() {
-    if (window.SafeMindDashboardSections) window.SafeMindDashboardSections.activate("home", { scroll: false });
-    else { main.classList.remove("is-investigating"); workspace.hidden = true; history.replaceState(null, "", window.location.pathname); }
-    window.scrollTo({ top: overviewScroll, behavior: "smooth" });
-    saveState();
-  }
-
   function clearFile() {
     selectedFile = null;
     imagePayload = null;
@@ -283,9 +276,7 @@ if (main && workspace && form) {
     recognition.onresult = (event) => { quickInput.value = event.results[0][0].transcript; saveState(); };
     recognition.start();
   });
-  document.getElementById("investigationBack").addEventListener("click", closeInvestigation);
   window.addEventListener("dashboard:sectionchange", () => saveState());
-  document.getElementById("investigationClear").addEventListener("click", () => { input.value = ""; quickInput.value = ""; resetAnalyzeButton({ clearResult: true }); progress.hidden = true; closeResultsDialog(); clearFile(); setStatus(""); saveState(); });
   form.addEventListener("change", (event) => { if (event.target.name === "dashboardScanType") { resetAnalyzeButton({ clearResult: true }); updateType(event.target.value); } });
   input.addEventListener("input", () => { resetAnalyzeButton({ clearResult: true }); saveState(); });
   quickInput.addEventListener("input", saveState);

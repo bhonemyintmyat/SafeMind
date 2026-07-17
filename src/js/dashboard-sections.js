@@ -42,7 +42,7 @@ if (sectionRoot) {
     document.body.dataset.dashboardSection = next;
     try { sessionStorage.setItem(STORAGE_KEY, next); } catch { /* Optional state. */ }
     if (options.updateLocation !== false) updateLocation(next);
-    if (options.scroll !== false) sectionRoot.scrollIntoView({ behavior: options.instant ? "auto" : "smooth", block: "start" });
+    if (options.scroll !== false) sectionRoot.scrollTo({ top: 0, behavior: options.instant ? "auto" : "smooth" });
     window.dispatchEvent(new CustomEvent("dashboard:sectionchange", { detail: { section: next } }));
   }
 

@@ -978,7 +978,7 @@ html[data-theme="light"] .terms-dialog-close { color:#1F2937 !important;backgrou
     min-width:0 !important;
   }
   .dashboard-content > * { min-width:0; max-width:100%; }
-  .dashboard-section-nav { top:88px !important; }
+  .dashboard-section-nav { top:auto !important; }
 }
 
 @media (max-width:720px) {
@@ -1073,5 +1073,5 @@ html[data-theme="light"] .terms-dialog-close { color:#1F2937 !important;backgrou
     scrollbar-gutter:stable;
   }
 
-  .dashboard-section-nav { top:0 !important; }
+  .dashboard-section-nav { top:auto !important; }
 }
