@@ -1134,3 +1134,20 @@ html[data-theme="dark"] .terms-dialog :where(p,li,small,label) { color:#4B5563 !
 
   .dashboard-section-nav { top:auto !important; }
 }
+
+/* This final rule intentionally follows every shared navigation state. */
+html[data-theme="light"] body.landing-page .navbar nav a:hover,
+html[data-theme="light"] body.landing-page .navbar nav a:focus-visible {
+  color:#56751F !important;
+  background:transparent !important;
+  border-color:transparent !important;
+  box-shadow:none !important;
+}
+
+html[data-theme="dark"] body.landing-page .navbar nav a:hover,
+html[data-theme="dark"] body.landing-page .navbar nav a:focus-visible {
+  color:#A9D35E !important;
+  background:transparent !important;
+  border-color:transparent !important;
+  box-shadow:none !important;
+}

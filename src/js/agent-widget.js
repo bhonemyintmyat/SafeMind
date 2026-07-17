@@ -42,9 +42,9 @@ if (document.body && !document.body.dataset.authPage && !blockedPages.has(page) 
       <form><label class="sr-only" for="safeMindAgentInput">Ask SafeMind</label><textarea id="safeMindAgentInput" rows="1" maxlength="4000" placeholder="Paste suspicious content or ask a question..."></textarea><button type="submit" aria-label="Send to SafeMind">Send</button></form>
       <p class="agent-note">Never share passwords, OTP codes, or payment details.</p>
     </section>`;
-  const footer = document.querySelector("footer");
-  if (footer?.parentNode) footer.parentNode.insertBefore(root, footer);
-  else document.body.append(root);
+  // Keep the assistant outside page/footer layout so fixed positioning cannot be
+  // clipped or pushed below mobile navigation while the document scrolls.
+  document.body.append(root);
 
   const launcher = root.querySelector(".agent-launcher");
   const panel = root.querySelector(".agent-panel");
@@ -56,14 +56,23 @@ if (document.body && !document.body.dataset.authPage && !blockedPages.has(page) 
 
   function syncVisualViewport() {
     const viewport = window.visualViewport;
-    if (!viewport) return;
-    const coveredBottom = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+    if (!viewport) {
+      root.style.setProperty("--agent-visual-bottom", "0px");
+      root.style.setProperty("--agent-visual-height", `${window.innerHeight}px`);
+      return;
+    }
+    const layoutHeight = Math.max(window.innerHeight, document.documentElement.clientHeight);
+    const coveredBottom = Math.max(0, layoutHeight - viewport.height - viewport.offsetTop);
     root.style.setProperty("--agent-visual-bottom", `${coveredBottom}px`);
     root.style.setProperty("--agent-visual-height", `${viewport.height}px`);
   }
   syncVisualViewport();
+  requestAnimationFrame(syncVisualViewport);
   window.visualViewport?.addEventListener("resize", syncVisualViewport);
   window.visualViewport?.addEventListener("scroll", syncVisualViewport);
+  window.addEventListener("resize", syncVisualViewport);
+  window.addEventListener("orientationchange", syncVisualViewport);
+  window.addEventListener("pageshow", syncVisualViewport);
 
   function save() {
     try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ messages: messages.slice(-10), lastEvidence, lastAssessment })); } catch { /* Optional. */ }
