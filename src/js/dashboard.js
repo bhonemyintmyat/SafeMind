@@ -560,8 +560,33 @@ document.getElementById("passwordForm")?.addEventListener("submit", async (event
     if (!user || !supabase) return;
     const submit = document.getElementById("passwordSubmit");
     const status = document.getElementById("passwordStatus");
+    const currentPassword = document.getElementById("profileCurrentPassword").value;
     const password = document.getElementById("profilePassword").value;
+    const confirmation = document.getElementById("profilePasswordConfirm").value;
+    if (password !== confirmation) {
+        setStatus(status, "New passwords do not match.", "error");
+        document.getElementById("profilePasswordConfirm").focus();
+        return;
+    }
+    if (currentPassword === password) {
+        setStatus(status, "Choose a new password that is different from your current password.", "error");
+        document.getElementById("profilePassword").focus();
+        return;
+    }
+    if (password.length < 12 || !/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/\d/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
+        setStatus(status, "Use at least 12 characters with upper and lowercase letters, a number, and a symbol.", "error");
+        document.getElementById("profilePassword").focus();
+        return;
+    }
     submit.disabled = true;
+    setStatus(status, "Confirming current password...");
+    const { error: confirmationError } = await supabase.auth.signInWithPassword({ email: user.email, password: currentPassword });
+    if (confirmationError) {
+        submit.disabled = false;
+        setStatus(status, "Current password is incorrect.", "error");
+        document.getElementById("profileCurrentPassword").focus();
+        return;
+    }
     setStatus(status, "Updating password...");
     const { error } = await supabase.auth.updateUser({ password });
     submit.disabled = false;

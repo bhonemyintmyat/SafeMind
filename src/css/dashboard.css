@@ -358,6 +358,7 @@ body.dashboard-page p { margin-top: 0; }
 .dashboard-form select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb,var(--primary) 18%,transparent); }
 .dashboard-form input[readonly] { color: var(--muted); background: #151515; }
 .dashboard-form .primary-button { width: fit-content; margin-top: 16px; }
+.dashboard-form .form-guidance { margin-top:-2px; color:var(--muted); font-size:13px; line-height:1.5; }
 .form-status { min-height: 24px; margin: 4px 0 0; color: var(--muted); }
 .form-status[data-state="error"] { color: var(--danger); }
 .form-status[data-state="success"] { color: var(--success); }

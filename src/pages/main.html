@@ -249,12 +249,12 @@
         </section>
     </main>
 
-    <footer class="site-footer">
-        <section class="terms-consent" aria-labelledby="termsTitle" data-terms-consent>
+    <dialog class="terms-consent terms-dialog" aria-labelledby="termsTitle" aria-describedby="termsDescription" data-terms-consent>
+            <button type="button" class="terms-dialog-close" data-terms-close aria-label="Close terms dialog">×</button>
             <div class="terms-consent-copy">
                 <p class="terms-kicker">Your choice</p>
                 <h2 id="termsTitle">SafeMind terms and responsible use</h2>
-                <p>Choose whether you accept the terms. Your choice is saved only in this browser and does not affect basic access to the website.</p>
+                <p id="termsDescription">Choose whether you accept the terms. Your choice is saved only in this browser and does not affect basic access to the website.</p>
                 <p class="terms-status" data-terms-status role="status" aria-live="polite">No choice selected yet.</p>
             </div>
             <details class="terms-details">
@@ -269,8 +269,9 @@
                 <button type="button" class="terms-accept" data-terms-choice="accepted" aria-pressed="false">Accept terms</button>
                 <button type="button" class="terms-decline" data-terms-choice="declined" aria-pressed="false">Decline</button>
             </div>
-        </section>
+    </dialog>
 
+    <footer class="site-footer">
         <div class="footer-identity">
             <a href="main.html" class="brand footer-brand" data-logo-link>
                 <img src="/assets/redlogo.png" alt="SafeMind logo" loading="lazy" decoding="async">
@@ -278,7 +279,7 @@
             </a>
             <p>Professional scam detection for modern teams and individuals.</p>
         </div>
-        <p class="footer-copyright">© 2026 SafeMind</p>
+        <div class="footer-meta"><button type="button" class="footer-terms-button" data-open-terms>Review terms</button><p class="footer-copyright">© 2026 SafeMind</p></div>
     </footer>
 
     <script type="module" src="../js/main.js"></script>

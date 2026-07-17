@@ -945,6 +945,7 @@ html[data-theme="light"] .terms-status { color:#1F2937 !important }
 html[data-theme="light"] .terms-decline { color:#374151 !important;background:#FFFFFF !important;border-color:#D1D5DB !important }
 html[data-theme="light"] .terms-consent[data-choice="accepted"] .terms-status { color:#365314 !important }
 html[data-theme="light"] .terms-consent[data-choice="declined"] .terms-status { color:#7C4A03 !important }
+html[data-theme="light"] .terms-dialog-close { color:#1F2937 !important;background:#FFFFFF !important;border-color:#D1D5DB !important }
 
 @media (max-width:720px) {
   html[data-theme="light"] .navbar > nav.is-open {
@@ -954,4 +955,33 @@ html[data-theme="light"] .terms-consent[data-choice="declined"] .terms-status { 
     background:#FFFFFF;
     box-shadow:0 10px 28px rgba(104,141,43,.16);
   }
+}
+
+/* Final dashboard layout contract: workspace remains beside the sidebar. */
+@media (min-width:721px) {
+  .dashboard-shell { align-items:start !important; }
+  .dashboard-sidebar { z-index:70 !important; }
+  .dashboard-main {
+    grid-column:2 !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    overflow:clip;
+  }
+  .dashboard-header {
+    position:sticky !important;
+    top:0 !important;
+    z-index:60 !important;
+  }
+  .dashboard-content {
+    max-width:calc(100% - 64px) !important;
+    min-width:0 !important;
+  }
+  .dashboard-content > * { min-width:0; max-width:100%; }
+  .dashboard-section-nav { top:88px !important; }
+}
+
+@media (max-width:720px) {
+  .dashboard-main { width:100% !important; min-width:0 !important; overflow:visible !important; }
+  .dashboard-content > * { min-width:0; max-width:100%; }
 }

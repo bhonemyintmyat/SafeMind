@@ -270,7 +270,7 @@ if (siteFooter && "IntersectionObserver" in window) {
 
 const termsPanel = document.querySelector("[data-terms-consent]");
 if (termsPanel) {
-    const storageKey = "safemind-terms-choice-v1";
+    const storageKey = "safemind-terms-choice-v2";
     const status = termsPanel.querySelector("[data-terms-status]");
     const choiceButtons = [...termsPanel.querySelectorAll("[data-terms-choice]")];
     const renderChoice = (choice) => {
@@ -287,13 +287,27 @@ if (termsPanel) {
     };
     let savedChoice = "";
     try { savedChoice = localStorage.getItem(storageKey) || ""; } catch { /* Consent controls remain usable without storage. */ }
+    const openTerms = () => {
+        if (typeof termsPanel.showModal === "function" && !termsPanel.open) termsPanel.showModal();
+        document.body.classList.add("terms-dialog-open");
+    };
+    const closeTerms = () => {
+        if (termsPanel.open) termsPanel.close();
+        document.body.classList.remove("terms-dialog-open");
+    };
     choiceButtons.forEach((button) => button.addEventListener("click", () => {
         savedChoice = button.dataset.termsChoice;
         try { localStorage.setItem(storageKey, savedChoice); } catch { /* Keep the current in-page choice. */ }
         renderChoice(savedChoice);
+        closeTerms();
     }));
+    termsPanel.querySelector("[data-terms-close]")?.addEventListener("click", closeTerms);
+    termsPanel.addEventListener("close", () => document.body.classList.remove("terms-dialog-open"));
+    termsPanel.addEventListener("cancel", () => document.body.classList.remove("terms-dialog-open"));
+    document.querySelectorAll("[data-open-terms]").forEach((button) => button.addEventListener("click", openTerms));
     window.addEventListener("safemind:language-change", () => renderChoice(savedChoice));
     renderChoice(savedChoice);
+    if (!savedChoice) window.requestAnimationFrame(openTerms);
 }
 setMode(activeDemoMode);
 loadContacts();

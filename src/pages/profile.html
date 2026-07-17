@@ -22,7 +22,7 @@
             <nav class="dashboard-nav" aria-label="Primary navigation">
                 <a class="nav-link" href="dashboard.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1Z"/></svg><span>Overview</span></a>
                 <a class="nav-link" href="reports.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4m0 1h11l-2 4 2 4H5"/></svg><span>Reports</span></a>
-                <a class="nav-link" href="education.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H11v17H7.5A3.5 3.5 0 0 0 4 22Zm16 0A3.5 3.5 0 0 0 16.5 2H13v17h3.5A3.5 3.5 0 0 1 20 22Z"/></svg><span>Education</span></a>
+                <a class="nav-link" href="education.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H11v17H7.5A3.5 3.5 0 0 0 4 22Zm16 0A3.5 3.5 0 0 0 16.5 2H13v17h3.5A3.5 3.5 0 0 1 20 22Z"/></svg><span>EduAI</span></a>
                 <a class="nav-link is-active" href="profile.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 1 1-7-7"/></svg><span>Setting</span></a>
             </nav>
             <button class="mobile-nav-more" type="button" aria-expanded="false" aria-controls="dashboardUtilities" aria-label="More options"><span></span><span></span><span></span></button>
@@ -45,7 +45,10 @@
                 <section class="content-card" id="settings">
                     <div class="section-title"><div><p>Security</p><h2>Change password</h2></div></div>
                     <form class="dashboard-form" id="passwordForm">
-                        <label for="profilePassword">New password</label><input id="profilePassword" type="password" minlength="12" maxlength="128" autocomplete="new-password" required>
+                        <label for="profileCurrentPassword">Current password</label><input id="profileCurrentPassword" type="password" minlength="8" maxlength="128" autocomplete="current-password" required>
+                        <label for="profilePassword">New password</label><input id="profilePassword" type="password" minlength="12" maxlength="128" autocomplete="new-password" aria-describedby="passwordGuidance" required>
+                        <small class="form-guidance" id="passwordGuidance">Use at least 12 characters with upper and lowercase letters, a number, and a symbol.</small>
+                        <label for="profilePasswordConfirm">Confirm new password</label><input id="profilePasswordConfirm" type="password" minlength="12" maxlength="128" autocomplete="new-password" required>
                         <button class="primary-button" type="submit" id="passwordSubmit">Update password</button><p class="form-status" id="passwordStatus" role="status" aria-live="polite"></p>
                     </form>
                 </section>
