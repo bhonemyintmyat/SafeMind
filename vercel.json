@@ -3,6 +3,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "redirects": [
+    { "source": "/", "destination": "/src/pages/main.html", "permanent": true },
     { "source": "/src/pages/scam-checker.html", "destination": "/src/pages/dashboard.html?view=investigation", "permanent": true }
   ],
   "headers": [

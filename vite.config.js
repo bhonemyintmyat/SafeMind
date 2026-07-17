@@ -27,6 +27,7 @@ export default defineConfig({
 				reports: resolve(__dirname, "src/pages/reports.html"),
 				education: resolve(__dirname, "src/pages/education.html"),
 				educationArticle: resolve(__dirname, "src/pages/education-article.html"),
+				sitemap: resolve(__dirname, "src/pages/sitemap.html"),
 				profile: resolve(__dirname, "src/pages/profile.html"),
 				onboarding: resolve(__dirname, "src/pages/onboarding.html")
 			}

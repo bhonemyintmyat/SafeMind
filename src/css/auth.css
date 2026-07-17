@@ -61,9 +61,8 @@ input{
 .auth-card{
     border:1px solid rgba(255,255,255,.08);
     border-radius:28px;
-    background:rgba(17,17,17,.92);
+    background:#111111;
     box-shadow:0 30px 90px rgba(0,0,0,.35);
-    backdrop-filter:blur(18px);
 }
 
 .auth-card-brand{
@@ -140,7 +139,7 @@ input{
     justify-self:center;
 }
 
-.auth-card h2{
+.auth-card h1{
     margin:0;
     font-size:28px;
 }
@@ -177,7 +176,7 @@ input{
     box-shadow:0 0 0 3px rgba(90,93,122,.18);
 }
 
-.field-guidance{margin:-6px 0 2px;color:var(--muted);font-size:12px;line-height:1.5}
+.field-guidance{margin:-6px 0 2px;color:var(--muted);font-size:16px;line-height:1.5}
 .field-error{margin:-7px 0 2px;color:var(--danger,#ef4444);font-size:13px;line-height:1.5}
 
 .auth-button,

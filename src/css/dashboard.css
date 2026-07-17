@@ -703,7 +703,7 @@ html[data-theme="light"] .education-copilot-page {
 .education-copilot-page .nav-link:focus-visible,
 .education-copilot-page .nav-link.is-active { background: color-mix(in srgb, var(--red) 13%, var(--surface)); border-color: color-mix(in srgb, var(--red) 42%, var(--border)); }
 .education-copilot-page .nav-link.is-active svg { color: currentColor; }
-.education-copilot-page .dashboard-header { position: sticky; top: 0; z-index: 20; min-height: 82px; padding-block: 12px; background: color-mix(in srgb, var(--background) 88%, transparent); backdrop-filter: blur(18px); }
+.education-copilot-page .dashboard-header { position: sticky; top: 0; z-index: 20; min-height: 82px; padding-block: 12px; background: var(--background); }
 .education-copilot-page .dashboard-header h1 { font-size: clamp(20px, 2vw, 27px); }
 .education-copilot-page .dashboard-content { width: min(1480px, calc(100% - 36px)); padding: 20px 0 34px; }
 .copilot-topbar-actions { display: flex; align-items: center; gap: 12px; }
@@ -727,7 +727,7 @@ html[data-theme="light"] .education-copilot-page {
 #educationRecentAnalyses button small { color: var(--quiet); font-size: 10px; }
 
 .copilot-workspace { display: grid; grid-template-columns: minmax(0, 3fr) minmax(250px, 1fr); gap: 16px; align-items: start; }
-.education-copilot-page .education-chat-card { height: 80vh; min-height: 640px; max-height: 900px; border: 0; border-radius: 22px; background: color-mix(in srgb, var(--surface) 94%, transparent); box-shadow: 0 24px 70px rgba(0, 0, 0, .24); backdrop-filter: blur(20px); }
+.education-copilot-page .education-chat-card { height: 80vh; min-height: 640px; max-height: 900px; border: 0; border-radius: 22px; background: var(--surface); box-shadow: 0 24px 70px rgba(0, 0, 0, .24); }
 .education-copilot-page .education-chat-header { min-height: 72px; padding: 12px 18px; border-color: var(--border); background: color-mix(in srgb, var(--surface) 92%, transparent); }
 .education-copilot-page .education-chat-header > div { display: flex; align-items: center; gap: 11px; }
 .education-copilot-page .education-chat-header > div > span:last-child { display: grid; }
@@ -811,7 +811,7 @@ html[data-theme="light"] .education-copilot-page {
 .education-copilot-page .education-disclaimer { padding: 3px 20px 11px; text-align: center; font-size: 10px; }
 
 .copilot-insights { display: grid; gap: 12px; }
-.copilot-panel { padding: 16px; border: 0; border-radius: 17px; background: color-mix(in srgb, var(--surface) 94%, transparent); box-shadow: 0 16px 42px rgba(0, 0, 0, .14); backdrop-filter: blur(18px); }
+.copilot-panel { padding: 16px; border: 0; border-radius: 17px; background: var(--surface); box-shadow: 0 16px 42px rgba(0, 0, 0, .14); }
 .copilot-panel-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
 .copilot-panel-title small { color: var(--quiet); font-size: 9px; text-transform: none; }
 .copilot-agent-status > strong,
@@ -1354,10 +1354,9 @@ body.dashboard-page .empty-state { max-width:58ch; }
     grid-template-columns: minmax(0, 1fr) 50px;
     gap: 4px;
     padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
-    background: color-mix(in srgb, var(--sidebar) 94%, transparent);
+    background: var(--sidebar);
     border-top-color: var(--border);
     box-shadow: 0 -8px 24px rgba(0, 0, 0, .14);
-    backdrop-filter: blur(18px);
   }
 
   .dashboard-nav {
@@ -1565,7 +1564,6 @@ body.dashboard-page .empty-state { max-width:58ch; }
   border-radius: 20px;
   background: var(--surface);
   box-shadow: 0 12px 34px rgba(15, 23, 42, .08);
-  backdrop-filter: none;
 }
 .education-copilot-page .education-chat-log {
   gap: 18px;
@@ -1877,9 +1875,8 @@ body.dashboard-page .empty-state { max-width:58ch; }
   padding:8px;
   border:1px solid var(--border);
   border-radius:16px;
-  background:color-mix(in srgb,var(--surface) 94%,transparent);
+  background:var(--surface);
   box-shadow:0 8px 24px rgba(15,23,42,.06);
-  backdrop-filter:blur(16px);
 }
 .dashboard-section-nav > div { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:6px; }
 .dashboard-section-nav button {

@@ -47,13 +47,13 @@
             <a href="#contact">Contact us</a>
             <a href="#faq">FAQ</a>
             <div class="mobile-nav-actions">
-                <button class="language-toggle" type="button" data-language-toggle aria-label="Switch language">မြန်မာ</button>
+                <button class="language-toggle" type="button" data-language-toggle title="Switch language">မြန်မာ</button>
                 <a href="login.html">Login</a>
             </div>
         </nav>
 
         <div class="nav-actions">
-            <button class="language-toggle" type="button" data-language-toggle aria-label="Switch language">မြန်မာ</button>
+            <button class="language-toggle" type="button" data-language-toggle title="Switch language">မြန်မာ</button>
             <a href="login.html">Login</a>
         </div>
     </header>
@@ -92,12 +92,13 @@
             <div class="demo-layout">
                 <div class="demo-input-card">
                     <div class="demo-tabs" role="tablist" aria-label="Demo modes">
-                        <button type="button" class="demo-tab is-active" data-demo-mode="phone" aria-pressed="true">Phone Number</button>
-                        <button type="button" class="demo-tab" data-demo-mode="message" aria-pressed="false">Message</button>
-                        <button type="button" class="demo-tab" data-demo-mode="link" aria-pressed="false">Link</button>
-                        <button type="button" class="demo-tab" data-demo-mode="email" aria-pressed="false">Email</button>
+                        <button type="button" class="demo-tab is-active" id="demoTabPhone" role="tab" data-demo-mode="phone" aria-controls="demoInputPanel" aria-selected="true" tabindex="0">Phone Number</button>
+                        <button type="button" class="demo-tab" id="demoTabMessage" role="tab" data-demo-mode="message" aria-controls="demoInputPanel" aria-selected="false" tabindex="-1">Message</button>
+                        <button type="button" class="demo-tab" id="demoTabLink" role="tab" data-demo-mode="link" aria-controls="demoInputPanel" aria-selected="false" tabindex="-1">Link</button>
+                        <button type="button" class="demo-tab" id="demoTabEmail" role="tab" data-demo-mode="email" aria-controls="demoInputPanel" aria-selected="false" tabindex="-1">Email</button>
                     </div>
 
+                    <div id="demoInputPanel" role="tabpanel" aria-labelledby="demoTabPhone" tabindex="0">
                     <label id="demoLabel" for="demoInput">Phone number</label>
                     <textarea id="demoInput" rows="5" minlength="3" maxlength="10000" spellcheck="false" placeholder="+1 555 010 2000"></textarea>
                     <p class="demo-hint" id="demoHint">Paste a number that looks suspicious or unfamiliar.</p>
@@ -107,6 +108,7 @@
                         <button type="button" class="secondary-btn" data-demo-example="scam">Scam example</button>
                         <button type="button" class="secondary-btn" data-demo-example="safe">Not scam</button>
                         <button type="button" class="secondary-btn" data-demo-example="unknown">Not in database</button>
+                    </div>
                     </div>
                 </div>
 
@@ -194,22 +196,22 @@
 
             <div class="trust-grid">
                 <article class="trust-card">
-                    <strong>Layered</strong>
+                    <h3>Layered</h3>
                     <span>Rules, patterns, reputation, and contextual analysis</span>
                 </article>
 
                 <article class="trust-card">
-                    <strong>Explainable</strong>
+                    <h3>Explainable</h3>
                     <span>Warning signs and limitations shown with every result</span>
                 </article>
 
                 <article class="trust-card">
-                    <strong>Private</strong>
+                    <h3>Private</h3>
                     <span>Submitted content is not included in application logs</span>
                 </article>
 
                 <article class="trust-card">
-                    <strong>Bilingual</strong>
+                    <h3>Bilingual</h3>
                     <span>English and မြန်မာ guidance</span>
                 </article>
             </div>
@@ -236,21 +238,21 @@
 
             <div class="faq-list">
                 <article class="faq-item">
-                    <button type="button" class="faq-question" data-faq-button aria-expanded="false">Does SafeMind store my scans?</button>
+                    <h3 class="faq-title"><button type="button" class="faq-question" data-faq-button aria-expanded="false">Does SafeMind store my scans?</button></h3>
                     <div class="faq-answer">
                         <p>Saved numbers and reports are stored in Supabase so authenticated users can review their history.</p>
                     </div>
                 </article>
 
                 <article class="faq-item">
-                    <button type="button" class="faq-question" data-faq-button aria-expanded="false">Do I need an account to use the demo?</button>
+                    <h3 class="faq-title"><button type="button" class="faq-question" data-faq-button aria-expanded="false">Do I need an account to use the demo?</button></h3>
                     <div class="faq-answer">
                         <p>No. The demo sends only the content you enter for analysis and does not add it to your account history.</p>
                     </div>
                 </article>
 
                 <article class="faq-item">
-                    <button type="button" class="faq-question" data-faq-button aria-expanded="false">What happens after login?</button>
+                    <h3 class="faq-title"><button type="button" class="faq-question" data-faq-button aria-expanded="false">What happens after login?</button></h3>
                     <div class="faq-answer">
                         <p>Authenticated users land on the dashboard, where they can review stats and open the dedicated scam checker.</p>
                     </div>
@@ -292,7 +294,7 @@
             </a>
             <p>Professional scam detection for modern teams and individuals.</p>
         </div>
-        <div class="footer-meta"><p class="footer-copyright">© 2026 SafeMind</p></div>
+        <div class="footer-meta"><a href="sitemap.html">Site map</a><p class="footer-copyright">© 2026 SafeMind</p></div>
     </footer>
 
     <script type="module" src="../js/main.js"></script>

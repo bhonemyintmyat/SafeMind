@@ -128,7 +128,6 @@ select:focus-visible {
   background: #0b0d10 !important;
   border-bottom-color: #242930 !important;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.24);
-  backdrop-filter: none !important;
 }
 
 .glass-card,
@@ -147,7 +146,6 @@ select:focus-visible {
   background: var(--surface) !important;
   border: 1px solid var(--border) !important;
   box-shadow: var(--shadow-panel) !important;
-  backdrop-filter: none !important;
 }
 
 .navbar,
@@ -166,7 +164,6 @@ select:focus-visible {
 .verified-card,
 .floating-card,
 .onboarding-features article {
-  -webkit-backdrop-filter: none !important;
 }
 
 .primary-btn,
@@ -341,7 +338,6 @@ body.landing-page::before {
 .education-form {
   background: #111318 !important;
   border-color: var(--border) !important;
-  backdrop-filter: none !important;
 }
 
 .progress-panel,

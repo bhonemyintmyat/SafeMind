@@ -6,6 +6,7 @@ const demoTabs = [...document.querySelectorAll("[data-demo-mode]")];
 const demoInput = document.getElementById("demoInput");
 const demoLabel = document.getElementById("demoLabel");
 const demoHint = document.getElementById("demoHint");
+const demoInputPanel = document.getElementById("demoInputPanel");
 const demoRisk = document.getElementById("demoRisk");
 const demoConfidence = document.getElementById("demoConfidence");
 const demoCategory = document.getElementById("demoCategory");
@@ -73,8 +74,11 @@ function setMode(mode) {
     demoTabs.forEach((button) => {
         const selected = button.dataset.demoMode === mode;
         button.classList.toggle("is-active", selected);
-        button.setAttribute("aria-pressed", String(selected));
+        button.setAttribute("aria-selected", String(selected));
+        button.tabIndex = selected ? 0 : -1;
     });
+    const activeTab = demoTabs.find((button) => button.dataset.demoMode === mode);
+    if (activeTab && demoInputPanel) demoInputPanel.setAttribute("aria-labelledby", activeTab.id);
     demoLabel.textContent = copy[mode][0];
     demoHint.textContent = copy[mode][1];
     demoInput.placeholder = copy[mode][2];
@@ -203,6 +207,18 @@ async function loadContacts() {
 }
 
 demoTabs.forEach((button) => button.addEventListener("click", () => setMode(button.dataset.demoMode)));
+demoTabs.forEach((button, index) => button.addEventListener("keydown", (event) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    let nextIndex = index;
+    if (event.key === "ArrowLeft") nextIndex = (index - 1 + demoTabs.length) % demoTabs.length;
+    if (event.key === "ArrowRight") nextIndex = (index + 1) % demoTabs.length;
+    if (event.key === "Home") nextIndex = 0;
+    if (event.key === "End") nextIndex = demoTabs.length - 1;
+    const nextTab = demoTabs[nextIndex];
+    setMode(nextTab.dataset.demoMode);
+    nextTab.focus();
+}));
 document.querySelectorAll("[data-hero-feature]").forEach((button) => button.addEventListener("click", () => {
     setMode(button.dataset.heroFeature);
     document.getElementById("demo")?.scrollIntoView({ behavior: "smooth" });
