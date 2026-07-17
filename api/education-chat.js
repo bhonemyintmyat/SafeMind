@@ -364,6 +364,26 @@ function buildBurmeseAssessment(assessment, directory) {
   return `အန္တရာယ်အဆင့်\n${riskLabel} — ယုံကြည်မှု ${confidence}%\n\nအကြောင်းရင်း\n${summary}\n${signals}\n${directoryLine}\n\nသင်လုပ်သင့်သည်\n• လင့်ခ်မနှိပ်ပါနှင့်၊ ပြန်မဖြေပါနှင့်၊ ငွေမပို့ပါနှင့်။\n• OTP၊ စကားဝှက်နှင့် ဘဏ်အချက်အလက်ကို မမျှဝေပါနှင့်။\n• သက်ဆိုင်ရာအဖွဲ့အစည်း၏ တရားဝင်အက်ပ်၊ ဝဘ်ဆိုက် သို့မဟုတ် ကိုယ်တိုင်ရှာထားသော ဖုန်းနံပါတ်မှ အတည်ပြုပါ။`;
 }
 
+function buildEnglishAssessment(assessment, directory) {
+  if (!assessment) return "";
+  const risk = String(assessment.risk || "LOW").toUpperCase();
+  const confidence = Math.max(0, Math.min(99, Number(assessment.confidence) || 0));
+  const reason = cleanText(assessment.agent_summary || assessment.reason, 650)
+    || "SafeMind evaluated the submitted evidence using scam patterns and explainable security signals.";
+  const indicators = (assessment.indicators || []).slice(0, 3).map((item) => cleanText(item, 160)).filter(Boolean);
+  const signals = indicators.length ? ` Warning signs: ${indicators.join(", ")}.` : "";
+  const directoryLine = directory?.matched
+    ? " It also matches a verified SafeMind directory record."
+    : " No verified directory match was found; absence from the directory does not prove safety.";
+  const actions = (assessment.recommended_actions || []).slice(0, 3).map((item) => cleanText(item, 240)).filter(Boolean);
+  const safeActions = actions.length ? actions : [
+    "Pause and do not click, reply, pay, or share security codes.",
+    "Verify the sender through an official app, website, or independently found phone number.",
+    "Block and report the sender if the request remains suspicious."
+  ];
+  return `Risk Level\n${risk} · ${confidence}%\n\nReason\n${reason}${signals}${directoryLine}\n\nWhat You Should Do\n${safeActions.map((item) => `• ${item}`).join("\n")}`;
+}
+
 function hasForeignScript(value) {
   return /[\u0900-\u0D7F\u1100-\u11FF\u3040-\u30FF\u3400-\u9FFF\uAC00-\uD7AF]/u.test(String(value || ""));
 }
@@ -430,8 +450,10 @@ async function streamCompletion({ res, config, messages, assessment, directory, 
     directory_match: directory?.matched || false,
     timing: { assessment_ms: Math.max(0, Date.now() - streamStartedAt) }
   });
-  if (language === "my" && assessment) {
-    const answer = buildBurmeseAssessment(assessment, directory);
+  if (assessment) {
+    const answer = language === "my"
+      ? buildBurmeseAssessment(assessment, directory)
+      : buildEnglishAssessment(assessment, directory);
     for (const section of answer.split(/(\n\n)/u)) {
       if (section) {
         if (!firstTokenAt) firstTokenAt = Date.now();
