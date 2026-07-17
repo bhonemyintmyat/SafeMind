@@ -164,6 +164,10 @@ html[data-theme="light"] .secondary-link {
   border-color: var(--border) !important;
 }
 
+html[data-theme="light"] .mobile-menu-button span {
+  background: #212121;
+}
+
 body.landing-page::before { opacity: .08 !important; }
 .splash { background: #5A5D7A !important; }
 
@@ -1034,8 +1038,10 @@ html[data-theme="dark"] body:not(.splash) :where(input,textarea)::placeholder {
   opacity:1 !important;
 }
 
-html[data-theme="dark"] .terms-dialog :where(h2,h3,strong) { color:#111827 !important; }
-html[data-theme="dark"] .terms-dialog :where(p,li,small,label) { color:#4B5563 !important; }
+/* The terms dialog keeps its white card in dark mode, so its text must stay dark.
+   These selectors must outrank the global dark-theme text rules above (0,2,2). */
+html[data-theme="dark"] body:not(.splash) .terms-dialog :where(h1,h2,h3,h4,h5,h6,strong,legend) { color:#111827 !important; }
+html[data-theme="dark"] body:not(.splash) .terms-dialog :where(p,li,dd,label,small) { color:#333333 !important; }
 
 @media (max-width:720px) {
   .dashboard-main { width:100% !important; min-width:0 !important; overflow:visible !important; }
@@ -1220,4 +1226,18 @@ html[lang="my"] body:not(.splash) :where(h1,h2,h3,h4,h5,h6,p,li,dd,label,button,
   word-break:normal;
   overflow-wrap:anywhere;
   line-break:auto;
+}
+
+/* Myanmar script stacks diacritics above and below the baseline, so the tight
+   line-heights clamped elsewhere (e.g. the heading rules above) clip them.
+   These must stay last in the cascade to outrank those !important clamps. */
+html[lang="my"] body:not(.splash) :where(h1,h2,h3,h4,h5,h6,legend) {
+  line-height:1.6 !important;
+}
+html[lang="my"] body:not(.splash) :where(p,li,dd,dt,label,summary,button,a,span,strong,small,td,th,input,textarea,select,blockquote,figcaption) {
+  line-height:1.8 !important;
+}
+/* Icon-only glyph buttons must keep a compact line box. */
+html[lang="my"] body:not(.splash) .terms-dialog-close {
+  line-height:1 !important;
 }
