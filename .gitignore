@@ -37,3 +37,5 @@ SafeMind.zip
 # Local Supabase integration and database setup files
 *supabase*
 *Supabase*
+
+.claude/
