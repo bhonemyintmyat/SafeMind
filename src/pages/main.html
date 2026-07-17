@@ -253,18 +253,21 @@
             <button type="button" class="terms-dialog-close" data-terms-close aria-label="Close terms dialog">×</button>
             <div class="terms-consent-copy">
                 <p class="terms-kicker">Your choice</p>
-                <h2 id="termsTitle">SafeMind terms and responsible use</h2>
-                <p id="termsDescription">Choose whether you accept the terms. Your choice is saved only in this browser and does not affect basic access to the website.</p>
-                <p class="terms-status" data-terms-status role="status" aria-live="polite">No choice selected yet.</p>
+                <h2 id="termsTitle">SafeMind Terms of Service</h2>
+                <p id="termsDescription">Please review these terms before choosing whether to accept them.</p>
             </div>
-            <details class="terms-details">
-                <summary>Read the key terms</summary>
-                <ul>
-                    <li>Use SafeMind analysis as guidance, not as a guarantee that content is safe.</li>
-                    <li>Never submit passwords, OTP codes, recovery phrases, or full payment details.</li>
-                    <li>Use the service lawfully and verify urgent requests through official channels.</li>
-                </ul>
-            </details>
+            <div class="terms-scroll" tabindex="0">
+                <p>These Terms of Service are an agreement between you and SafeMind. By accepting, you agree to use the website, scam-analysis tools, EduAI, reports, and related services responsibly and lawfully.</p>
+                <h3>Security guidance</h3>
+                <p>SafeMind provides automated guidance and cannot guarantee that content is safe or malicious. Verify unexpected requests through an official app, website, or independently confirmed phone number before acting.</p>
+                <h3>Protect sensitive information</h3>
+                <p>Never submit passwords, OTP codes, recovery phrases, private keys, full payment-card details, or banking credentials. Remove unrelated personal information from screenshots and reports.</p>
+                <h3>Responsible use</h3>
+                <p>Do not use SafeMind to target, deceive, harass, impersonate, or harm another person. Reports must be truthful and limited to evidence needed for security review.</p>
+                <h3>Your choice</h3>
+                <p>Your choice is saved only in this browser. Declining does not prevent basic browsing, and you may review or change your choice from the footer.</p>
+            </div>
+            <p class="terms-status" data-terms-status role="status" aria-live="polite">No choice selected yet.</p>
             <div class="terms-actions" role="group" aria-label="Terms choice">
                 <button type="button" class="terms-accept" data-terms-choice="accepted" aria-pressed="false">Accept terms</button>
                 <button type="button" class="terms-decline" data-terms-choice="declined" aria-pressed="false">Decline</button>

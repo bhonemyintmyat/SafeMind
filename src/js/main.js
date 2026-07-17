@@ -270,7 +270,7 @@ if (siteFooter && "IntersectionObserver" in window) {
 
 const termsPanel = document.querySelector("[data-terms-consent]");
 if (termsPanel) {
-    const storageKey = "safemind-terms-choice-v2";
+    const storageKey = "safemind-terms-choice-v3";
     const status = termsPanel.querySelector("[data-terms-status]");
     const choiceButtons = [...termsPanel.querySelectorAll("[data-terms-choice]")];
     const renderChoice = (choice) => {
