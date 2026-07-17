@@ -887,3 +887,71 @@ body.auth-page {
   body.auth-page { padding: 16px !important; }
   .auth-page .auth-shell { min-height: calc(100dvh - 32px) !important; }
 }
+
+/* Accessible lime interaction language for light mode navigation and CTAs. */
+html[data-theme="light"] :where(.navbar, .dashboard-sidebar, .dashboard-header,
+.checker-header, .dashboard-section-nav) {
+  border-color: rgba(169, 211, 94, .72) !important;
+  box-shadow: 0 0 0 1px rgba(169, 211, 94, .38), 0 10px 28px rgba(169, 211, 94, .18) !important;
+}
+
+html[data-theme="light"] :where(.navbar nav a, .nav-actions a, .dashboard-nav .nav-link,
+.dashboard-section-nav button, .checker-mode-tabs button, .demo-tab) {
+  color: #374151 !important;
+  border: 1px solid transparent !important;
+  border-radius: 12px !important;
+}
+
+html[data-theme="light"] :where(.navbar nav a, .nav-actions a, .dashboard-nav .nav-link,
+.dashboard-section-nav button, .checker-mode-tabs button, .demo-tab):hover,
+html[data-theme="light"] :where(.navbar nav a, .nav-actions a, .dashboard-nav .nav-link,
+.dashboard-section-nav button, .checker-mode-tabs button, .demo-tab):focus-visible,
+html[data-theme="light"] :where(.dashboard-nav .nav-link.is-active,
+.dashboard-section-nav button.is-active, .checker-mode-tabs button.is-active, .demo-tab.is-active) {
+  color: #1F2937 !important;
+  background: #A9D35E !important;
+  border-color: #8DB547 !important;
+  box-shadow: 0 0 0 3px rgba(169, 211, 94, .28), 0 8px 20px rgba(104, 141, 43, .22) !important;
+}
+
+html[data-theme="light"] body:not(.splash) :where(.primary-btn, .primary-button, .primary-link,
+.nav-btn, .auth-button, button.primary-action, .report-form button[type="submit"],
+.education-chat-form button[type="submit"], .terms-accept) {
+  color: #1F2937 !important;
+  background: #A9D35E !important;
+  border-color: #8DB547 !important;
+  box-shadow: 0 8px 20px rgba(104, 141, 43, .2) !important;
+}
+
+html[data-theme="light"] body:not(.splash) :where(button, .secondary-btn, .secondary-link,
+.secondary-action):hover:not(:disabled),
+html[data-theme="light"] body:not(.splash) :where(button, .secondary-btn, .secondary-link,
+.secondary-action):focus-visible:not(:disabled) {
+  color: #1F2937 !important;
+  background: #ECFCCB !important;
+  border-color: #A9D35E !important;
+  box-shadow: 0 0 0 3px rgba(169, 211, 94, .24), 0 8px 20px rgba(104, 141, 43, .14) !important;
+}
+
+html[data-theme="light"] .terms-consent {
+  color: #1F2937 !important;
+  background: #FFFFFF !important;
+  border-color: #A9D35E !important;
+  box-shadow: 0 0 0 1px rgba(169, 211, 94, .3), 0 18px 46px rgba(31, 41, 55, .1) !important;
+}
+html[data-theme="light"] .terms-details { color:#374151;background:#F7F8FA;border-color:#D1D5DB }
+html[data-theme="light"] .terms-details summary,
+html[data-theme="light"] .terms-status { color:#1F2937 !important }
+html[data-theme="light"] .terms-decline { color:#374151 !important;background:#FFFFFF !important;border-color:#D1D5DB !important }
+html[data-theme="light"] .terms-consent[data-choice="accepted"] .terms-status { color:#365314 !important }
+html[data-theme="light"] .terms-consent[data-choice="declined"] .terms-status { color:#7C4A03 !important }
+
+@media (max-width:720px) {
+  html[data-theme="light"] .navbar > nav.is-open {
+    padding:12px;
+    border:1px solid #A9D35E;
+    border-radius:16px;
+    background:#FFFFFF;
+    box-shadow:0 10px 28px rgba(104,141,43,.16);
+  }
+}

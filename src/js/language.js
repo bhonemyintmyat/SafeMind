@@ -172,6 +172,19 @@ const translations = {
 };
 
 Object.assign(translations, {
+  "Your choice": "သင့်ရွေးချယ်မှု",
+  "SafeMind terms and responsible use": "SafeMind စည်းကမ်းချက်များနှင့် တာဝန်ယူအသုံးပြုမှု",
+  "Choose whether you accept the terms. Your choice is saved only in this browser and does not affect basic access to the website.": "စည်းကမ်းချက်များကို လက်ခံမလား ရွေးချယ်ပါ။ သင့်ရွေးချယ်မှုကို ဤဘရောက်ဇာတွင်သာ သိမ်းထားပြီး ဝဘ်ဆိုက်၏ အခြေခံအသုံးပြုခွင့်ကို မထိခိုက်ပါ။",
+  "No choice selected yet.": "ရွေးချယ်မှု မပြုလုပ်ရသေးပါ။",
+  "Read the key terms": "အဓိကစည်းကမ်းချက်များကို ဖတ်ရန်",
+  "Use SafeMind analysis as guidance, not as a guarantee that content is safe.": "SafeMind စိစစ်ချက်ကို လမ်းညွှန်အဖြစ်သာ အသုံးပြုပြီး အကြောင်းအရာလုံခြုံကြောင်း အာမခံချက်အဖြစ် မယူဆပါနှင့်။",
+  "Never submit passwords, OTP codes, recovery phrases, or full payment details.": "စကားဝှက်၊ OTP ကုဒ်၊ ပြန်လည်ရယူစာစု သို့မဟုတ် ငွေပေးချေမှုအချက်အလက်အပြည့်အစုံကို မထည့်ပါနှင့်။",
+  "Use the service lawfully and verify urgent requests through official channels.": "ဝန်ဆောင်မှုကို ဥပဒေနှင့်အညီ အသုံးပြုပြီး အရေးပေါ်တောင်းဆိုချက်များကို တရားဝင်လမ်းကြောင်းမှ အတည်ပြုပါ။",
+  "Terms choice": "စည်းကမ်းချက် ရွေးချယ်မှု",
+  "Accept terms": "စည်းကမ်းချက်များကို လက်ခံရန်",
+  Decline: "ငြင်းပယ်ရန်",
+  "Terms accepted on this browser.": "ဤဘရောက်ဇာတွင် စည်းကမ်းချက်များကို လက်ခံထားသည်။",
+  "Terms declined. Basic browsing remains available.": "စည်းကမ်းချက်များကို ငြင်းပယ်ထားသည်။ အခြေခံကြည့်ရှုမှုကို ဆက်လက်အသုံးပြုနိုင်သည်။",
   Home: "ပင်မ",
   Learn: "လေ့လာရန်",
   "Threat Center": "အန္တရာယ် သတင်းစင်တာ",

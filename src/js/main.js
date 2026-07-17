@@ -267,6 +267,34 @@ if (siteFooter && "IntersectionObserver" in window) {
         document.body.classList.toggle("footer-in-view", entry.isIntersecting);
     }).observe(siteFooter);
 }
+
+const termsPanel = document.querySelector("[data-terms-consent]");
+if (termsPanel) {
+    const storageKey = "safemind-terms-choice-v1";
+    const status = termsPanel.querySelector("[data-terms-status]");
+    const choiceButtons = [...termsPanel.querySelectorAll("[data-terms-choice]")];
+    const renderChoice = (choice) => {
+        const language = document.documentElement.lang === "my" ? "my" : "en";
+        const messages = {
+            accepted: { en: "Terms accepted on this browser.", my: "ဤဘရောက်ဇာတွင် စည်းကမ်းချက်များကို လက်ခံထားသည်။" },
+            declined: { en: "Terms declined. Basic browsing remains available.", my: "စည်းကမ်းချက်များကို ငြင်းပယ်ထားသည်။ အခြေခံကြည့်ရှုမှုကို ဆက်လက်အသုံးပြုနိုင်သည်။" },
+            pending: { en: "No choice selected yet.", my: "ရွေးချယ်မှု မပြုလုပ်ရသေးပါ။" }
+        };
+        const selected = ["accepted", "declined"].includes(choice) ? choice : "pending";
+        termsPanel.dataset.choice = selected;
+        if (status) status.textContent = messages[selected][language];
+        choiceButtons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.termsChoice === selected)));
+    };
+    let savedChoice = "";
+    try { savedChoice = localStorage.getItem(storageKey) || ""; } catch { /* Consent controls remain usable without storage. */ }
+    choiceButtons.forEach((button) => button.addEventListener("click", () => {
+        savedChoice = button.dataset.termsChoice;
+        try { localStorage.setItem(storageKey, savedChoice); } catch { /* Keep the current in-page choice. */ }
+        renderChoice(savedChoice);
+    }));
+    window.addEventListener("safemind:language-change", () => renderChoice(savedChoice));
+    renderChoice(savedChoice);
+}
 setMode(activeDemoMode);
 loadContacts();
 document.body.classList.add("is-ready");
