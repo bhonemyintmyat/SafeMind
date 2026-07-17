@@ -453,6 +453,9 @@ button:hover,
 }
 
 .demo-tab{
+    flex:0 0 auto;
+    white-space:nowrap;
+    max-width:none;
     border:1px solid var(--border);
     background:#141414;
     color:var(--muted);
@@ -501,7 +504,6 @@ button:hover,
 }
 
 .demo-input-card .primary-btn{
-    margin-top:16px;
     padding:14px 22px;
 }
 
@@ -516,6 +518,12 @@ button:hover,
     flex-wrap:wrap;
     gap:12px;
     margin-top:18px;
+}
+
+.demo-actions>*{
+    flex:0 0 auto;
+    white-space:nowrap;
+    max-width:none;
 }
 
 .demo-result-card{
@@ -1034,8 +1042,10 @@ footer{
     .demo-section{padding-top:28px}
     .contact-card{align-items:stretch;flex-direction:column}.contact-card .primary-btn{text-align:center;overflow-wrap:anywhere}
     .demo-input-card,.demo-result-card{padding:20px}
-    .demo-actions>*{width:100%;text-align:center}
-    .demo-tabs{overflow-x:auto;flex-wrap:nowrap;padding-bottom:6px}
+    .demo-actions{gap:8px}
+    .demo-actions>*{padding:9px 14px;font-size:14px;text-align:center}
+    .demo-tabs{gap:8px}
+    .demo-tab{padding:8px 12px;font-size:14px}
 }
 
 @media(prefers-reduced-motion:reduce){
