@@ -800,8 +800,6 @@ body.terms-dialog-open{overflow:hidden}
 .footer-copyright{justify-self:end}
 .footer-meta{display:grid;justify-items:end;gap:8px}
 .footer-meta p{margin:0}
-.footer-terms-button{padding:4px 0;border:0;border-bottom:1px solid currentColor;color:var(--text);background:transparent;font-weight:700}
-.footer-terms-button:hover,.footer-terms-button:focus-visible{color:#A9D35E;outline:none}
 
 .footer-brand{
     margin-bottom:10px;

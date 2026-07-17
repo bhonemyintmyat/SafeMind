@@ -34,7 +34,7 @@ if (document.body && !document.body.dataset.authPage && !blockedPages.has(page) 
   root.dataset.safemindAgent = "";
   root.innerHTML = `
     <button class="agent-launcher" type="button" aria-expanded="false" aria-controls="safeMindAgentPanel" aria-label="Open SafeMind Agent">
-      <span aria-hidden="true">SM</span><b>Ask SafeMind</b>
+      <span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.6 2.9 8.4 7 10 4.1-1.6 7-5.4 7-10V6Z"/><path d="M8.5 10.5h7M8.5 14h4"/></svg></span><b>Ask SafeMind</b>
     </button>
     <section class="agent-panel" id="safeMindAgentPanel" role="dialog" aria-label="SafeMind Agent" hidden>
       <header><div><strong>SafeMind Agent</strong><small><i aria-hidden="true"></i> Online</small></div><button type="button" data-agent-close aria-label="Close SafeMind Agent">×</button></header>
@@ -42,7 +42,9 @@ if (document.body && !document.body.dataset.authPage && !blockedPages.has(page) 
       <form><label class="sr-only" for="safeMindAgentInput">Ask SafeMind</label><textarea id="safeMindAgentInput" rows="1" maxlength="4000" placeholder="Paste suspicious content or ask a question..."></textarea><button type="submit" aria-label="Send to SafeMind">Send</button></form>
       <p class="agent-note">Never share passwords, OTP codes, or payment details.</p>
     </section>`;
-  document.body.append(root);
+  const footer = document.querySelector("footer");
+  if (footer?.parentNode) footer.parentNode.insertBefore(root, footer);
+  else document.body.append(root);
 
   const launcher = root.querySelector(".agent-launcher");
   const panel = root.querySelector(".agent-panel");
@@ -51,6 +53,17 @@ if (document.body && !document.body.dataset.authPage && !blockedPages.has(page) 
   const form = root.querySelector("form");
   const input = root.querySelector("textarea");
   const sendButton = form.querySelector('button[type="submit"]');
+
+  function syncVisualViewport() {
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+    const coveredBottom = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+    root.style.setProperty("--agent-visual-bottom", `${coveredBottom}px`);
+    root.style.setProperty("--agent-visual-height", `${viewport.height}px`);
+  }
+  syncVisualViewport();
+  window.visualViewport?.addEventListener("resize", syncVisualViewport);
+  window.visualViewport?.addEventListener("scroll", syncVisualViewport);
 
   function save() {
     try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ messages: messages.slice(-10), lastEvidence, lastAssessment })); } catch { /* Optional. */ }
