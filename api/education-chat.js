@@ -17,6 +17,7 @@ Reply in Burmese when the user writes Burmese or requests Burmese; otherwise rep
 Your role:
 - Explain whether submitted content or screenshots show scam indicators.
 - Use the supplied SafeMind NLP assessment and verified directory match as primary evidence.
+- When the user asks a follow-up, answer the new question directly with added explanation. Do not repeat the previous verdict or action list word-for-word.
 - Clearly distinguish confirmed facts, warning signals, and uncertainty.
 - Give short, practical next steps: pause, verify independently, block, preserve evidence, contact the financial provider, and report when appropriate.
 - Teach the relevant scam pattern so the user can recognize it again.
@@ -449,7 +450,7 @@ function writeStreamEvent(res, event) {
   res.write(`${JSON.stringify(event)}\n`);
 }
 
-async function streamCompletion({ res, config, messages, assessment, directory, scanType, language }) {
+async function streamCompletion({ res, config, messages, assessment, directory, scanType, language, conversational }) {
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/x-ndjson; charset=utf-8");
   res.setHeader("Cache-Control", "no-store, no-cache, max-age=0");
@@ -462,7 +463,7 @@ async function streamCompletion({ res, config, messages, assessment, directory, 
     analysis: structuredAnalysis(assessment, directory),
     directory_match: directory?.matched || false
   });
-  if (assessment && language !== "my") {
+  if (assessment && language !== "my" && !conversational) {
     const answer = buildEnglishAssessment(assessment, directory);
     for (const section of answer.split(/(\n\n)/u)) {
       if (section) {
@@ -601,6 +602,8 @@ export default async function handler(req, res) {
     const previousAssessment = payload.memory?.last_assessment && typeof payload.memory.last_assessment === "object"
       ? publicAssessment(payload.memory.last_assessment)
       : null;
+    const history = safeHistory(payload.history);
+    const conversational = history.length > 0 && Boolean(previousAssessment || payload.memory?.evidence_retained);
     const context = {
       preferred_language: language === "my" ? "Burmese" : "English",
       selected_input_type: scanType,
@@ -617,7 +620,7 @@ export default async function handler(req, res) {
       : userText;
     const messages = [
       { role: "system", content: SYSTEM_PROMPT },
-      ...safeHistory(payload.history),
+      ...history,
       { role: "user", content: userContent }
     ];
     if (payload.stream === true) {
@@ -628,7 +631,8 @@ export default async function handler(req, res) {
         assessment,
         directory,
         scanType,
-        language
+        language,
+        conversational
       });
     }
     const result = await requestCompletion(config, messages, 1_250);

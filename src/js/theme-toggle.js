@@ -1,4 +1,5 @@
 import "../css/theme-toggle.css";
+import "./agent-widget.js";
 
 const STORAGE_KEY = "safemind-theme";
 
