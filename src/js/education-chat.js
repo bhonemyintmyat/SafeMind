@@ -269,7 +269,10 @@ if (form && chatLog) {
     }
     const confidence = Math.max(0, Math.min(99, Number(assessment.confidence) || 0));
     badge.dataset.risk = risk.toLowerCase();
-    badge.textContent = `${risk} · ${confidence}%`;
+    const riskLabel = locale() === "my"
+      ? ({ HIGH: "အန္တရာယ်မြင့်", MEDIUM: "သံသယရှိ", LOW: "အန္တရာယ်နည်း" }[risk] || risk)
+      : risk;
+    badge.textContent = `${riskLabel} · ${confidence}%`;
   }
 
   function renderStructuredResponse(container, value) {
@@ -338,7 +341,9 @@ if (form && chatLog) {
     protectionScore.style.setProperty("--score", confidence);
     protectionScore.querySelector("strong").textContent = `${confidence}%`;
     protectionLabel.textContent = risk === "HIGH" ? copy("High risk", "အန္တရာယ်မြင့်") : risk === "MEDIUM" ? copy("Needs review", "ထပ်မံစစ်ဆေးရန်လို") : copy("Low signal", "အန္တရာယ်လက္ခဏာနည်း");
-    currentAnalysis.textContent = assessment.category || copy("Security analysis complete.", "လုံခြုံရေးစိစစ်မှု ပြီးပါပြီ။");
+    currentAnalysis.textContent = locale() === "my"
+      ? "လုံခြုံရေးစိစစ်မှု ပြီးပါပြီ။"
+      : assessment.category || "Security analysis complete.";
   }
 
   function addRecentAnalysis(question, assessment) {
@@ -349,7 +354,11 @@ if (form && chatLog) {
     const title = document.createElement("strong");
     const meta = document.createElement("small");
     title.textContent = question;
-    meta.textContent = `${assessment?.risk || copy("Checked", "စစ်ဆေးပြီး")} · ${timeLabel()}`;
+    const risk = String(assessment?.risk || "").toUpperCase();
+    const riskLabel = locale() === "my"
+      ? ({ HIGH: "အန္တရာယ်မြင့်", MEDIUM: "သံသယရှိ", LOW: "အန္တရာယ်နည်း" }[risk] || "စစ်ဆေးပြီး")
+      : risk || "Checked";
+    meta.textContent = `${riskLabel} · ${timeLabel()}`;
     button.append(title, meta);
     button.addEventListener("click", () => { questionInput.value = question; questionInput.focus(); });
     recentAnalyses.prepend(button);

@@ -235,8 +235,10 @@ function alignAnswerRisk(answer, assessment, language) {
   const pattern = language === "my"
     ? /(အန္တရာယ်အဆင့်[\s:။-]*)([\s\S]*?)(?=\n\s*အကြောင်းရင်း)/u
     : /((?:Risk Level|Threat Level)[\s:।-]*)([\s\S]*?)(?=\n\s*Reason)/iu;
-  if (pattern.test(answer)) return answer.replace(pattern, `$1\n${value}\n`);
-  return language === "my" ? `အန္တရာယ်အဆင့်\n${value}\n\n${answer}` : `Risk Level\n${value}\n\n${answer}`;
+  const aligned = pattern.test(answer)
+    ? answer.replace(pattern, `$1\n${value}\n`)
+    : language === "my" ? `အန္တရာယ်အဆင့်\n${value}\n\n${answer}` : `Risk Level\n${value}\n\n${answer}`;
+  return aligned.replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
 }
 
 function structuredAnalysis(assessment, directory) {
