@@ -44,7 +44,8 @@ body.landing-page::before{
     z-index:0;
 }
 
-body.landing-page > *{
+/* Exclude dialogs so .terms-dialog keeps position:fixed and its own z-index. */
+body.landing-page > :not(dialog){
     position:relative;
     z-index:1;
 }
