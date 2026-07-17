@@ -981,6 +981,23 @@ html[data-theme="light"] .terms-dialog-close { color:#1F2937 !important;backgrou
   .dashboard-section-nav { top:auto !important; }
 }
 
+/* Landing navigation uses a text-only green hover, never a filled box. */
+html[data-theme="light"] body.landing-page .navbar nav a:hover,
+html[data-theme="light"] body.landing-page .navbar nav a:focus-visible {
+  color:#56751F !important;
+  background:transparent !important;
+  border-color:transparent !important;
+  box-shadow:none !important;
+}
+
+html[data-theme="dark"] body.landing-page .navbar nav a:hover,
+html[data-theme="dark"] body.landing-page .navbar nav a:focus-visible {
+  color:#A9D35E !important;
+  background:transparent !important;
+  border-color:transparent !important;
+  box-shadow:none !important;
+}
+
 /* Final navigation and theme contrast contract. */
 html[data-theme="light"] :where(.navbar .brand span, .footer-brand span, .dashboard-brand span) {
   color:#1F2937 !important;
