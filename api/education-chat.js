@@ -178,6 +178,55 @@ function publicAssessment(assessment) {
   };
 }
 
+const RISK_PRIORITY = { LOW: 1, MEDIUM: 2, HIGH: 3 };
+
+function riskFromAnswer(answer) {
+  const text = plainTextAnswer(answer);
+  const riskSection = text.match(/(?:Risk Level|Threat Level|အန္တရာယ်အဆင့်)[\s:။-]*([^\n\r]{0,180})/iu)?.[1] || "";
+  const risk = /(?:CRITICAL|HIGH)(?:\s+RISK)?\b/i.test(riskSection) || /အန္တရာယ်မြင့်/u.test(riskSection)
+    ? "HIGH"
+    : /MEDIUM(?:\s+RISK)?\b/i.test(riskSection) || /(?:သံသယရှိ|အန္တရာယ်အလယ်အလတ်)/u.test(riskSection)
+      ? "MEDIUM"
+      : /LOW(?:\s+RISK)?\b/i.test(riskSection) || /အန္တရာယ်နည်း/u.test(riskSection)
+        ? "LOW"
+        : "";
+  const confidence = Number(riskSection.match(/(\d{1,3})\s*%/)?.[1]);
+  return { risk, confidence: Number.isFinite(confidence) ? Math.max(0, Math.min(99, confidence)) : 0 };
+}
+
+function reconcileAssessment(assessment, answer) {
+  const current = publicAssessment(assessment);
+  const inferred = riskFromAnswer(answer);
+  if (!inferred.risk) return current;
+  if (!current) {
+    return {
+      risk: inferred.risk,
+      confidence: inferred.confidence,
+      category: "AI security assessment",
+      reason: "Risk level identified from the completed security analysis.",
+      indicators: [],
+      recommended_actions: []
+    };
+  }
+  if (RISK_PRIORITY[inferred.risk] > RISK_PRIORITY[String(current.risk || "").toUpperCase()]) {
+    return { ...current, risk: inferred.risk, confidence: inferred.confidence || current.confidence };
+  }
+  return current;
+}
+
+function alignAnswerRisk(answer, assessment, language) {
+  if (!assessment?.risk) return answer;
+  const risk = String(assessment.risk).toUpperCase();
+  const confidence = Math.max(0, Math.min(99, Number(assessment.confidence) || 0));
+  const label = language === "my" ? burmeseRiskLabel(risk) : risk;
+  const value = `${label} · ${confidence}%`;
+  const pattern = language === "my"
+    ? /(အန္တရာယ်အဆင့်[\s:။-]*)([\s\S]*?)(?=\n\s*အကြောင်းရင်း)/u
+    : /((?:Risk Level|Threat Level)[\s:।-]*)([\s\S]*?)(?=\n\s*Reason)/iu;
+  if (pattern.test(answer)) return answer.replace(pattern, `$1\n${value}\n`);
+  return language === "my" ? `အန္တရာယ်အဆင့်\n${value}\n\n${answer}` : `Risk Level\n${value}\n\n${answer}`;
+}
+
 function structuredAnalysis(assessment, directory) {
   if (!assessment) return {
     riskLevel: "unknown",
@@ -365,19 +414,29 @@ function writeStreamEvent(res, event) {
   res.write(`${JSON.stringify(event)}\n`);
 }
 
-async function streamCompletion({ res, config, messages, assessment, directory, scanType, language }) {
+async function streamCompletion({ res, config, messages, assessment, directory, scanType, language, startedAt }) {
+  const streamStartedAt = Number(startedAt) || Date.now();
+  let firstTokenAt = 0;
+  res.statusCode = 200;
+  res.setHeader("Content-Type", "application/x-ndjson; charset=utf-8");
+  res.setHeader("Cache-Control", "no-store, no-cache, max-age=0");
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Accel-Buffering", "no");
+  res.flushHeaders?.();
+  writeStreamEvent(res, {
+    type: "meta",
+    assessment: publicAssessment(assessment),
+    analysis: structuredAnalysis(assessment, directory),
+    directory_match: directory?.matched || false,
+    timing: { assessment_ms: Math.max(0, Date.now() - streamStartedAt) }
+  });
   if (language === "my" && assessment) {
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "application/x-ndjson; charset=utf-8");
-    res.setHeader("Cache-Control", "no-store, no-cache, max-age=0");
-    res.setHeader("X-Content-Type-Options", "nosniff");
-    res.setHeader("X-Accel-Buffering", "no");
-    res.flushHeaders?.();
-    writeStreamEvent(res, { type: "meta", assessment: publicAssessment(assessment), analysis: structuredAnalysis(assessment, directory), directory_match: directory?.matched || false });
     const answer = buildBurmeseAssessment(assessment, directory);
     for (const section of answer.split(/(\n\n)/u)) {
-      if (section) writeStreamEvent(res, { type: "token", token: section });
-      await new Promise((resolve) => setTimeout(resolve, 18));
+      if (section) {
+        if (!firstTokenAt) firstTokenAt = Date.now();
+        writeStreamEvent(res, { type: "token", token: section });
+      }
     }
     writeStreamEvent(res, {
       type: "done",
@@ -385,7 +444,9 @@ async function streamCompletion({ res, config, messages, assessment, directory, 
       model: "safemind-hybrid-nlp",
       response_complete: true,
       analysis: structuredAnalysis(assessment, directory),
-      follow_ups: followUpSuggestions(scanType, assessment, language)
+      assessment: publicAssessment(assessment),
+      follow_ups: followUpSuggestions(scanType, assessment, language),
+      timing: { duration_ms: Math.max(0, Date.now() - streamStartedAt), ttft_ms: Math.max(0, firstTokenAt - streamStartedAt) }
     });
     return res.end();
   }
@@ -396,14 +457,6 @@ async function streamCompletion({ res, config, messages, assessment, directory, 
   });
   const response = upstream.response;
   if (!response.body) throw Object.assign(new Error("The Scam Coach streaming service is temporarily unavailable."), { statusCode: 502 });
-
-  res.statusCode = 200;
-  res.setHeader("Content-Type", "application/x-ndjson; charset=utf-8");
-  res.setHeader("Cache-Control", "no-store, no-cache, max-age=0");
-  res.setHeader("X-Content-Type-Options", "nosniff");
-  res.setHeader("X-Accel-Buffering", "no");
-  res.flushHeaders?.();
-  writeStreamEvent(res, { type: "meta", assessment: publicAssessment(assessment), analysis: structuredAnalysis(assessment, directory), directory_match: directory?.matched || false });
 
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
@@ -430,7 +483,10 @@ async function streamCompletion({ res, config, messages, assessment, directory, 
         rawAnswer += token;
         if (language !== "my") {
           const safeToken = token.replace(/\*/g, "").replace(/`/g, "");
-          if (safeToken) writeStreamEvent(res, { type: "token", token: safeToken });
+          if (safeToken) {
+            if (!firstTokenAt) firstTokenAt = Date.now();
+            writeStreamEvent(res, { type: "token", token: safeToken });
+          }
         }
       }
       if (choice?.finish_reason) finish = String(choice.finish_reason).toLowerCase();
@@ -452,16 +508,23 @@ async function streamCompletion({ res, config, messages, assessment, directory, 
     }
     completed = finishReason(continuation) !== "length";
   }
-  const answer = language === "my" ? safeBurmeseAnswer(rawAnswer, assessment, directory) : polishAnswer(rawAnswer, language);
-  if (!answer) throw new Error("I'm sorry, I couldn't generate an answer. Please try again.");
-  if (language === "my") streamPlainText(res, answer);
+  const generatedAnswer = language === "my" ? safeBurmeseAnswer(rawAnswer, assessment, directory) : polishAnswer(rawAnswer, language);
+  if (!generatedAnswer) throw new Error("I'm sorry, I couldn't generate an answer. Please try again.");
+  const finalAssessment = reconcileAssessment(assessment, generatedAnswer);
+  const answer = alignAnswerRisk(generatedAnswer, finalAssessment, language);
+  if (language === "my") {
+    if (!firstTokenAt) firstTokenAt = Date.now();
+    streamPlainText(res, answer);
+  }
   writeStreamEvent(res, {
     type: "done",
     answer,
     model,
     response_complete: completed,
     analysis: structuredAnalysis(assessment, directory),
-    follow_ups: followUpSuggestions(scanType, assessment, language)
+    assessment: finalAssessment,
+    follow_ups: followUpSuggestions(scanType, finalAssessment, language),
+    timing: { duration_ms: Math.max(0, Date.now() - streamStartedAt), ttft_ms: Math.max(0, firstTokenAt - streamStartedAt) }
   });
   res.end();
 }
@@ -479,6 +542,7 @@ async function readBody(req) {
 }
 
 export default async function handler(req, res) {
+  const startedAt = Date.now();
   const method = String(req.method || "GET").toUpperCase();
   if (method === "GET") return json(res, 200, { status: "ok", service: "safemind-education-agent" });
   if (method !== "POST") return json(res, 405, { error: "Method not allowed." }, { Allow: "GET, POST" });
@@ -534,7 +598,8 @@ export default async function handler(req, res) {
         assessment,
         directory,
         scanType,
-        language: payload.language === "my" ? "my" : "en"
+        language: payload.language === "my" ? "my" : "en",
+        startedAt
       });
     }
     const result = await requestCompletion(config, messages, 1_250);
@@ -550,17 +615,20 @@ export default async function handler(req, res) {
       rawAnswer = `${rawAnswer}\n${remainder}`.trim();
       completed = finishReason(continuation) !== "length";
     }
-    const answer = payload.language === "my"
+    const generatedAnswer = payload.language === "my"
       ? safeBurmeseAnswer(rawAnswer, assessment, directory)
       : polishAnswer(rawAnswer, "en");
-    if (!answer) return json(res, 502, { error: "I'm sorry, I couldn't generate an answer. Please try again." });
+    if (!generatedAnswer) return json(res, 502, { error: "I'm sorry, I couldn't generate an answer. Please try again." });
+    const finalAssessment = reconcileAssessment(assessment, generatedAnswer);
+    const answer = alignAnswerRisk(generatedAnswer, finalAssessment, payload.language === "my" ? "my" : "en");
     return json(res, 200, {
       answer,
       model: cleanText(result.model, 120),
-      assessment: publicAssessment(assessment),
+      assessment: finalAssessment,
       analysis: structuredAnalysis(assessment, directory),
       directory_match: directory?.matched || false,
-      response_complete: completed
+      response_complete: completed,
+      timing: { duration_ms: Math.max(0, Date.now() - startedAt) }
     });
   } catch (error) {
     const timedOut = error?.name === "TimeoutError" || error?.name === "AbortError";
