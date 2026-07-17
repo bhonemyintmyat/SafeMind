@@ -77,8 +77,10 @@ function openRouterConfig() {
 }
 
 function configForLanguage(config, language) {
-  if (language !== "my") return config;
-  const gemini = cleanText(process.env.OPENROUTER_BURMESE_MODEL || "google/gemini-2.5-flash", 120);
+  const configuredModel = language === "my"
+    ? process.env.OPENROUTER_BURMESE_MODEL
+    : process.env.OPENROUTER_AGENT_MODEL;
+  const gemini = cleanText(configuredModel || "google/gemini-2.5-flash", 120);
   const models = [...new Set([gemini, ...config.models].filter(Boolean))].slice(0, 4);
   return { ...config, models };
 }
