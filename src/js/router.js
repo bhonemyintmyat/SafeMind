@@ -16,7 +16,7 @@ export async function getActiveUser() {
     }
 }
 
-export async function redirectIfAuthenticated(target = "dashboard.html") {
+export async function redirectIfAuthenticated(target = "/dashboard") {
     const user = await getActiveUser();
 
     if (user) {
@@ -27,7 +27,7 @@ export async function redirectIfAuthenticated(target = "dashboard.html") {
     return false;
 }
 
-export async function requireAuth(target = "login.html") {
+export async function requireAuth(target = "/login") {
     const user = await getActiveUser();
 
     if (!user) {
@@ -41,7 +41,7 @@ export async function requireAuth(target = "login.html") {
     return user;
 }
 
-export function bindLogoLinks(target = "main.html") {
+export function bindLogoLinks(target = "/") {
     document.querySelectorAll("[data-logo-link]").forEach((link) => {
         if (link instanceof HTMLAnchorElement) {
             link.href = target;
@@ -73,7 +73,7 @@ export async function logoutToMain() {
     if (supabase) {
         await supabase.auth.signOut();
     }
-    window.location.replace("main.html");
+    window.location.replace("/");
 }
 
 export function pageReady() {

@@ -1,7 +1,7 @@
-const CACHE_NAME = "safemind-v3";
+const CACHE_NAME = "safemind-v4";
 const APP_SHELL = [
-  "/src/pages/onboarding.html",
-  "/src/pages/main.html",
+  "/welcome",
+  "/",
   "/assets/Untitled_Artwork.jpg",
   "/assets/redlogo.png"
 ];
@@ -22,5 +22,5 @@ self.addEventListener("fetch", (event) => {
       caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
     }
     return response;
-  }).catch(() => caches.match(event.request).then((cached) => cached || (event.request.mode === "navigate" ? caches.match("/src/pages/main.html") : Response.error()))));
+  }).catch(() => caches.match(event.request).then((cached) => cached || (event.request.mode === "navigate" ? caches.match("/") : Response.error()))));
 });

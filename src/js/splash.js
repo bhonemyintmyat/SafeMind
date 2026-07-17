@@ -11,5 +11,5 @@ if (logo) {
 }
 
 window.setTimeout(() => {
-    window.location.replace("main.html");
+    window.location.replace("/");
 }, 3500);

@@ -3,7 +3,7 @@
   "short_name": "SafeMind",
   "description": "Check suspicious messages, links, phone numbers, and email addresses.",
   "id": "/",
-  "start_url": "/src/pages/onboarding.html?source=homescreen",
+  "start_url": "/welcome?source=homescreen",
   "scope": "/",
   "display": "standalone",
   "background_color": "#050505",

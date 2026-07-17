@@ -1,8 +1,14 @@
 User-agent: *
 Allow: /
 Disallow: /api/
-Disallow: /src/pages/dashboard.html
-Disallow: /src/pages/reports.html
-Disallow: /src/pages/profile.html
+Disallow: /dashboard
+Disallow: /reports
+Disallow: /eduai
+Disallow: /settings
+Disallow: /login
+Disallow: /signup
+Disallow: /welcome
+Disallow: /intro
+Disallow: /src/
 
 Sitemap: https://safemind.kaungkhantko.studio/sitemap.xml

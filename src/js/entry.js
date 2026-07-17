@@ -1,1 +1,1 @@
-window.location.replace("/src/pages/splash.html");
+window.location.replace("/intro");

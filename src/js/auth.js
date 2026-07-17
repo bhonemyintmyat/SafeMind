@@ -9,20 +9,19 @@ const message = document.querySelector("[data-auth-message]");
 const submitButton = form?.querySelector('button[type="submit"]');
 
 function safeReturnTarget() {
-    if (sessionStorage.getItem("safemindPendingReport")) return "reports.html";
+    if (sessionStorage.getItem("safemindPendingReport")) return "/reports";
     const requested = new URLSearchParams(window.location.search).get("returnTo");
-    if (!requested) return "dashboard.html";
+    if (!requested) return "/dashboard";
     try {
         const target = new URL(requested, window.location.origin);
-        const allowedPages = ["dashboard.html", "reports.html", "education.html", "education-article.html", "profile.html"];
-        const page = target.pathname.split("/").pop();
-        if (target.origin === window.location.origin && allowedPages.includes(page)) {
+        const allowedPaths = ["/dashboard", "/reports", "/eduai", "/eduai/article", "/settings"];
+        if (target.origin === window.location.origin && allowedPaths.includes(target.pathname)) {
             return `${target.pathname}${target.search}${target.hash}`;
         }
     } catch {
-        return "dashboard.html";
+        return "/dashboard";
     }
-    return "dashboard.html";
+    return "/dashboard";
 }
 
 function showMessage(text, isError = true) {
@@ -160,7 +159,7 @@ document.querySelectorAll("[data-provider]").forEach((button) => {
                 provider: button.dataset.provider,
                 options: {
                     scopes: button.dataset.provider === "azure" ? "email" : undefined,
-                    redirectTo: new URL("dashboard.html", window.location.href).href
+                    redirectTo: new URL("/dashboard", window.location.origin).href
                 }
             }));
         } catch {

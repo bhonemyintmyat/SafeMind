@@ -353,7 +353,7 @@ function renderEducation() {
         date.dateTime = Number.isNaN(published.getTime()) ? "" : published.toISOString();
         date.textContent = Number.isNaN(published.getTime()) ? "Recently" : published.toLocaleDateString();
         const link = document.createElement("a");
-        link.href = `education-article.html?id=${encodeURIComponent(row.id)}`;
+        link.href = `/eduai/article?id=${encodeURIComponent(row.id)}`;
         link.target = "_blank";
         link.rel = "noopener noreferrer";
         link.textContent = "Read article";
@@ -427,7 +427,7 @@ async function initializePage(activeUser) {
     user = activeUser;
     if (!user) return;
     if (page === "overview" && sessionStorage.getItem("safemindPendingReport")) {
-        window.location.replace("reports.html");
+        window.location.replace("/reports");
         return;
     }
     const name = renderIdentity(user);
@@ -606,4 +606,4 @@ document.getElementById("passwordForm")?.addEventListener("submit", async (event
 pageReady();
 initLanguage();
 document.querySelectorAll("[data-logout]").forEach((button) => button.addEventListener("click", logoutToMain));
-requireAuth("login.html").then(initializePage);
+requireAuth("/login").then(initializePage);

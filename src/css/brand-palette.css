@@ -1160,3 +1160,64 @@ html[data-theme="light"] body.landing-page .footer-copyright { color:#4B5563 !im
 html[data-theme="light"] body.auth-page { color:#1F2937 !important; background-color:#F7F8FA !important; }
 html[data-theme="light"] body.auth-page a { color:#3F425A; background-color:transparent; }
 html[data-theme="light"] body.auth-page .auth-footer a { color:#3F425A !important; }
+
+/* Responsive typography and wrapping contract shared by every page. */
+html {
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+body:not(.splash) {
+  font-size:clamp(15px,calc(14px + .22vw),17px);
+}
+body:not(.splash) :where(h1,h2,h3,h4,h5,h6,p,li,dd,dt,label,button,a,span,strong,small) {
+  max-width:100%;
+  overflow-wrap:anywhere;
+}
+body:not(.splash) :where(h1,h2,h3,h4,h5,h6) {
+  margin-block-start:0;
+  text-wrap:balance;
+}
+body:not(.splash) h1 { font-size:clamp(1.75rem,4vw,3.5rem) !important; line-height:1.2 !important; }
+body:not(.splash) h2 { font-size:clamp(1.35rem,3vw,2.5rem) !important; line-height:1.3 !important; }
+body:not(.splash) h3 { font-size:clamp(1.05rem,2vw,1.6rem) !important; line-height:1.4 !important; }
+body:not(.splash) :where(p,li,dd) { line-height:1.65; }
+body:not(.splash) :where(small,.eyebrow,.tag,.field-guidance,.demo-hint,.agent-note) {
+  font-size:clamp(.75rem,calc(.7rem + .18vw),.9375rem);
+  line-height:1.6;
+}
+:where(.dashboard-shell,.dashboard-main,.dashboard-content,.cards,.demo-layout,.dashboard-command-grid,
+.dashboard-summary-grid,.scanner-findings,.threat-center-grid,.learning-levels,.auth-shell,
+.content-card,.card,.how-card,.trust-card,.faq-item,.agent-panel) > * { min-width:0; }
+:where(button,[role="button"],.primary-btn,.secondary-btn,.nav-link,.sidebar-control) {
+  min-width:0;
+  max-width:100%;
+  white-space:normal;
+  text-align:center;
+}
+:where(input,textarea,select) { min-width:0; width:100%; }
+:where(table) { width:100%; max-width:100%; }
+
+@media (max-width:720px) {
+  body:not(.splash) { font-size:16px; }
+  :where(.dashboard-content,.narrow-content,.article-shell,.sitemap-content) {
+    width:min(100% - 24px,100%) !important;
+    max-width:100% !important;
+  }
+  :where(.cards,.demo-layout,.verified-grid,.trust-grid,.how-grid,.dashboard-command-grid,
+  .dashboard-summary-grid,.scanner-findings,.threat-center-grid,.learning-levels,.profile-card) {
+    grid-template-columns:minmax(0,1fr) !important;
+  }
+  :where(.content-card,.dashboard-card,.card,.how-card,.trust-card,.faq-item,
+  .demo-input-card,.demo-result-card,.auth-card) {
+    padding:clamp(16px,5vw,24px) !important;
+  }
+  :where(.app-modal,.terms-dialog,.agent-panel) {
+    max-width:calc(100vw - 24px) !important;
+  }
+}
+
+html[lang="my"] body:not(.splash) :where(h1,h2,h3,h4,h5,h6,p,li,dd,label,button,a,span,strong,small) {
+  word-break:normal;
+  overflow-wrap:anywhere;
+  line-break:auto;
+}

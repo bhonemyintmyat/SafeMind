@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SafeMind Reports</title>
+    <meta name="robots" content="noindex,nofollow">
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
@@ -12,18 +13,18 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="SafeMind">
-    <link rel="stylesheet" href="../css/dashboard.css">
-    <link rel="stylesheet" href="../css/brand-palette.css">
+    <link rel="stylesheet" href="/src/css/dashboard.css">
+    <link rel="stylesheet" href="/src/css/brand-palette.css">
 </head>
 <body class="dashboard-page" data-page="reports">
     <div class="dashboard-shell">
         <aside class="dashboard-sidebar">
-            <a class="dashboard-brand" href="dashboard.html"><img src="/assets/redlogo.png" alt=""><span>SafeMind</span></a>
+            <a class="dashboard-brand" href="/dashboard"><img src="/assets/redlogo.png" alt=""><span>SafeMind</span></a>
             <nav class="dashboard-nav" aria-label="Primary navigation">
-                <a class="nav-link" href="dashboard.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1Z"/></svg><span>Overview</span></a>
-                <a class="nav-link is-active" href="reports.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4m0 1h11l-2 4 2 4H5"/></svg><span>Reports</span></a>
-                <a class="nav-link" href="education.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H11v17H7.5A3.5 3.5 0 0 0 4 22Zm16 0A3.5 3.5 0 0 0 16.5 2H13v17h3.5A3.5 3.5 0 0 1 20 22Z"/></svg><span>EduAI</span></a>
-                <a class="nav-link" href="profile.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 1 1-7-7"/></svg><span>Setting</span></a>
+                <a class="nav-link" href="/dashboard"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1Z"/></svg><span>Overview</span></a>
+                <a class="nav-link is-active" href="/reports" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4m0 1h11l-2 4 2 4H5"/></svg><span>Reports</span></a>
+                <a class="nav-link" href="/eduai"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H11v17H7.5A3.5 3.5 0 0 0 4 22Zm16 0A3.5 3.5 0 0 0 16.5 2H13v17h3.5A3.5 3.5 0 0 1 20 22Z"/></svg><span>EduAI</span></a>
+                <a class="nav-link" href="/settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 1 1-7-7"/></svg><span>Setting</span></a>
             </nav>
             <button class="mobile-nav-more" type="button" aria-expanded="false" aria-controls="dashboardUtilities" aria-label="More options"><span></span><span></span><span></span></button>
             <div class="dashboard-utilities" id="dashboardUtilities">
@@ -32,7 +33,7 @@
             </div>
         </aside>
         <div class="dashboard-main">
-            <header class="dashboard-header"><div><p>Reports</p><h1>Request a manual review</h1></div><a class="profile-link" href="profile.html"><span class="avatar" data-avatar>SM</span><span><b class="username">User</b><small>Edit profile</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a></header>
+            <header class="dashboard-header"><div><p>Reports</p><h1>Request a manual review</h1></div><a class="profile-link" href="/settings"><span class="avatar" data-avatar>SM</span><span><b class="username">User</b><small>Edit profile</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a></header>
             <main class="dashboard-content narrow-content">
                 <section class="content-card">
                     <div class="section-title"><div><p>Manual review</p><h2>Send suspicious content</h2><span>An administrator will review the content you submit.</span></div></div>
@@ -69,6 +70,6 @@
             </main>
         </div>
     </div>
-    <script type="module" src="../js/dashboard.js"></script>
+    <script type="module" src="/src/js/dashboard.js"></script>
 </body>
 </html>
