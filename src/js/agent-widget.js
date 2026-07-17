@@ -1,6 +1,6 @@
 import "../css/agent-widget.css";
 
-const blockedPages = new Set(["education", "splash", "onboarding"]);
+const blockedPages = new Set(["main", "education", "splash", "onboarding"]);
 const page = document.body?.dataset.page || "";
 
 if (document.body && !document.body.dataset.authPage && !blockedPages.has(page) && !document.querySelector("[data-safemind-agent]")) {
