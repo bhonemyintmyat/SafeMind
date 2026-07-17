@@ -757,7 +757,7 @@ html[data-theme="light"] .education-feed {
 }
 
 /* Replace dark-only landing surfaces so light-theme text keeps its contrast. */
-html[data-theme="light"] .hero-features li,
+html[data-theme="light"] .hero-features li button,
 html[data-theme="light"] .demo-tab {
   background: #FFFFFF !important;
   border-color: #D1D5DB !important;

@@ -203,6 +203,10 @@ async function loadContacts() {
 }
 
 demoTabs.forEach((button) => button.addEventListener("click", () => setMode(button.dataset.demoMode)));
+document.querySelectorAll("[data-hero-feature]").forEach((button) => button.addEventListener("click", () => {
+    setMode(button.dataset.heroFeature);
+    document.getElementById("demo")?.scrollIntoView({ behavior: "smooth" });
+}));
 document.querySelectorAll("[data-demo-example]").forEach((button) => button.addEventListener("click", () => {
     demoInput.value = examples[activeDemoMode][button.dataset.demoExample];
 }));
@@ -256,6 +260,12 @@ if (typingTarget) {
         typeHeading();
     });
     typeHeading();
+}
+const siteFooter = document.querySelector(".site-footer");
+if (siteFooter && "IntersectionObserver" in window) {
+    new IntersectionObserver(([entry]) => {
+        document.body.classList.toggle("footer-in-view", entry.isIntersecting);
+    }).observe(siteFooter);
 }
 setMode(activeDemoMode);
 loadContacts();

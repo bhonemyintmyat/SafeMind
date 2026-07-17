@@ -18,6 +18,7 @@ const translations = {
   "Phone intelligence": "ဖုန်းနံပါတ် စိစစ်မှု",
   "Message analysis": "စာတို စိစစ်မှု",
   "Link inspection": "လင့်ခ် စိစစ်မှု",
+  "Email verification": "အီးမေးလ် စိစစ်မှု",
   "Interactive Demo": "အပြန်အလှန် အစမ်းသုံးစနစ်",
   "Test a suspicious input instantly":
     "သံသယဖြစ်ဖွယ် အချက်အလက်ကို ချက်ချင်းစစ်ဆေးပါ",
