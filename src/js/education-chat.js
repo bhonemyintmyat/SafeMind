@@ -402,7 +402,14 @@ if (form && chatLog) {
     const avatar = document.createElement("span");
     avatar.className = "education-message-avatar";
     avatar.setAttribute("aria-hidden", "true");
-    avatar.textContent = role === "assistant" ? "SM" : copy("You", "သင်");
+    if (role === "assistant") {
+      const icon = document.createElement("img");
+      icon.src = "/assets/green-logo.png";
+      icon.alt = "";
+      avatar.append(icon);
+    } else {
+      avatar.textContent = copy("You", "သင်");
+    }
     const content = document.createElement("div");
     applyRiskBadge(content, assessment);
     const paragraph = document.createElement("p");
@@ -427,7 +434,10 @@ if (form && chatLog) {
     const avatar = document.createElement("span");
     avatar.className = "education-message-avatar";
     avatar.setAttribute("aria-hidden", "true");
-    avatar.textContent = "SM";
+    const icon = document.createElement("img");
+    icon.src = "/assets/green-logo.png";
+    icon.alt = "";
+    avatar.append(icon);
     const content = document.createElement("div");
     const label = document.createElement("strong");
     label.textContent = copy("Analyzing evidence...", "သက်သေအထောက်အထားကို စိစစ်နေသည်...");

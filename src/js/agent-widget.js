@@ -34,7 +34,7 @@ if (document.body && !document.body.dataset.authPage && !blockedPages.has(page) 
   root.dataset.safemindAgent = "";
   root.innerHTML = `
     <button class="agent-launcher" type="button" aria-expanded="false" aria-controls="safeMindAgentPanel" aria-label="Open SafeMind Agent">
-      <span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.6 2.9 8.4 7 10 4.1-1.6 7-5.4 7-10V6Z"/><path d="M8.5 10.5h7M8.5 14h4"/></svg></span><b>Ask SafeMind</b>
+      <span aria-hidden="true"><img src="/assets/green-logo.png" alt=""></span><b>Ask SafeMind</b>
     </button>
     <section class="agent-panel" id="safeMindAgentPanel" role="dialog" aria-label="SafeMind Agent" hidden>
       <header><div><strong>SafeMind Agent</strong><small><i aria-hidden="true"></i> Online</small></div><button type="button" data-agent-close aria-label="Close SafeMind Agent">×</button></header>
@@ -82,7 +82,14 @@ if (document.body && !document.body.dataset.authPage && !blockedPages.has(page) 
     const article = document.createElement("article");
     article.className = `agent-message is-${role}${pending ? " is-pending" : ""}`;
     const label = document.createElement("span");
-    label.textContent = role === "assistant" ? "SM" : copy("You", "သင်");
+    if (role === "assistant") {
+      const icon = document.createElement("img");
+      icon.src = "/assets/green-logo.png";
+      icon.alt = "";
+      label.append(icon);
+    } else {
+      label.textContent = copy("You", "သင်");
+    }
     const text = document.createElement("p");
     text.textContent = plainText(value);
     article.append(label, text);

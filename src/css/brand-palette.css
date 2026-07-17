@@ -1241,3 +1241,52 @@ html[lang="my"] body:not(.splash) :where(p,li,dd,dt,label,summary,button,a,span,
 html[lang="my"] body:not(.splash) .terms-dialog-close {
   line-height:1 !important;
 }
+
+/* One typography system across every page: light English, consistent Burmese. */
+@font-face {
+  font-family:"SafeMind Myanmar";
+  src:url('/သူရိယ.ttf') format('truetype');
+  font-display:swap;
+  font-style:normal;
+  font-weight:400 600;
+}
+
+html:not([lang="my"]) body:not(.splash),
+html:not([lang="my"]) body:not(.splash) :where(button,input,textarea,select,option,optgroup) {
+  font-family:"Avenir Next",Avenir,"Helvetica Neue",Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif !important;
+  font-weight:400 !important;
+}
+
+html:not([lang="my"]) body:not(.splash) :where(h1,h2,h3,h4,h5,h6,strong,b,.brand,.dashboard-brand,.checker-header-brand) {
+  font-weight:600 !important;
+}
+
+html:not([lang="my"]) body:not(.splash) :where(button,label,legend,th,.tag,.eyebrow,.auth-kicker) {
+  font-weight:500 !important;
+}
+
+html[lang="my"] body,
+html[lang="my"] body *,
+html[lang="my"] body *::before,
+html[lang="my"] body *::after {
+  font-family:"SafeMind Myanmar","Myanmar Sangam MN","Noto Sans Myanmar",sans-serif !important;
+  font-synthesis:none;
+  letter-spacing:0 !important;
+}
+
+html[lang="my"] body :where(h1,h2,h3,h4,h5,h6,strong,b,button,label,legend,.brand,.dashboard-brand,.checker-header-brand) {
+  font-weight:500 !important;
+}
+
+.education-message-avatar {
+  overflow:hidden !important;
+  border-radius:50% !important;
+}
+
+.education-message-avatar img {
+  width:100%;
+  height:100%;
+  display:block;
+  border-radius:50%;
+  object-fit:cover;
+}
