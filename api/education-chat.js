@@ -75,6 +75,18 @@ function openRouterConfig() {
   return { apiKey, models };
 }
 
+function configForLanguage(config, language) {
+  if (language !== "my") return config;
+  const gemini = cleanText(process.env.OPENROUTER_BURMESE_MODEL || "google/gemini-2.5-flash", 120);
+  const models = [...new Set([gemini, ...config.models].filter(Boolean))].slice(0, 4);
+  return { ...config, models };
+}
+
+function requestedLanguage(payload, ...values) {
+  if (payload?.language === "my") return "my";
+  return values.some((value) => /[\u1000-\u109F\uAA60-\uAA7F]/u.test(String(value || ""))) ? "my" : "en";
+}
+
 function wait(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
@@ -390,8 +402,9 @@ function hasForeignScript(value) {
 
 function safeBurmeseAnswer(value, assessment, directory) {
   const generated = polishAnswer(value, "my");
+  const hasRequiredSections = ["အန္တရာယ်အဆင့်", "အကြောင်းရင်း", "သင်လုပ်သင့်သည်"].every((label) => generated.includes(label));
+  if (hasRequiredSections && !hasForeignScript(generated) && (generated.match(/[\u1000-\u109F]/gu) || []).length >= 20) return generated;
   if (assessment) return buildBurmeseAssessment(assessment, directory);
-  if (!hasForeignScript(generated) && (generated.match(/[\u1000-\u109F]/gu) || []).length >= 20) return generated;
   return `အန္တရာယ်အဆင့်\nမသေချာသေးပါ။\n\nအကြောင်းရင်း\nပေးထားသော အချက်အလက်ကို ဆုံးဖြတ်ရန် သက်သေအထောက်အထား မလုံလောက်သေးပါ။\n\nသင်လုပ်သင့်သည်\n• မသေချာသေးချိန်တွင် လင့်ခ်မနှိပ်ပါနှင့်၊ ငွေမပို့ပါနှင့်။\n• OTP နှင့် စကားဝှက်ကို မမျှဝေပါနှင့်။\n• တရားဝင်လမ်းကြောင်းမှ ပို့သူကို သီးခြားအတည်ပြုပါ။`;
 }
 
@@ -434,9 +447,7 @@ function writeStreamEvent(res, event) {
   res.write(`${JSON.stringify(event)}\n`);
 }
 
-async function streamCompletion({ res, config, messages, assessment, directory, scanType, language, startedAt }) {
-  const streamStartedAt = Number(startedAt) || Date.now();
-  let firstTokenAt = 0;
+async function streamCompletion({ res, config, messages, assessment, directory, scanType, language }) {
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/x-ndjson; charset=utf-8");
   res.setHeader("Cache-Control", "no-store, no-cache, max-age=0");
@@ -447,16 +458,12 @@ async function streamCompletion({ res, config, messages, assessment, directory, 
     type: "meta",
     assessment: publicAssessment(assessment),
     analysis: structuredAnalysis(assessment, directory),
-    directory_match: directory?.matched || false,
-    timing: { assessment_ms: Math.max(0, Date.now() - streamStartedAt) }
+    directory_match: directory?.matched || false
   });
-  if (assessment) {
-    const answer = language === "my"
-      ? buildBurmeseAssessment(assessment, directory)
-      : buildEnglishAssessment(assessment, directory);
+  if (assessment && language !== "my") {
+    const answer = buildEnglishAssessment(assessment, directory);
     for (const section of answer.split(/(\n\n)/u)) {
       if (section) {
-        if (!firstTokenAt) firstTokenAt = Date.now();
         writeStreamEvent(res, { type: "token", token: section });
       }
     }
@@ -467,8 +474,7 @@ async function streamCompletion({ res, config, messages, assessment, directory, 
       response_complete: true,
       analysis: structuredAnalysis(assessment, directory),
       assessment: publicAssessment(assessment),
-      follow_ups: followUpSuggestions(scanType, assessment, language),
-      timing: { duration_ms: Math.max(0, Date.now() - streamStartedAt), ttft_ms: Math.max(0, firstTokenAt - streamStartedAt) }
+      follow_ups: followUpSuggestions(scanType, assessment, language)
     });
     return res.end();
   }
@@ -506,7 +512,6 @@ async function streamCompletion({ res, config, messages, assessment, directory, 
         if (language !== "my") {
           const safeToken = token.replace(/\*/g, "").replace(/`/g, "");
           if (safeToken) {
-            if (!firstTokenAt) firstTokenAt = Date.now();
             writeStreamEvent(res, { type: "token", token: safeToken });
           }
         }
@@ -535,8 +540,9 @@ async function streamCompletion({ res, config, messages, assessment, directory, 
   const finalAssessment = reconcileAssessment(assessment, generatedAnswer);
   const answer = alignAnswerRisk(generatedAnswer, finalAssessment, language);
   if (language === "my") {
-    if (!firstTokenAt) firstTokenAt = Date.now();
-    streamPlainText(res, answer);
+    for (const section of answer.split(/(\n\n)/u)) {
+      if (section) writeStreamEvent(res, { type: "token", token: section });
+    }
   }
   writeStreamEvent(res, {
     type: "done",
@@ -545,8 +551,7 @@ async function streamCompletion({ res, config, messages, assessment, directory, 
     response_complete: completed,
     analysis: structuredAnalysis(assessment, directory),
     assessment: finalAssessment,
-    follow_ups: followUpSuggestions(scanType, finalAssessment, language),
-    timing: { duration_ms: Math.max(0, Date.now() - streamStartedAt), ttft_ms: Math.max(0, firstTokenAt - streamStartedAt) }
+    follow_ups: followUpSuggestions(scanType, finalAssessment, language)
   });
   res.end();
 }
@@ -564,7 +569,6 @@ async function readBody(req) {
 }
 
 export default async function handler(req, res) {
-  const startedAt = Date.now();
   const method = String(req.method || "GET").toUpperCase();
   if (method === "GET") return json(res, 200, { status: "ok", service: "safemind-education-agent" });
   if (method !== "POST") return json(res, 405, { error: "Method not allowed." }, { Allow: "GET, POST" });
@@ -573,8 +577,8 @@ export default async function handler(req, res) {
     return json(res, 415, { error: "Content-Type must be application/json." });
   }
 
-  const config = openRouterConfig();
-  if (!config) return json(res, 503, { error: "The education AI is not configured correctly." });
+  const baseConfig = openRouterConfig();
+  if (!baseConfig) return json(res, 503, { error: "The education AI is not configured correctly." });
 
   try {
     const payload = JSON.parse(await readBody(req) || "{}");
@@ -582,6 +586,8 @@ export default async function handler(req, res) {
     const evidenceText = cleanText(payload.evidence_text, 10_000);
     const image = safeImage(payload.image);
     if (!question && !evidenceText && !image) return json(res, 400, { error: "Enter a question or add scam evidence." });
+    const language = requestedLanguage(payload, question, evidenceText);
+    const config = configForLanguage(baseConfig, language);
 
     const requestedType = SUPPORTED_TYPES.has(payload.scan_type) ? payload.scan_type : "auto";
     const scanType = requestedType === "auto" ? detectScanType(evidenceText || question) : requestedType;
@@ -594,7 +600,7 @@ export default async function handler(req, res) {
       ? publicAssessment(payload.memory.last_assessment)
       : null;
     const context = {
-      preferred_language: payload.language === "my" ? "Burmese" : "English",
+      preferred_language: language === "my" ? "Burmese" : "English",
       selected_input_type: scanType,
       nlp_assessment: publicAssessment(assessment),
       verified_directory: directory,
@@ -620,8 +626,7 @@ export default async function handler(req, res) {
         assessment,
         directory,
         scanType,
-        language: payload.language === "my" ? "my" : "en",
-        startedAt
+        language
       });
     }
     const result = await requestCompletion(config, messages, 1_250);
@@ -637,20 +642,19 @@ export default async function handler(req, res) {
       rawAnswer = `${rawAnswer}\n${remainder}`.trim();
       completed = finishReason(continuation) !== "length";
     }
-    const generatedAnswer = payload.language === "my"
+    const generatedAnswer = language === "my"
       ? safeBurmeseAnswer(rawAnswer, assessment, directory)
       : polishAnswer(rawAnswer, "en");
     if (!generatedAnswer) return json(res, 502, { error: "I'm sorry, I couldn't generate an answer. Please try again." });
     const finalAssessment = reconcileAssessment(assessment, generatedAnswer);
-    const answer = alignAnswerRisk(generatedAnswer, finalAssessment, payload.language === "my" ? "my" : "en");
+    const answer = alignAnswerRisk(generatedAnswer, finalAssessment, language);
     return json(res, 200, {
       answer,
       model: cleanText(result.model, 120),
       assessment: finalAssessment,
       analysis: structuredAnalysis(assessment, directory),
       directory_match: directory?.matched || false,
-      response_complete: completed,
-      timing: { duration_ms: Math.max(0, Date.now() - startedAt) }
+      response_complete: completed
     });
   } catch (error) {
     const timedOut = error?.name === "TimeoutError" || error?.name === "AbortError";

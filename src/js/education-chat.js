@@ -272,23 +272,12 @@ if (form && chatLog) {
     badge.textContent = `${risk} · ${confidence}%`;
   }
 
-  function addResponseTiming(container, timing) {
-    container.querySelector(".education-response-timing")?.remove();
-    const duration = Math.max(0, Math.round(Number(timing?.duration_ms) || 0));
-    if (!duration) return;
-    const timingLabel = document.createElement("span");
-    timingLabel.className = "education-response-timing";
-    timingLabel.textContent = copy(`Completed in ${duration} ms`, `${duration} ms အတွင်း ပြီးစီးသည်`);
-    container.append(timingLabel);
-  }
-
   function renderStructuredResponse(container, value) {
     const answer = plainText(value);
     container.querySelector("p")?.remove();
     container.querySelector(".education-response-grid")?.remove();
     container.querySelector(".education-response-actions")?.remove();
     container.querySelector(".education-message-time")?.remove();
-    container.querySelector(".education-response-timing")?.remove();
     const sections = parseResponseSections(answer);
     const grid = document.createElement("div");
     grid.className = "education-response-grid";
@@ -492,12 +481,11 @@ if (form && chatLog) {
         responseParagraph.textContent = plainText(text);
         chatLog.scrollTop = chatLog.scrollHeight;
       },
-      finish(text, assessment = null, timing = null) {
+      finish(text, assessment = null) {
         clearTimers();
         applyRiskBadge(content, assessment);
         this.setResponse(text);
         renderStructuredResponse(content, text);
-        addResponseTiming(content, timing);
         article.classList.remove("is-loading");
       },
       cancel() {
@@ -526,7 +514,6 @@ if (form && chatLog) {
   }
 
   async function sendQuestion(question) {
-    const interactionStartedAt = performance.now();
     const typedQuestion = String(question || "").trim();
     const selectedType = evidenceType.value;
     const questionOnly = /^(?:why|what|how|when|where|who|is|are|can|could|should|would|explain|teach|tell|ဘာ|ဘယ်|မည်|ရှင်းပြ|သင်ပေး)/iu.test(typedQuestion)
@@ -571,6 +558,15 @@ if (form && chatLog) {
       activeRequest = controller;
       let retrying = false;
       let cancelled = false;
+      let streamedText = "";
+      let renderFrame = 0;
+      const scheduleStreamRender = () => {
+        if (renderFrame) return;
+        renderFrame = window.requestAnimationFrame(() => {
+          renderFrame = 0;
+          loading.setResponse(streamedText);
+        });
+      };
       loading.continueButton.onclick = () => {
         loading.continueButton.closest(".education-wait-panel").hidden = true;
         setStatus(chatStatus, copy("Still analyzing. The answer will stream here when ready.", "ဆက်လက်စိစစ်နေပါသည်။ အဖြေရရှိသည်နှင့် ဤနေရာတွင် တဖြည်းဖြည်း ပြသပါမည်။"), "pending");
@@ -605,7 +601,6 @@ if (form && chatLog) {
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = "";
-        let streamedText = "";
         let doneEvent = null;
         while (true) {
           const { value, done } = await reader.read();
@@ -620,14 +615,10 @@ if (form && chatLog) {
               lastAssessment = event.assessment || null;
               updateProtection(lastAssessment);
               loading.beginResponse(lastAssessment);
-              const assessmentMs = Math.max(0, Math.round(Number(event.timing?.assessment_ms) || 0));
-              setStatus(chatStatus, copy(
-                `Risk classified in ${assessmentMs} ms. Preparing guidance...`,
-                `အန္တရာယ်အဆင့်ကို ${assessmentMs} ms အတွင်း သတ်မှတ်ပြီးပါပြီ။ အကြံပြုချက် ပြင်ဆင်နေသည်...`
-              ), "pending");
+              setStatus(chatStatus, copy("Risk classified. Preparing guidance...", "အန္တရာယ်အဆင့် သတ်မှတ်ပြီးပါပြီ။ အကြံပြုချက် ပြင်ဆင်နေသည်..."), "pending");
             } else if (event.type === "token") {
               streamedText += event.token || "";
-              loading.setResponse(streamedText);
+              scheduleStreamRender();
             } else if (event.type === "done") {
               doneEvent = event;
               streamedText = event.answer || streamedText;
@@ -637,29 +628,32 @@ if (form && chatLog) {
           }
           if (done) break;
         }
+        if (renderFrame) {
+          window.cancelAnimationFrame(renderFrame);
+          renderFrame = 0;
+        }
         if (!doneEvent?.answer && !streamedText.trim()) throw new Error(copy("I'm sorry, I couldn't generate an answer. Please try again.", "စိတ်မကောင်းပါ။ အဖြေမထုတ်ပေးနိုင်ပါ။ ထပ်မံကြိုးစားပါ။"));
         const completedAnswer = plainText(doneEvent?.answer || streamedText);
         lastAssessment = doneEvent?.assessment || lastAssessment;
         updateProtection(lastAssessment);
-        const timing = doneEvent?.timing || { duration_ms: performance.now() - interactionStartedAt };
-        loading.finish(completedAnswer, lastAssessment, timing);
+        loading.finish(completedAnswer, lastAssessment);
         history.push({ role: "assistant", content: completedAnswer });
         persistChatHistory();
         addRecentAnalysis(userQuestion, lastAssessment);
         updateFollowUps(doneEvent?.follow_ups || []);
         questionInput.value = "";
-        const duration = Math.max(0, Math.round(Number(timing.duration_ms) || 0));
         setStatus(chatStatus, doneEvent?.response_complete === false
           ? copy("The response reached its limit. Use a follow-up to continue.", "အဖြေကန့်သတ်ချက်သို့ ရောက်သွားသည်။ ဆက်မေးရန် အောက်ပါမေးခွန်းများကို သုံးပါ။")
-          : copy(`Analysis completed in ${duration} ms.`, `စိစစ်မှု ${duration} ms အတွင်း ပြီးစီးပါပြီ။`), doneEvent?.response_complete === false ? "pending" : "success");
+          : copy("Analysis complete.", "စိစစ်မှု ပြီးပါပြီ။"), doneEvent?.response_complete === false ? "pending" : "success");
       } catch (error) {
         if (retrying || cancelled) return;
         const message = error.name === "AbortError"
           ? copy("The request took too long. Retry when you are ready.", "တောင်းဆိုမှု အချိန်ကြာလွန်းပါသည်။ အဆင်ပြေသည့်အခါ ထပ်မံကြိုးစားပါ။")
           : error.message || copy("I'm sorry, I couldn't generate an answer. Please try again.", "စိတ်မကောင်းပါ။ အဖြေမထုတ်ပေးနိုင်ပါ။ ထပ်မံကြိုးစားပါ။");
-        loading.finish(message, lastAssessment, { duration_ms: performance.now() - interactionStartedAt });
+        loading.finish(message, lastAssessment);
         setStatus(chatStatus, message, "error");
       } finally {
+        if (renderFrame) window.cancelAnimationFrame(renderFrame);
         window.clearTimeout(timeout);
         if (activeRequest === controller) {
           activeRequest = null;
