@@ -38,7 +38,7 @@ body.landing-page::before{
     content:"";
     position:fixed;
     inset:0;
-    background:url('/assets/redlogo.png') center 16% / min(78vw, 980px) no-repeat;
+    background:url('/assets/green-wordmark.png') center 16% / min(78vw, 980px) no-repeat;
     opacity:.5;
     pointer-events:none;
     z-index:0;
@@ -129,15 +129,15 @@ button:hover,
 .brand{
     display:flex;
     align-items:center;
-    gap:12px;
+    gap:10px;
     color:#fff;
-    font-size:22px;
+    font-size:20px;
     font-weight:700;
 }
 
 .brand img{
-    width:45px;
-    height:45px;
+    width:40px;
+    height:40px;
     object-fit:contain;
 }
 

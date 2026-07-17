@@ -1,9 +1,9 @@
-const CACHE_NAME = "safemind-v4";
+const CACHE_NAME = "safemind-v5";
 const APP_SHELL = [
   "/welcome",
   "/",
-  "/assets/Untitled_Artwork.jpg",
-  "/assets/redlogo.png"
+  "/assets/green-wordmark.png",
+  "/assets/green-logo.png"
 ];
 self.addEventListener("install", (event) => event.waitUntil(
   caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)).then(() => self.skipWaiting())

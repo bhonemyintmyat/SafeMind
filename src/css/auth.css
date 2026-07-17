@@ -76,7 +76,11 @@ input{
     font-size:20px;
     font-weight:700;
 }
-.auth-card-brand img{width:42px;height:42px;object-fit:contain}
+.auth-card-brand img{
+    width:min(240px,72%);
+    height:auto;
+    object-fit:contain;
+}
 
 .auth-copy{
     padding:56px;
@@ -90,7 +94,7 @@ input{
     inset:auto -10% -10% auto;
     width:320px;
     height:320px;
-    background:url('/assets/redlogo.png') center/contain no-repeat;
+    background:url('/assets/green-wordmark.png') center/contain no-repeat;
     opacity:.18;
     pointer-events:none;
 }
