@@ -1034,3 +1034,44 @@ html[data-theme="light"] .terms-dialog-close { color:#1F2937 !important;backgrou
   .terms-dialog .terms-actions { display:grid !important; grid-template-columns:1fr !important; width:100%; }
   .terms-dialog .terms-actions button { width:100% !important; }
 }
+
+/* Keep every desktop dashboard context level with the persistent sidebar. */
+@media (min-width:721px) {
+  body.dashboard-page {
+    height:100dvh;
+    overflow:hidden !important;
+  }
+
+  .dashboard-shell {
+    height:100dvh;
+    min-height:0 !important;
+    overflow:hidden;
+  }
+
+  .dashboard-sidebar {
+    height:100dvh !important;
+    min-height:0;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+  }
+
+  .dashboard-main {
+    display:flex;
+    flex-direction:column;
+    height:100dvh;
+    min-height:0;
+    overflow:hidden !important;
+  }
+
+  .dashboard-header { flex:0 0 auto; }
+
+  .dashboard-content {
+    flex:1 1 auto;
+    min-height:0 !important;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    scrollbar-gutter:stable;
+  }
+
+  .dashboard-section-nav { top:0 !important; }
+}

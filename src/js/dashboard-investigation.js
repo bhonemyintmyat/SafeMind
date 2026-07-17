@@ -184,8 +184,13 @@ if (main && workspace && form) {
   }
 
   function fillList(element, values, emptyText) {
-    const rows = Array.isArray(values) && values.length ? values : [emptyText];
+    const rows = Array.isArray(values) && values.length ? values.slice(0, 3) : [emptyText];
     element.replaceChildren(...rows.map((value) => { const item = document.createElement("li"); item.textContent = value; return item; }));
+  }
+
+  function concise(value, maximum = 260) {
+    const text = String(value || "").replace(/\s+/g, " ").trim();
+    return text.length > maximum ? `${text.slice(0, maximum - 1).trimEnd()}…` : text;
   }
 
   function renderResult(result, { open = true } = {}) {
@@ -197,9 +202,9 @@ if (main && workspace && form) {
     document.getElementById("dashboardFindingRisk").dataset.risk = risk.toLowerCase();
     document.getElementById("dashboardFindingConfidence").textContent = `${Math.max(0, Math.min(99, Number(result.confidence) || 0))}%`;
     document.getElementById("dashboardFindingHeadline").textContent = result.agent_headline || result.category || "Analysis complete";
-    document.getElementById("dashboardFindingSummary").textContent = result.agent_summary || result.reason || "The investigation is complete.";
+    document.getElementById("dashboardFindingSummary").textContent = concise(result.agent_summary || result.reason || "The investigation is complete.");
     document.getElementById("dashboardFindingPattern").textContent = result.category || "No exact pattern match";
-    document.getElementById("dashboardFindingReason").textContent = result.reason || "Verify unexpected requests through an official channel.";
+    document.getElementById("dashboardFindingReason").textContent = concise(result.reason || "Verify unexpected requests through an official channel.", 220);
     fillList(document.getElementById("dashboardFindingWarnings"), result.indicators, "No strong automated warning sign was found.");
     fillList(document.getElementById("dashboardFindingActions"), result.recommended_actions, "Verify the request independently before acting.");
     results.hidden = false;
