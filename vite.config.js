@@ -1,11 +1,23 @@
 import { defineConfig } from "vite";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { readFileSync } from "node:fs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
 	publicDir: "public",
+	plugins: [{
+		name: "safemind-root-landing-page",
+		enforce: "pre",
+		transformIndexHtml: {
+			order: "pre",
+			handler(html, context) {
+				if (resolve(context.filename) !== resolve(__dirname, "index.html")) return html;
+				return readFileSync(resolve(__dirname, "src/pages/main.html"), "utf8");
+			}
+		}
+	}],
 	server: {
 		strictPort: true,
 		proxy: {
