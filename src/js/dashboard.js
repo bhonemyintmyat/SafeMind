@@ -33,6 +33,7 @@ let activeEducationFilter = "all";
 let latestResult = null;
 let reportScreenshotUrl = "";
 let recentActivityRows = [];
+let communityRefreshTimer = 0;
 let activitySearchTerm = "";
 let activityRisk = "all";
 
@@ -276,6 +277,79 @@ async function loadRecentActivity() {
     setText("dashboardLatestScanTime", Number.isNaN(latestCreatedAt.getTime()) ? "Recently" : latestCreatedAt.toLocaleString());
 }
 
+function communityLabel(type) {
+    return {
+        message: "Suspicious messages",
+        link: "Suspicious websites",
+        phone: "Unknown phone numbers",
+        email: "Suspicious emails",
+        qr: "QR codes",
+        screenshot: "Uploaded screenshots"
+    }[String(type || "").toLowerCase()] || "Other suspicious content";
+}
+
+async function loadCommunityChecks() {
+    const list = document.getElementById("communityCheckList");
+    if (!list || !supabase) return;
+    let { data, error } = await supabase.rpc("get_community_scan_trends");
+    if (error) {
+        const fallback = await supabase.from("threat_directory")
+            .select("entry_type,created_at")
+            .eq("verdict", "scam")
+            .order("created_at", { ascending: false })
+            .limit(200);
+        error = fallback.error;
+        const verified = new Map();
+        for (const row of fallback.data || []) {
+            const type = String(row.entry_type || "other").toLowerCase();
+            const current = verified.get(type) || { scan_type: type, risk: "high", check_count: 0, last_checked_at: row.created_at };
+            current.check_count += 1;
+            verified.set(type, current);
+        }
+        data = [...verified.values()];
+    }
+    if (error || !data?.length) {
+        const empty = document.createElement("p");
+        empty.className = "empty-state";
+        empty.textContent = "No anonymized community trends are available yet.";
+        list.replaceChildren(empty);
+        return;
+    }
+    const grouped = new Map();
+    for (const row of data) {
+        const risk = ["high", "medium", "low"].includes(String(row.risk).toLowerCase()) ? String(row.risk).toLowerCase() : "low";
+        const type = String(row.scan_type || row.entry_type || "other").toLowerCase();
+        const key = `${risk}:${type}`;
+        const current = grouped.get(key) || { type, risk, count: 0, latest: row.last_checked_at || row.created_at };
+        current.count += Math.max(1, Number(row.check_count) || 1);
+        grouped.set(key, current);
+    }
+    const rank = { high: 3, medium: 2, low: 1 };
+    const trends = [...grouped.values()].sort((a, b) => (rank[b.risk] - rank[a.risk]) || (b.count - a.count)).slice(0, 6);
+    list.replaceChildren(...trends.map((trend) => {
+        const article = document.createElement("article");
+        const details = document.createElement("div");
+        const title = document.createElement("strong");
+        const meta = document.createElement("span");
+        const badge = document.createElement("span");
+        title.textContent = communityLabel(trend.type);
+        meta.textContent = `${trend.count} anonymized ${trend.count === 1 ? "check" : "checks"}`;
+        badge.className = "activity-risk";
+        badge.dataset.risk = trend.risk;
+        badge.textContent = `${trend.risk} risk`;
+        details.append(title, meta);
+        article.append(details, badge);
+        return article;
+    }));
+}
+
+function refreshCheckData() {
+    window.clearTimeout(communityRefreshTimer);
+    communityRefreshTimer = window.setTimeout(() => {
+        void Promise.all([loadProgress(), loadRecentActivity(), loadCommunityChecks()]);
+    }, 120);
+}
+
 async function loadThreatNumbers() {
     const list = document.getElementById("threatNumberList");
     if (!list || !supabase) return;
@@ -428,7 +502,13 @@ async function initializePage(activeUser) {
     }
     const name = renderIdentity(user);
     if (page === "overview") {
-        await Promise.all([loadProgress(), loadRecentActivity(), loadThreatNumbers()]);
+        await Promise.all([loadProgress(), loadRecentActivity(), loadCommunityChecks(), loadThreatNumbers()]);
+        window.addEventListener("safemind:scan-complete", refreshCheckData);
+        const channel = supabase.channel("community-scan-activity")
+            .on("postgres_changes", { event: "INSERT", schema: "public", table: "user_scan_history" }, refreshCheckData)
+            .subscribe();
+        const communityPoll = window.setInterval(() => { if (!document.hidden) void loadCommunityChecks(); }, 60_000);
+        window.addEventListener("pagehide", () => { window.clearInterval(communityPoll); void supabase.removeChannel(channel); }, { once: true });
     }
     if (page === "education") {
         const admin = await checkAdminAccess();

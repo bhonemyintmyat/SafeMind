@@ -248,7 +248,10 @@ if (main && workspace && form) {
       renderResult(result);
       setStatus("Investigation complete.", "success");
       const { data } = await supabase?.auth.getSession() || {};
-      if (data?.session?.user) await supabase.rpc("award_scan_credit", { scan_kind: type, scan_risk: String(result.risk || "low").toLowerCase() });
+      if (data?.session?.user) {
+        const { error: historyError } = await supabase.rpc("award_scan_credit", { scan_kind: type, scan_risk: String(result.risk || "low").toLowerCase() });
+        if (!historyError) window.dispatchEvent(new CustomEvent("safemind:scan-complete", { detail: { scanType: type, risk: String(result.risk || "low").toLowerCase() } }));
+      }
     } catch (error) {
       setStatus(error.message || "The investigation could not be completed. Please retry.", "error");
       analyzeButton.textContent = "Retry analysis";
