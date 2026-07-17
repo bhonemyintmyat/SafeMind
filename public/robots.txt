@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /src/pages/dashboard.html
+Disallow: /src/pages/reports.html
+Disallow: /src/pages/profile.html
+
+Sitemap: https://safemind.kaungkhantko.studio/sitemap.xml
