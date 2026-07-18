@@ -1654,3 +1654,49 @@ body.dashboard-page .dashboard-home-summary .dashboard-summary-card > :is(a, but
   text-decoration: none !important;
   transform: translateY(-1px) !important;
 }
+
+/* Interactive demo modes and actions expose one clear next step at a time. */
+body.landing-page .demo-actions {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+}
+
+body.landing-page .demo-actions > button {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 48px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 10px 16px !important;
+  border-radius: 13px !important;
+  line-height: 1.25 !important;
+  text-align: center !important;
+  white-space: normal !important;
+}
+
+html[data-theme="dark"] body.landing-page .demo-tabs .demo-tab:not(.is-active),
+html[data-theme="dark"] body.landing-page .demo-actions .secondary-btn {
+  color: #E5E7EB !important;
+  background: transparent !important;
+  border-color: rgba(229, 231, 235, .22) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] body.landing-page .demo-tabs .demo-tab:not(.is-active):hover,
+html[data-theme="dark"] body.landing-page .demo-tabs .demo-tab:not(.is-active):focus-visible,
+html[data-theme="dark"] body.landing-page .demo-actions .secondary-btn:hover,
+html[data-theme="dark"] body.landing-page .demo-actions .secondary-btn:focus-visible {
+  color: #FFFFFF !important;
+  background: rgba(255, 255, 255, .07) !important;
+  border-color: rgba(229, 231, 235, .4) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] body.landing-page .demo-tabs .demo-tab.is-active {
+  color: #20300F !important;
+  background: #A9D35E !important;
+  border-color: #BCE477 !important;
+  box-shadow: 0 0 0 3px rgba(169, 211, 94, .2), 0 8px 20px rgba(104, 141, 43, .22) !important;
+}
