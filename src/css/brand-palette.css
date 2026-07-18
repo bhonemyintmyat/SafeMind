@@ -1594,3 +1594,26 @@ html[data-theme="dark"] body.landing-page .hero-features li button:focus-visible
   border-color: rgba(229, 231, 235, .38) !important;
   box-shadow: none !important;
 }
+
+/* Dashboard section tabs show one current view instead of five green actions. */
+html[data-theme="dark"] body.dashboard-page .dashboard-section-nav button:not(.is-active) {
+  color: #D7DAE8 !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] body.dashboard-page .dashboard-section-nav button:not(.is-active):hover,
+html[data-theme="dark"] body.dashboard-page .dashboard-section-nav button:not(.is-active):focus-visible {
+  color: #FFFFFF !important;
+  background: rgba(255, 255, 255, .07) !important;
+  border-color: rgba(229, 231, 235, .28) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] body.dashboard-page .dashboard-section-nav button.is-active {
+  color: #20300F !important;
+  background: #A9D35E !important;
+  border-color: #BCE477 !important;
+  box-shadow: 0 0 0 3px rgba(169, 211, 94, .2), 0 8px 20px rgba(104, 141, 43, .22) !important;
+}

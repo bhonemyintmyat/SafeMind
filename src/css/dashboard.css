@@ -1782,7 +1782,7 @@ body.dashboard-page .empty-state { max-width:58ch; }
 .scanner-type-picker legend { margin-bottom:8px; color:var(--heading); }
 .scanner-type-picker > div { display:flex; flex-wrap:wrap; gap:8px; }
 .scanner-type-picker label { cursor:pointer; }
-.scanner-type-picker input { position:absolute; opacity:0; pointer-events:none; }
+.scanner-type-picker input { position:absolute; width:1px; height:1px; margin:0; opacity:0; pointer-events:none; }
 .scanner-type-picker span { min-height:40px; display:flex; align-items:center; justify-content:center; padding:6px 14px; border:1px solid #DADADA; border-radius:999px; color:#5A5D7A; background:#FFFFFF; }
 .scanner-type-picker input:checked + span { color:#303247; border-color:#A9D35E; background:#A9D35E; }
 .scanner-type-picker input:focus-visible + span { outline:3px solid #A9D35E; outline-offset:3px; }
