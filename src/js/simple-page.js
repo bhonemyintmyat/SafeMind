@@ -89,6 +89,35 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
+const menuToggle = document.querySelector("[data-simple-menu-toggle]");
+const menu = document.getElementById("simpleMenu");
+function setMenuOpen(open) {
+  menuToggle.setAttribute("aria-expanded", String(open));
+  menuToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+  menu.classList.toggle("is-open", open);
+}
+menuToggle.addEventListener("click", () => setMenuOpen(menuToggle.getAttribute("aria-expanded") !== "true"));
+document.addEventListener("click", (event) => {
+  if (menu.classList.contains("is-open") && !menu.contains(event.target) && !menuToggle.contains(event.target)) setMenuOpen(false);
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && menu.classList.contains("is-open")) { setMenuOpen(false); menuToggle.focus(); }
+});
+
+const THEME_KEY = "safemind-theme";
+function applyTheme(theme, persist = true) {
+  const next = theme === "light" ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  document.documentElement.style.colorScheme = next;
+  document.querySelectorAll("[data-set-theme]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.setTheme === next)));
+  if (persist) { try { localStorage.setItem(THEME_KEY, next); } catch { /* The choice still applies on this page when storage is blocked. */ } }
+}
+document.querySelectorAll("[data-set-theme]").forEach((button) => button.addEventListener("click", () => applyTheme(button.dataset.setTheme)));
+window.addEventListener("storage", (event) => {
+  if (event.key === THEME_KEY && (event.newValue === "light" || event.newValue === "dark")) applyTheme(event.newValue, false);
+});
+applyTheme(document.documentElement.dataset.theme, false);
+
 document.getElementById("simpleAgain").addEventListener("click", () => { answer.hidden = true; input.focus(); form.scrollIntoView({behavior:"smooth"}); });
 document.querySelectorAll("[data-open-simple-tutorial],[data-tutorial-topic]").forEach((button) => button.addEventListener("click", () => show(tutorial)));
 document.querySelectorAll("[data-close-simple-tutorial]").forEach((button) => button.addEventListener("click", () => close(tutorial)));
