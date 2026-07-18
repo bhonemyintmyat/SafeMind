@@ -15,4 +15,17 @@ assert.equal(safeResult.label, "not_spam");
 assert(safeResult.spam_probability < 0.5, "Safe probability must agree with the not-spam label.");
 assert.equal(isScamResult(safeResult), false, "Simple Mode must render a normal Burmese message as SAFE.");
 
-console.log("Simple Mode scam regression passed: Burmese scam → SCAM, normal Burmese message → SAFE.");
+const taskReference = runAgent("message", "Congrats! You’ve been selected for a remote task role. Earn daily income by rating hotels. Start today!");
+assert.equal(taskReference.risk, "HIGH");
+assert.equal(taskReference.category, "Task job scam");
+assert.equal(isScamResult(taskReference), true);
+
+const unseenTaskParaphrase = runAgent("message", "Flexible online work: review travel listings and receive commission each day. Message us to begin.");
+assert.equal(unseenTaskParaphrase.risk, "HIGH", "The model must generalize beyond the reference wording.");
+assert.equal(isScamResult(unseenTaskParaphrase), true);
+
+const safeHotelReview = runAgent("message", "I rated the hotel after our vacation and shared the review with my family.");
+assert.equal(safeHotelReview.risk, "LOW", "A normal hotel review must not be classified as a task scam.");
+assert.equal(isScamResult(safeHotelReview), false);
+
+console.log("Simple Mode scam regression passed: reference and unseen task scams → SCAM; normal Burmese and hotel messages → SAFE.");

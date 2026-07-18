@@ -67,6 +67,23 @@ class SpamClassifierTests(unittest.TestCase):
         self.assertTrue(result["is_spam"])
         self.assertEqual(result["category"], "Job scam")
 
+    def test_generalizes_task_job_scam_from_unseen_wording(self):
+        result = self.classifier.predict("Flexible online work: review travel listings and receive commission each day. Message us to begin.")
+        self.assertTrue(result["is_spam"])
+        self.assertEqual(result["risk"], "HIGH")
+        self.assertEqual(result["category"], "Task job scam")
+
+    def test_hotel_review_safe_counterexample_stays_low(self):
+        result = self.classifier.predict("I rated the hotel after our vacation and shared the review with my family")
+        self.assertFalse(result["is_spam"])
+        self.assertEqual(result["risk"], "LOW")
+
+    def test_generalizes_delivery_fee_smishing(self):
+        result = self.classifier.predict("Parcel notice: the address is incomplete. Submit the redelivery fee at parcel-help.example")
+        self.assertTrue(result["is_spam"])
+        self.assertIn(result["risk"], {"MEDIUM", "HIGH"})
+        self.assertEqual(result["category"], "Delivery scam")
+
     def test_detects_romance_emergency_payment_scam(self):
         result = self.classifier.predict("Hello sweetheart, our relationship is real. I need you to transfer money for an emergency")
         self.assertTrue(result["is_spam"])
