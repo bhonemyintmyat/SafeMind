@@ -1059,6 +1059,10 @@ Object.assign(translations, {
   "MEDIUM RISK": "အန္တရာယ် အလယ်အလတ်"
 });
 
+Object.assign(translations, {
+  "Back to top": "အပေါ်သို့ ပြန်သွားရန်"
+});
+
 const originalText = new WeakMap();
 const renderedText = new WeakMap();
 const attributes = ["placeholder", "aria-label", "title", "alt"];
