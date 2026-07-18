@@ -1,4 +1,5 @@
 import { supabase } from "./backend-client.js";
+import { createActionReadiness } from "./action-readiness.js";
 
 const form = document.getElementById("educationChatForm");
 const chatLog = document.getElementById("educationChatLog");
@@ -38,6 +39,11 @@ if (form && chatLog) {
   let lastAssessment = null;
   let lastQuestion = "";
   let chatStorageKey = "";
+  const submitReadiness = createActionReadiness({
+    button: submitButton,
+    controls: [questionInput, evidenceInput, fileInput],
+    isReady: () => questionInput.value.trim().length > 0 || evidenceInput.value.trim().length > 0 || Boolean(selectedImage)
+  });
 
   const locale = () => document.documentElement.lang === "my" ? "my" : "en";
   const copy = (english, burmese) => locale() === "my" ? burmese : english;
@@ -137,6 +143,7 @@ if (form && chatLog) {
     if (fileName) fileName.textContent = "";
     if (fileMeta) fileMeta.textContent = "";
     setStatus(fileStatus, "");
+    submitReadiness.sync();
   }
 
   async function handleFile(file) {
@@ -163,6 +170,7 @@ if (form && chatLog) {
     fileMeta.textContent = `${isImage ? copy("Screenshot", "စခရင်ရှော့") : copy("Text evidence", "စာသားသက်သေ")} · ${formatBytes(file.size)}`;
     filePreview.hidden = false;
     setStatus(fileStatus, copy("Evidence ready for analysis.", "စိစစ်ရန် သက်သေအထောက်အထား အသင့်ဖြစ်ပါပြီ။"), "success");
+    submitReadiness.sync();
   }
 
   function detectType(value) {
@@ -360,7 +368,7 @@ if (form && chatLog) {
       : risk || "Checked";
     meta.textContent = `${riskLabel} · ${timeLabel()}`;
     button.append(title, meta);
-    button.addEventListener("click", () => { questionInput.value = question; questionInput.focus(); });
+    button.addEventListener("click", () => { questionInput.value = question; submitReadiness.sync(); questionInput.focus(); });
     recentAnalyses.prepend(button);
     while (recentAnalyses.children.length > 3) recentAnalyses.lastElementChild.remove();
   }
@@ -527,7 +535,7 @@ if (form && chatLog) {
       button.type = "button";
       button.dataset.educationPrompt = prompt;
       button.textContent = prompt;
-      button.addEventListener("click", () => { questionInput.value = prompt; questionInput.focus(); });
+      button.addEventListener("click", () => { questionInput.value = prompt; submitReadiness.sync(); questionInput.focus(); });
       return button;
     }));
   }
@@ -552,7 +560,7 @@ if (form && chatLog) {
     await appendMessage("user", userQuestion);
     history.push({ role: "user", content: userQuestion });
     persistChatHistory();
-    submitButton.disabled = true;
+    submitReadiness.setBusy(true);
     questionInput.disabled = true;
     setStatus(chatStatus, copy("SafeMind is matching NLP signals and verified records...", "SafeMind သည် NLP လက္ခဏာများနှင့် အတည်ပြုမှတ်တမ်းများကို တိုက်စစ်နေသည်..."), "pending");
     const loadingMessage = createLoadingMessage();
@@ -676,7 +684,7 @@ if (form && chatLog) {
         window.clearTimeout(timeout);
         if (activeRequest === controller) {
           activeRequest = null;
-          submitButton.disabled = false;
+          submitReadiness.setBusy(false);
           questionInput.disabled = false;
           questionInput.focus();
         }
@@ -724,6 +732,7 @@ if (form && chatLog) {
             "Teach me how urgency is used in scams.": "လိမ်လည်သူများက အလျင်စလိုဖြစ်အောင် ဘယ်လိုဖိအားပေးသလဲ သင်ပေးပါ။"
           })[prompt] || prompt
         : prompt;
+      submitReadiness.sync();
       questionInput.focus();
       return;
     }
@@ -797,6 +806,7 @@ if (form && chatLog) {
   emojiButton?.addEventListener("click", () => {
     const start = questionInput.selectionStart || questionInput.value.length;
     questionInput.setRangeText(" 🛡️", start, start, "end");
+    submitReadiness.sync();
     questionInput.focus();
   });
   voiceButton?.addEventListener("click", () => {
@@ -809,7 +819,7 @@ if (form && chatLog) {
     recognition.lang = locale() === "my" ? "my-MM" : "en-US";
     recognition.interimResults = false;
     recognition.onstart = () => { voiceButton.setAttribute("aria-pressed", "true"); setStatus(chatStatus, copy("Listening...", "နားထောင်နေသည်..."), "pending"); };
-    recognition.onresult = (result) => { questionInput.value = `${questionInput.value} ${result.results[0][0].transcript}`.trim(); };
+    recognition.onresult = (result) => { questionInput.value = `${questionInput.value} ${result.results[0][0].transcript}`.trim(); submitReadiness.sync(); };
     recognition.onerror = () => setStatus(chatStatus, copy("Voice input could not start.", "အသံဖြင့်ရေးသားခြင်း မစတင်နိုင်ပါ။"), "error");
     recognition.onend = () => { voiceButton.setAttribute("aria-pressed", "false"); questionInput.focus(); };
     recognition.start();
@@ -859,7 +869,7 @@ if (form && chatLog) {
       bank: "Explain bank impersonation scams and account verification pressure.",
       crypto: "Explain crypto wallet and recovery phrase scams."
     };
-    if (prompts[intent]) questionInput.value = prompts[intent];
+    if (prompts[intent]) { questionInput.value = prompts[intent]; submitReadiness.sync(); }
     if (window.location.hash === "#upload") showEvidence("auto");
     if (prompts[intent] || window.location.hash === "#upload") questionInput.focus();
   }

@@ -1,4 +1,5 @@
 import { supabase } from "./backend-client.js";
+import { createActionReadiness } from "./action-readiness.js";
 
 const main = document.querySelector("main.dashboard-content");
 const workspace = document.getElementById("dashboardInvestigation");
@@ -24,10 +25,15 @@ if (main && workspace && form) {
   const resultsDialog = document.getElementById("dashboardResultsDialog");
   const reportDialog = document.getElementById("investigationReportDialog");
   const reportForm = document.getElementById("investigationReportForm");
+  const reportSubmitButton = reportForm.querySelector('button[type="submit"]');
   let selectedFile = null;
   let imagePayload = null;
   let activeResult = null;
   let overviewScroll = 0;
+  const quickReadiness = createActionReadiness({ button: document.getElementById("quickScanInvestigate"), controls: [quickInput], isReady: () => quickInput.value.trim().length > 0 });
+  const analyzeReadiness = createActionReadiness({ button: analyzeButton, controls: [input, fileInput], isReady: () => input.value.trim().length > 0 || Boolean(imagePayload) });
+  const resultReportReadiness = createActionReadiness({ button: reportButton, isReady: () => Boolean(activeResult) });
+  const reportSubmitReadiness = createActionReadiness({ button: reportSubmitButton, controls: [document.getElementById("investigationReportNotes")], isReady: () => Boolean(activeResult) });
 
   const typeCopy = {
     message: ["Suspicious message", "Paste the suspicious message exactly as received..."],
@@ -60,7 +66,8 @@ if (main && workspace && form) {
     if (clearResult) {
       activeResult = null;
       results.hidden = true;
-      reportButton.disabled = true;
+      resultReportReadiness.sync();
+      reportSubmitReadiness.sync();
       copyButton.disabled = true;
       exportButton.disabled = true;
     }
@@ -110,6 +117,7 @@ if (main && workspace && form) {
     previewImage.removeAttribute("src");
     fileName.textContent = "";
     fileMeta.textContent = "";
+    analyzeReadiness.sync();
   }
 
   function readFile(file, mode) {
@@ -145,6 +153,7 @@ if (main && workspace && form) {
     fileMeta.textContent = `${isImage ? "Image evidence" : "Text evidence"} · ${formatBytes(file.size)}`;
     preview.hidden = false;
     setStatus("Evidence ready for analysis.", "success");
+    analyzeReadiness.sync();
     saveState();
   }
 
@@ -201,7 +210,8 @@ if (main && workspace && form) {
     fillList(document.getElementById("dashboardFindingWarnings"), result.indicators, "No strong automated warning sign was found.");
     fillList(document.getElementById("dashboardFindingActions"), result.recommended_actions, "Verify the request independently before acting.");
     results.hidden = false;
-    reportButton.disabled = false;
+    resultReportReadiness.sync();
+    reportSubmitReadiness.sync();
     copyButton.disabled = false;
     exportButton.disabled = false;
     progress.hidden = true;
@@ -238,7 +248,7 @@ if (main && workspace && form) {
     const type = currentType();
     const content = input.value.trim();
     if (!content && !imagePayload) { setStatus("Enter suspicious content or upload evidence first.", "error"); input.focus(); return; }
-    analyzeButton.disabled = true;
+    analyzeReadiness.setBusy(true);
     analyzeButton.classList.remove("is-complete");
     analyzeButton.textContent = "Analyzing...";
     results.hidden = true;
@@ -255,7 +265,7 @@ if (main && workspace && form) {
     } catch (error) {
       setStatus(error.message || "The investigation could not be completed. Please retry.", "error");
       analyzeButton.textContent = "Retry analysis";
-    } finally { analyzeButton.disabled = false; }
+    } finally { analyzeReadiness.setBusy(false); }
   });
 
   document.getElementById("quickScanInvestigate").addEventListener("click", () => {
@@ -276,7 +286,7 @@ if (main && workspace && form) {
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!Recognition) { quickInput.placeholder = "Voice input is not supported in this browser."; return; }
     const recognition = new Recognition(); recognition.lang = document.documentElement.lang === "my" ? "my-MM" : "en-US";
-    recognition.onresult = (event) => { quickInput.value = event.results[0][0].transcript; saveState(); };
+    recognition.onresult = (event) => { quickInput.value = event.results[0][0].transcript; quickReadiness.sync(); saveState(); };
     recognition.start();
   });
   window.addEventListener("dashboard:sectionchange", () => saveState());
@@ -343,16 +353,18 @@ if (main && workspace && form) {
     const reportStatus = document.getElementById("investigationReportStatus");
     const { data } = await supabase.auth.getSession();
     if (!data?.session?.user) { reportStatus.textContent = "Sign in again before sending a report."; return; }
+    reportSubmitReadiness.setBusy(true);
     reportStatus.textContent = "Sending report...";
     let screenshotPath = null;
     if (selectedFile && imagePayload) {
       const extension = ({ "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" })[selectedFile.type];
       screenshotPath = `${data.session.user.id}/${crypto.randomUUID()}.${extension}`;
       const { error: uploadError } = await supabase.storage.from("report-screenshots").upload(screenshotPath, selectedFile, { contentType: selectedFile.type, cacheControl: "3600", upsert: false });
-      if (uploadError) { reportStatus.textContent = "The screenshot could not be uploaded. Please retry."; return; }
+      if (uploadError) { reportSubmitReadiness.setBusy(false); reportStatus.textContent = "The screenshot could not be uploaded. Please retry."; return; }
     }
     const { error } = await supabase.from("admin_reports").insert({ reporter_id: data.session.user.id, report_type: currentType(), content: input.value.trim().slice(0, 5000) || `[${selectedFile?.name || "Uploaded evidence"}]`, notes: document.getElementById("investigationReportNotes").value.trim() || null, automated_result: activeResult, screenshot_path: screenshotPath, screenshot_name: imagePayload ? selectedFile?.name.slice(0, 255) : null, screenshot_type: imagePayload ? selectedFile?.type : null, screenshot_size: imagePayload ? selectedFile?.size : null, status: "pending" });
     if (error && screenshotPath) await supabase.storage.from("report-screenshots").remove([screenshotPath]);
+    reportSubmitReadiness.setBusy(false);
     reportStatus.textContent = error ? "The report could not be sent. Please retry." : "Report sent for administrator review.";
     if (!error) window.setTimeout(closeDialog, 900);
   });
@@ -362,7 +374,7 @@ if (main && workspace && form) {
     const sectionController = window.SafeMindDashboardSections;
     const sectionRequestsInvestigation = sectionController?.current?.() === "investigation";
     const locationRequestsInvestigation = window.location.hash === "#investigation" || new URLSearchParams(window.location.search).get("view") === "investigation";
-    if (saved) { quickInput.value = saved.quick || ""; input.value = saved.input || ""; overviewScroll = Number(saved.overviewScroll) || 0; updateType(saved.type || "message"); if (saved.result) renderResult(saved.result, { open: false }); if (sectionRequestsInvestigation || locationRequestsInvestigation || (!sectionController && saved.investigating)) openInvestigation(saved.type, true); }
+    if (saved) { quickInput.value = saved.quick || ""; input.value = saved.input || ""; quickReadiness.sync(); analyzeReadiness.sync(); overviewScroll = Number(saved.overviewScroll) || 0; updateType(saved.type || "message"); if (saved.result) renderResult(saved.result, { open: false }); if (sectionRequestsInvestigation || locationRequestsInvestigation || (!sectionController && saved.investigating)) openInvestigation(saved.type, true); }
     else if (window.location.hash === "#investigation" || new URLSearchParams(window.location.search).get("view") === "investigation") openInvestigation("message");
   } catch { updateType("message"); }
 }

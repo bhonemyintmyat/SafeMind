@@ -1,6 +1,7 @@
 import { supabase } from "./backend-client.js";
 import { requireAuth, formatDisplayName, getInitials, pageReady, logoutToMain } from "./router.js";
 import { initLanguage } from "./language.js";
+import { createFormActionReadiness } from "./action-readiness.js";
 import "./theme-toggle.js";
 
 const page = document.body.dataset.page;
@@ -8,6 +9,8 @@ const usernameNodes = document.querySelectorAll(".username");
 const avatarNodes = document.querySelectorAll("[data-avatar]");
 const reportForm = document.getElementById("reportForm");
 const educationForm = document.getElementById("educationForm");
+const profileForm = document.getElementById("profileForm");
+const passwordForm = document.getElementById("passwordForm");
 const educationFeed = document.getElementById("educationFeed");
 const mobileNavMore = document.querySelector(".mobile-nav-more");
 const dashboardUtilities = document.querySelector(".dashboard-utilities");
@@ -27,6 +30,26 @@ const REPORT_SCREENSHOT_TYPES = new Map([
     ["image/jpeg", "jpg"],
     ["image/webp", "webp"]
 ]);
+const reportReadiness = createFormActionReadiness(reportForm, document.getElementById("reportSubmit"), {
+    isReady: () => (document.getElementById("reportContent")?.value.trim().length || 0) >= 3
+});
+const educationReadiness = createFormActionReadiness(educationForm, document.getElementById("educationSubmit"));
+const profileReadiness = createFormActionReadiness(profileForm, document.getElementById("profileSubmit"));
+const passwordReadiness = createFormActionReadiness(passwordForm, document.getElementById("passwordSubmit"), {
+    isReady: () => {
+        const currentPassword = document.getElementById("profileCurrentPassword")?.value || "";
+        const password = document.getElementById("profilePassword")?.value || "";
+        const confirmation = document.getElementById("profilePasswordConfirm")?.value || "";
+        return currentPassword.length >= 8
+            && password === confirmation
+            && password !== currentPassword
+            && password.length >= 12
+            && /[a-z]/.test(password)
+            && /[A-Z]/.test(password)
+            && /\d/.test(password)
+            && /[^A-Za-z0-9]/.test(password);
+    }
+});
 let user = null;
 let educationRows = [];
 let activeEducationFilter = "all";
@@ -371,6 +394,23 @@ async function classifyAdminReport(id, verdict, button) {
 
 document.getElementById("adminReportsRefresh")?.addEventListener("click", loadAdminReports);
 
+function loadPendingReport() {
+    if (!reportForm) return;
+    const pendingReport = sessionStorage.getItem("safemindPendingReport");
+    if (!pendingReport) return;
+    try {
+        const pending = JSON.parse(pendingReport);
+        const type = document.getElementById("reportType");
+        if (["message", "link", "phone", "email", "other"].includes(pending.type)) type.value = pending.type;
+        document.getElementById("reportContent").value = String(pending.content || "").slice(0, 5000);
+        latestResult = pending.result || null;
+    } catch {
+        latestResult = null;
+    }
+    sessionStorage.removeItem("safemindPendingReport");
+    reportReadiness.sync();
+}
+
 function refreshCheckData() {
     window.setTimeout(() => { void Promise.all([loadProgress(), loadRecentActivity()]); }, 120);
 }
@@ -502,22 +542,6 @@ async function loadArticle() {
     container.replaceChildren(category, title, date, content);
 }
 
-function loadPendingReport() {
-    if (!reportForm) return;
-    const pendingReport = sessionStorage.getItem("safemindPendingReport");
-    if (!pendingReport) return;
-    try {
-        const pending = JSON.parse(pendingReport);
-        const type = document.getElementById("reportType");
-        if (["message", "link", "phone", "email", "other"].includes(pending.type)) type.value = pending.type;
-        document.getElementById("reportContent").value = String(pending.content || "").slice(0, 5000);
-        latestResult = pending.result || null;
-    } catch {
-        latestResult = null;
-    }
-    sessionStorage.removeItem("safemindPendingReport");
-}
-
 async function initializePage(activeUser) {
     user = activeUser;
     if (!user) return;
@@ -547,13 +571,13 @@ async function initializePage(activeUser) {
     if (page === "profile") {
         document.getElementById("profileName").value = name;
         document.getElementById("profileEmail").value = user.email || "";
+        profileReadiness.sync();
     }
 }
 
 reportForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!user || !supabase) return;
-    const submit = document.getElementById("reportSubmit");
     const status = document.getElementById("reportStatus");
     const content = document.getElementById("reportContent").value.trim();
     const screenshot = reportScreenshotInput?.files?.[0] || null;
@@ -566,7 +590,7 @@ reportForm?.addEventListener("submit", async (event) => {
             return;
         }
     }
-    submit.disabled = true;
+    reportReadiness.setBusy(true);
     let screenshotPath = null;
     try {
         if (screenshot) {
@@ -602,11 +626,11 @@ reportForm?.addEventListener("submit", async (event) => {
         if (screenshotPath) {
             await supabase.storage.from(REPORT_SCREENSHOT_BUCKET).remove([screenshotPath]);
         }
-        submit.disabled = false;
+        reportReadiness.setBusy(false);
         setStatus(status, "The report could not be sent. Please try again.", "error");
         return;
     }
-    submit.disabled = false;
+    reportReadiness.setBusy(false);
     reportForm.reset();
     resetReportScreenshot();
     latestResult = null;
@@ -616,9 +640,8 @@ reportForm?.addEventListener("submit", async (event) => {
 educationForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!user || !supabase) return;
-    const submit = document.getElementById("educationSubmit");
     const status = document.getElementById("educationStatus");
-    submit.disabled = true;
+    educationReadiness.setBusy(true);
     setStatus(status, "Publishing article...");
     const { error } = await supabase.from("scam_education").insert({
         author_id: user.id,
@@ -626,7 +649,7 @@ educationForm?.addEventListener("submit", async (event) => {
         category: document.getElementById("educationCategory").value.trim(),
         content: document.getElementById("educationContent").value.trim()
     });
-    submit.disabled = false;
+    educationReadiness.setBusy(false);
     if (error) {
         setStatus(status, "The article could not be published.", "error");
         return;
@@ -642,16 +665,15 @@ document.querySelectorAll("[data-education-filter]").forEach((button) => button.
     renderEducation();
 }));
 
-document.getElementById("profileForm")?.addEventListener("submit", async (event) => {
+profileForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!user || !supabase) return;
-    const submit = document.getElementById("profileSubmit");
     const status = document.getElementById("profileStatus");
     const displayName = document.getElementById("profileName").value.trim();
-    submit.disabled = true;
+    profileReadiness.setBusy(true);
     setStatus(status, "Saving profile...");
     const { data, error } = await supabase.auth.updateUser({ data: { display_name: displayName } });
-    submit.disabled = false;
+    profileReadiness.setBusy(false);
     if (error) {
         setStatus(status, error.message || "The profile could not be saved.", "error");
         return;
@@ -661,10 +683,9 @@ document.getElementById("profileForm")?.addEventListener("submit", async (event)
     setStatus(status, "Profile saved.", "success");
 });
 
-document.getElementById("passwordForm")?.addEventListener("submit", async (event) => {
+passwordForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!user || !supabase) return;
-    const submit = document.getElementById("passwordSubmit");
     const status = document.getElementById("passwordStatus");
     const currentPassword = document.getElementById("profileCurrentPassword").value;
     const password = document.getElementById("profilePassword").value;
@@ -684,18 +705,18 @@ document.getElementById("passwordForm")?.addEventListener("submit", async (event
         document.getElementById("profilePassword").focus();
         return;
     }
-    submit.disabled = true;
+    passwordReadiness.setBusy(true);
     setStatus(status, "Confirming current password...");
     const { error: confirmationError } = await supabase.auth.signInWithPassword({ email: user.email, password: currentPassword });
     if (confirmationError) {
-        submit.disabled = false;
+        passwordReadiness.setBusy(false);
         setStatus(status, "Current password is incorrect.", "error");
         document.getElementById("profileCurrentPassword").focus();
         return;
     }
     setStatus(status, "Updating password...");
     const { error } = await supabase.auth.updateUser({ password });
-    submit.disabled = false;
+    passwordReadiness.setBusy(false);
     if (error) {
         setStatus(status, error.message || "The password could not be updated.", "error");
         return;
