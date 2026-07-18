@@ -67,6 +67,23 @@ class SpamClassifierTests(unittest.TestCase):
         self.assertTrue(result["is_spam"])
         self.assertEqual(result["category"], "Job scam")
 
+    def test_generalizes_task_job_scam_from_unseen_wording(self):
+        result = self.classifier.predict("Flexible online work: review travel listings and receive commission each day. Message us to begin.")
+        self.assertTrue(result["is_spam"])
+        self.assertEqual(result["risk"], "HIGH")
+        self.assertEqual(result["category"], "Task job scam")
+
+    def test_hotel_review_safe_counterexample_stays_low(self):
+        result = self.classifier.predict("I rated the hotel after our vacation and shared the review with my family")
+        self.assertFalse(result["is_spam"])
+        self.assertEqual(result["risk"], "LOW")
+
+    def test_generalizes_delivery_fee_smishing(self):
+        result = self.classifier.predict("Parcel notice: the address is incomplete. Submit the redelivery fee at parcel-help.example")
+        self.assertTrue(result["is_spam"])
+        self.assertIn(result["risk"], {"MEDIUM", "HIGH"})
+        self.assertEqual(result["category"], "Delivery scam")
+
     def test_detects_romance_emergency_payment_scam(self):
         result = self.classifier.predict("Hello sweetheart, our relationship is real. I need you to transfer money for an emergency")
         self.assertTrue(result["is_spam"])
@@ -76,6 +93,39 @@ class SpamClassifierTests(unittest.TestCase):
         result = self.classifier.predict("Microsoft support technician says install AnyDesk for remote access now")
         self.assertTrue(result["is_spam"])
         self.assertEqual(result["category"], "Tech-support scam")
+
+    def test_detects_authority_impersonation_without_payment_or_link(self):
+        result = self.classifier.predict(
+            "This is President Joan T. A. Gabel, the president of the University of Minnesota. "
+            "I am sending this message with my private number and it must be treated with urgency. "
+            "Kindly leave a message once you see this message."
+        )
+        self.assertTrue(result["is_spam"])
+        self.assertEqual(result["risk"], "HIGH")
+        self.assertEqual(result["category"], "Authority impersonation scam")
+        self.assertIn("Possible authority impersonation through an unverifiable channel", result["indicators"])
+
+    def test_generalizes_authority_impersonation_to_unseen_titles(self):
+        result = self.classifier.predict(
+            "I am the company director writing from a temporary line. Respond as soon as possible."
+        )
+        self.assertEqual(result["risk"], "HIGH")
+        self.assertEqual(result["category"], "Authority impersonation scam")
+
+    def test_detects_burmese_authority_impersonation(self):
+        result = self.classifier.predict(
+            "ကျွန်တော် ကုမ္ပဏီ ဥက္ကဋ္ဌပါ။ ကိုယ်ပိုင်ဖုန်းနံပါတ်အသစ်ကနေ စာပို့တာပါ။ "
+            "အရေးကြီးလို့ တွေ့တာနဲ့ စာပြန်ပါ။"
+        )
+        self.assertEqual(result["risk"], "HIGH")
+        self.assertEqual(result["category"], "Authority impersonation scam")
+
+    def test_normal_authority_reference_stays_low(self):
+        result = self.classifier.predict(
+            "The university president's office posted the meeting schedule on the official website."
+        )
+        self.assertFalse(result["is_spam"])
+        self.assertEqual(result["risk"], "LOW")
 
     def test_benign_official_app_message_stays_low_risk(self):
         result = self.classifier.predict("Your monthly statement is ready in the official app")
@@ -160,6 +210,16 @@ class SecurityAnalyzerTests(unittest.TestCase):
         )
         self.assertFalse(result["is_spam"])
         self.assertEqual(result["label"], "not_spam")
+
+    def test_email_body_detects_authority_impersonation(self):
+        result = self.analyzer.analyze(
+            "email",
+            "From: assistant@example.org\nSubject: Private request\n\n"
+            "I am the company director using a personal number. Reply urgently when you read this.",
+        )
+        self.assertEqual(result["risk"], "HIGH")
+        self.assertEqual(result["category"], "Authority impersonation scam")
+        self.assertEqual(result["pipeline"], ["type-specific analysis", "shared spam-language analysis"])
 
     def test_detects_premium_phone_pattern(self):
         result = self.analyzer.analyze("phone", "+1 900 555 0100")

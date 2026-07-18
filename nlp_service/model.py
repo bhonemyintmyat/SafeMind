@@ -59,6 +59,18 @@ TRAINING_MESSAGES = [
     ("Your CEO needs gift cards urgently. Do not tell anyone", "spam"),
     ("ဘဏ်ဝန်ထမ်းပါ OTP ကုဒ်ကို ချက်ချင်း ပို့ပေးပါ", "spam"),
     ("အကောင့် လုံခြုံရေးအတွက် ငွေလွှဲပြီး လျှို့ဝှက်ထားပါ", "spam"),
+    ("Flexible online tasks are available. Review travel listings and receive commission every day", "spam"),
+    ("A recruiter selected you to rate products from home for quick daily pay", "spam"),
+    ("Complete simple app tasks, then add funds to unlock your earnings", "spam"),
+    ("Your parcel has an address problem. Pay a small redelivery fee through this link", "spam"),
+    ("Road fee alert: settle the overdue toll today through the attached website", "spam"),
+    ("Security notice: unusual bank activity requires account confirmation at this link", "spam"),
+    ("Your streaming membership will renew for a large charge. Use this link to cancel", "spam"),
+    ("A refund is waiting. Submit bank information through the claim page", "spam"),
+    ("Your electricity will be disconnected unless the overdue balance is paid through this link", "spam"),
+    ("This is the company president. I am using a private number, so reply urgently when you see this", "spam"),
+    ("I am the university chancellor messaging from a new line. Respond as soon as possible", "spam"),
+    ("This is your director. Contact me on this personal number right away", "spam"),
     # Normal messages
     ("Can we meet for lunch tomorrow at noon", "ham"),
     ("I am on my way home, see you soon", "ham"),
@@ -85,6 +97,12 @@ TRAINING_MESSAGES = [
     ("အိမ်ပြန်ရောက်ရင် ဖုန်းဆက်ပေးပါ", "ham"),
     ("အစည်းအဝေးကို တနင်္လာနေ့ ပြောင်းထားပါတယ်", "ham"),
     ("မွေးနေ့မှာ ပျော်ရွှင်ပါစေ", "ham"),
+    ("I rated the hotel after our family holiday and posted an honest review", "ham"),
+    ("The hiring manager scheduled a video interview for the remote engineering role", "ham"),
+    ("Your package was delivered to the front desk this afternoon", "ham"),
+    ("The bank confirmed in its official app that no action is required", "ham"),
+    ("This is Maya, president of the student club. The meeting starts at six", "ham"),
+    ("The president's office published the announcement through the official university website", "ham"),
 ]
 
 
@@ -122,6 +140,23 @@ PHRASE_SIGNALS = {
     "processing fee": 0.18,
     "training fee": 0.18,
     "work from home": 0.10,
+    "remote task": 0.18,
+    "flexible online": 0.12,
+    "travel listings": 0.14,
+    "receive commission": 0.18,
+    "daily income": 0.18,
+    "rating hotels": 0.24,
+    "reviewing hotels": 0.22,
+    "easy tasks": 0.14,
+    "earn commission": 0.18,
+    "add funds": 0.24,
+    "top up": 0.24,
+    "unlock withdrawal": 0.28,
+    "unpaid toll": 0.20,
+    "delivery fee": 0.20,
+    "package is pending": 0.16,
+    "account has been locked": 0.16,
+    "reactivate your account": 0.18,
     "investment opportunity": 0.16,
     "ဘဏ်ဝန်ထမ်း": 0.16,
     "otp ကုဒ်": 0.24,
@@ -146,6 +181,14 @@ CONTEXT_SIGNALS = (
     (re.compile(r"\b(?:arrest|lawsuit|police|warrant|penalty)\b", re.I), 0.18, "Uses threats or intimidation"),
     (re.compile(r"\b(?:seed phrase|recovery phrase|private key|wallet key)\b", re.I), 0.30, "Requests a wallet recovery secret"),
     (re.compile(r"\b(?:job|hiring|recruiter|work from home|employment)\b.{0,70}\b(?:fee|deposit|crypto|gift card|equipment payment)\b", re.I), 0.24, "Requests payment for a job opportunity"),
+    (re.compile(r"(?:remote|online|flexible|work from home).{0,70}(?:task|rating|review|hotel|app|product).{0,80}(?:earn|income|commission|paid|start today)", re.I), 0.55, "Offers a fake task or rating job"),
+    (re.compile(r"(?:task|rating|review|commission).{0,80}(?:add funds|top up|deposit|buy credits|unlock|withdraw)", re.I), 0.45, "Requires payment to unlock task earnings"),
+    (re.compile(r"(?:package|parcel|delivery).{0,70}(?:fee|payment|address|return).{0,70}(?:link|click|https?://|www\.|[a-z0-9-]+\.[a-z]{2,})", re.I), 0.32, "Uses a fake delivery problem to request payment or data"),
+    (re.compile(r"(?:toll|road fee).{0,60}(?:unpaid|overdue|penalty|pay now).{0,70}(?:link|click|https?://|www\.|[a-z0-9-]+\.[a-z]{2,})", re.I), 0.32, "Uses a fake toll charge and payment link"),
+    (re.compile(r"(?:bank alert|unusual activity|card locked|account suspended).{0,80}(?:verify|confirm|reactivate|click|login)", re.I), 0.30, "Impersonates an account alert to steal credentials"),
+    (re.compile(r"(?:subscription|membership).{0,60}(?:renew|charge|expired).{0,60}(?:cancel|click|link|update payment)", re.I), 0.26, "Uses a fake subscription charge or cancellation link"),
+    (re.compile(r"(?:refund|overpaid|rebate).{0,60}(?:claim|process|bank details|click|link)", re.I), 0.24, "Uses a fake refund to request financial information"),
+    (re.compile(r"(?:electricity|utility|water|service).{0,60}(?:disconnect|shut off|overdue).{0,60}(?:pay|link|click)", re.I), 0.30, "Threatens service disconnection to demand payment"),
     (re.compile(r"\b(?:love|relationship|fianc[eé]|dear|sweetheart)\b.{0,100}\b(?:money|loan|transfer|crypto|emergency)\b", re.I), 0.22, "Uses a relationship to request money"),
     (re.compile(r"\b(?:investment|trading|forex|crypto)\b.{0,70}\b(?:guaranteed|double|profit|return|risk.?free)\b", re.I), 0.24, "Promises unrealistic investment returns"),
     (re.compile(r"\b(?:support|technician|security team)\b.{0,70}\b(?:anydesk|teamviewer|screen share|remote access|install)\b", re.I), 0.24, "Impersonates support to request remote access"),
@@ -159,6 +202,29 @@ BENIGN_SIGNALS = {
     "monthly statement": 0.08,
     "will never ask": 0.16,
 }
+
+# These deliberately describe behavior rather than named people. Public-office
+# holders change, while the authority + channel-switch + pressure pattern remains.
+AUTHORITY_CLAIM_PATTERN = re.compile(
+    r"(?:\b(?:this is|i am|i'm)\b.{0,90}\b(?:president|chancellor|vice[ -]?chancellor|ceo|chief executive|director|dean|professor|minister|governor|mayor|police officer|officer|manager|boss|bank manager)\b|"
+    r"(?:ကျွန်တော်|ကျွန်မ|ငါ|ဒီမှာ).{0,45}(?:သမ္မတ|ဥက္ကဋ္ဌ|အမှုဆောင်အရာရှိ|ဒါရိုက်တာ|ဌာနမှူး|ပါမောက္ခ|ဝန်ကြီး|အုပ်ချုပ်ရေးမှူး|ရဲအရာရှိ|မန်နေဂျာ|ဘဏ်မန်နေဂျာ)(?:ပါ|ဖြစ်ပါတယ်)?)",
+    re.I,
+)
+PRIVATE_CHANNEL_PATTERN = re.compile(
+    r"(?:\b(?:my|a|this)\s+(?:private|personal|new|temporary|other|alternate)\s+(?:phone\s+)?(?:number|line|account)\b|"
+    r"\b(?:private|personal|new|temporary|other|alternate)\s+(?:phone\s+)?(?:number|line|account)\b|"
+    r"\b(?:texting|messaging|contacting|writing)\s+(?:you\s+)?from\s+(?:my|a|this)\s+(?:private|personal|new|temporary|other|alternate)\b|"
+    r"(?:ကိုယ်ပိုင်|သီးသန့်|ပုဂ္ဂိုလ်ရေး|အသစ်|ယာယီ|အခြား)(?:ဖုန်း)?(?:နံပါတ်|လိုင်း|အကောင့်))",
+    re.I,
+)
+URGENCY_PATTERN = re.compile(
+    r"(?:\b(?:urgent|urgency|urgently|immediate|immediately|as soon as possible|asap|time[ -]?sensitive|right away)\b|(?:အရေးကြီး|အရေးပေါ်|အမြန်|ချက်ချင်း|အခုပဲ))",
+    re.I,
+)
+REPLY_REQUEST_PATTERN = re.compile(
+    r"(?:\b(?:reply|respond|get back to me|leave (?:me )?a message|message me|text me|acknowledge (?:this|receipt)|let me know once you (?:see|receive|read))\b|(?:စာပြန်|အကြောင်းပြန်|ပြန်လည်ဆက်သွယ်|ပြန်ဆက်သွယ်|မက်ဆေ့ချ်ပို့|မက်ဆေ့ချ်ထား))",
+    re.I,
+)
 
 
 def normalize_text(text):
@@ -350,15 +416,34 @@ class SpamClassifier:
         phrases = [self.phrase_by_match_id[match_id] for match_id, _, _ in self.phrase_matcher(doc)]
         phrase_boost = sum(PHRASE_SIGNALS[phrase] for phrase in phrases)
         contextual = [(boost, label) for pattern, boost, label in CONTEXT_SIGNALS if pattern.search(cleaned)]
+        authority_claim = bool(AUTHORITY_CLAIM_PATTERN.search(cleaned))
+        private_channel = bool(PRIVATE_CHANNEL_PATTERN.search(cleaned))
+        urgency = bool(URGENCY_PATTERN.search(cleaned))
+        reply_request = bool(REPLY_REQUEST_PATTERN.search(cleaned))
+        authority_channel_impersonation = authority_claim and private_channel and (urgency or reply_request)
+        authority_pressure_impersonation = authority_claim and urgency and reply_request
         context_boost = sum(boost for boost, _ in contextual)
         benign_discount = min(0.24, sum(weight for phrase, weight in BENIGN_SIGNALS.items() if phrase in cleaned.lower()))
         combination_boost = 0.10 if len(contextual) >= 2 else 0.0
         if any(boost >= 0.22 for boost, _ in contextual):
             benign_discount = min(benign_discount, 0.04)
         probability = max(0.01, min(0.99, probability + phrase_boost + min(0.45, context_boost) + combination_boost - benign_discount))
+        if authority_channel_impersonation:
+            probability = max(probability, 0.82)
+        elif authority_pressure_impersonation:
+            probability = max(probability, 0.74)
 
         is_spam = probability >= 0.50
-        indicators = list(dict.fromkeys(phrases + [label for _, label in contextual] + self._spam_terms(tokens)))[:6]
+        behavioral_indicators = []
+        if authority_claim:
+            behavioral_indicators.append("Claims a senior or trusted identity")
+        if private_channel:
+            behavioral_indicators.append("Uses a private or changed contact channel")
+        if reply_request:
+            behavioral_indicators.append("Requests a reply before identity verification")
+        if authority_channel_impersonation or authority_pressure_impersonation:
+            behavioral_indicators.insert(0, "Possible authority impersonation through an unverifiable channel")
+        indicators = list(dict.fromkeys(behavioral_indicators + phrases + [label for _, label in contextual] + self._spam_terms(tokens)))[:6]
         confidence = probability if is_spam else 1.0 - probability
 
         if probability >= 0.70:
@@ -376,12 +461,28 @@ class SpamClassifier:
             reason = "The NLP model found no strong spam pattern in this message."
 
         indicator_labels = set(indicators)
-        if "Requests an authentication secret" in indicator_labels:
+        if "Possible authority impersonation through an unverifiable channel" in indicator_labels:
+            category = "Authority impersonation scam"
+        elif "Requests an authentication secret" in indicator_labels:
             category = "Credential phishing"
         elif "Requests a wallet recovery secret" in indicator_labels:
             category = "Crypto wallet theft"
         elif "Requests payment for a job opportunity" in indicator_labels:
             category = "Job scam"
+        elif "Offers a fake task or rating job" in indicator_labels or "Requires payment to unlock task earnings" in indicator_labels:
+            category = "Task job scam"
+        elif "Uses a fake delivery problem to request payment or data" in indicator_labels:
+            category = "Delivery scam"
+        elif "Uses a fake toll charge and payment link" in indicator_labels:
+            category = "Toll-payment scam"
+        elif "Impersonates an account alert to steal credentials" in indicator_labels:
+            category = "Account phishing"
+        elif "Uses a fake subscription charge or cancellation link" in indicator_labels:
+            category = "Subscription scam"
+        elif "Uses a fake refund to request financial information" in indicator_labels:
+            category = "Refund scam"
+        elif "Threatens service disconnection to demand payment" in indicator_labels:
+            category = "Utility-payment scam"
         elif "Uses a relationship to request money" in indicator_labels:
             category = "Romance scam"
         elif "Impersonates support to request remote access" in indicator_labels:

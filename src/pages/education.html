@@ -23,7 +23,7 @@
             <nav class="dashboard-nav" aria-label="Primary navigation">
                 <a class="nav-link" href="/dashboard"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1Z"/></svg><span>Overview</span></a>
                 <a class="nav-link" href="/reports"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4m0 1h11l-2 4 2 4H5"/></svg><span>Reports</span></a>
-                <a class="nav-link is-active" href="/eduai" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H11v17H7.5A3.5 3.5 0 0 0 4 22Zm16 0A3.5 3.5 0 0 0 16.5 2H13v17h3.5A3.5 3.5 0 0 1 20 22Z"/></svg><span>EduAI</span></a>
+                <a class="nav-link is-active" href="/eduai" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 9 9-5 9 5-9 5Z"/><path d="M7 12v4c2.8 2.1 7.2 2.1 10 0v-4M21 9v6"/><path d="m19 2 .55 1.45L21 4l-1.45.55L19 6l-.55-1.45L17 4l1.45-.55Z"/></svg><span>EduAI</span></a>
                 <a class="nav-link" href="/settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 1 1-7-7"/></svg><span>Setting</span></a>
             </nav>
             <button class="mobile-nav-more" type="button" aria-expanded="false" aria-controls="dashboardUtilities" aria-label="More options"><span></span><span></span><span></span></button>
@@ -42,7 +42,7 @@
                     <section class="education-chat-card" aria-label="SafeMind Scam Coach conversation">
                         <div class="education-chat-log" id="educationChatLog" aria-live="polite" aria-relevant="additions">
                             <section class="education-welcome" aria-label="Welcome to SafeMind Scam Coach">
-                                <span class="education-welcome-icon"><img src="/assets/green-logo.png" alt="SafeMind logo"></span>
+                                <span class="education-welcome-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 9 9-5 9 5-9 5Z"/><path d="M7 12v4c2.8 2.1 7.2 2.1 10 0v-4M21 9v6"/><path d="m19 2 .55 1.45L21 4l-1.45.55L19 6l-.55-1.45L17 4l1.45-.55Z"/></svg></span>
                                 <p>Hello 👋</p><h2 id="educationAgentTitle">What would you like to check today?</h2>
                                 <span>I can help analyze suspicious messages, websites, phone numbers, emails, QR codes, and screenshots.</span>
                             </section>
@@ -70,7 +70,7 @@
                                 <button type="button" id="educationAttach" aria-label="Attach evidence" title="Attach evidence"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 11.5-8.4 8.4a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/></svg></button>
                             </div>
                             <textarea id="educationQuestion" rows="1" maxlength="4000" placeholder="Paste a suspicious message, link, email, or phone number..."></textarea>
-                            <button class="primary-button" type="submit" id="educationChatSubmit" aria-label="Analyze content" data-input-action disabled><span>Analyze</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></button>
+                            <button class="primary-button" type="submit" id="educationChatSubmit" aria-label="Analyze content" data-input-action disabled><span>Analyze</span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="5.5"/><path d="m14.5 14.5 5 5M18 2.5l.55 1.45L20 4.5l-1.45.55L18 6.5l-.55-1.45L16 4.5l1.45-.55Z"/></svg></button>
                         </form>
                         <p class="education-chat-status" id="educationChatStatus" role="status" aria-live="polite"></p>
                         <p class="education-disclaimer">AI guidance can be wrong. Never share credentials or send money based only on this chat.</p>

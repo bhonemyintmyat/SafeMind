@@ -1,5 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 import { performance } from "node:perf_hooks";
+import { isOpenRouterScanConfigured, scanWithOpenRouter } from "./openrouter-scan.js";
 
 const SUPPORTED_SCAN_TYPES = new Set(["message", "link", "email", "phone"]);
 const TOOL_ROUTES = {
@@ -11,6 +12,7 @@ const TOOL_ROUTES = {
 const AGENT_CACHE = new Map();
 const AGENT_CACHE_TTL_MS = 300_000;
 const AGENT_CACHE_MAX = 256;
+const OPENROUTER_AGENT_CACHE = new Map();
 const SHORTENER_DOMAINS = new Set(["bit.ly", "tinyurl.com", "t.co", "is.gd", "cutt.ly", "rb.gy", "ow.ly"]);
 const RISKY_TLDS = new Set(["click", "country", "download", "gq", "loan", "men", "mom", "party", "rest", "review", "stream", "top", "vip", "work", "zip"]);
 const URL_BAIT_TERMS = new Set(["account", "auth", "bank", "confirm", "login", "password", "payment", "reset", "secure", "signin", "update", "verify", "wallet"]);
@@ -51,6 +53,23 @@ const PHRASE_SIGNALS = new Map([
   ["processing fee", 0.18],
   ["training fee", 0.18],
   ["work from home", 0.10],
+  ["remote task", 0.18],
+  ["flexible online", 0.12],
+  ["travel listings", 0.14],
+  ["receive commission", 0.18],
+  ["daily income", 0.18],
+  ["rating hotels", 0.24],
+  ["reviewing hotels", 0.22],
+  ["easy tasks", 0.14],
+  ["earn commission", 0.18],
+  ["add funds", 0.24],
+  ["top up", 0.24],
+  ["unlock withdrawal", 0.28],
+  ["unpaid toll", 0.20],
+  ["delivery fee", 0.20],
+  ["package is pending", 0.16],
+  ["account has been locked", 0.16],
+  ["reactivate your account", 0.18],
   ["investment opportunity", 0.16],
   ["online relationship", 0.10],
   ["ဘဏ်ဝန်ထမ်း", 0.16],
@@ -77,6 +96,14 @@ const CONTEXT_SIGNALS = [
   [/\b(?:arrest|lawsuit|police|warrant|penalty)\b/i, 0.18, "Uses threats or intimidation"],
   [/\b(?:seed phrase|recovery phrase|private key|wallet key)\b/i, 0.30, "Requests a wallet recovery secret"],
   [/\b(?:job|hiring|recruiter|work from home|employment)\b.{0,70}\b(?:fee|deposit|crypto|gift card|equipment payment)\b/i, 0.24, "Requests payment for a job opportunity"],
+  [/(?:remote|online|flexible|work from home).{0,70}(?:task|rating|review|hotel|app|product).{0,80}(?:earn|income|commission|paid|start today)/i, 0.55, "Offers a fake task or rating job"],
+  [/(?:task|rating|review|commission).{0,80}(?:add funds|top up|deposit|buy credits|unlock|withdraw)/i, 0.45, "Requires payment to unlock task earnings"],
+  [/(?:package|parcel|delivery).{0,70}(?:fee|payment|address|return).{0,70}(?:link|click|http|www\.|[a-z0-9-]+\.[a-z]{2,})/i, 0.32, "Uses a fake delivery problem to request payment or data"],
+  [/(?:toll|road fee).{0,60}(?:unpaid|overdue|penalty|pay now).{0,70}(?:link|click|http|www\.|[a-z0-9-]+\.[a-z]{2,})/i, 0.32, "Uses a fake toll charge and payment link"],
+  [/(?:bank alert|unusual activity|card locked|account suspended).{0,80}(?:verify|confirm|reactivate|click|login)/i, 0.30, "Impersonates an account alert to steal credentials"],
+  [/(?:subscription|membership).{0,60}(?:renew|charge|expired).{0,60}(?:cancel|click|link|update payment)/i, 0.26, "Uses a fake subscription charge or cancellation link"],
+  [/(?:refund|overpaid|rebate).{0,60}(?:claim|process|bank details|click|link)/i, 0.24, "Uses a fake refund to request financial information"],
+  [/(?:electricity|utility|water|service).{0,60}(?:disconnect|shut off|overdue).{0,60}(?:pay|link|click)/i, 0.30, "Threatens service disconnection to demand payment"],
   [/\b(?:love|relationship|fianc[eé]|dear|sweetheart)\b.{0,100}\b(?:money|loan|transfer|crypto|emergency)\b/i, 0.22, "Uses a relationship to request money"],
   [/\b(?:investment|trading|forex|crypto)\b.{0,70}\b(?:guaranteed|double|profit|return|risk.?free)\b/i, 0.24, "Promises unrealistic investment returns"],
   [/\b(?:support|technician|security team)\b.{0,70}\b(?:anydesk|teamviewer|screen share|remote access|install)\b/i, 0.24, "Impersonates support to request remote access"],
@@ -90,6 +117,10 @@ const BENIGN_SIGNALS = new Map([
   ["monthly statement", 0.08],
   ["will never ask", 0.16]
 ]);
+const AUTHORITY_CLAIM_PATTERN = /(?:\b(?:this is|i am|i'm)\b.{0,90}\b(?:president|chancellor|vice[ -]?chancellor|ceo|chief executive|director|dean|professor|minister|governor|mayor|police officer|officer|manager|boss|bank manager)\b|(?:ကျွန်တော်|ကျွန်မ|ငါ|ဒီမှာ).{0,45}(?:သမ္မတ|ဥက္ကဋ္ဌ|အမှုဆောင်အရာရှိ|ဒါရိုက်တာ|ဌာနမှူး|ပါမောက္ခ|ဝန်ကြီး|အုပ်ချုပ်ရေးမှူး|ရဲအရာရှိ|မန်နေဂျာ|ဘဏ်မန်နေဂျာ)(?:ပါ|ဖြစ်ပါတယ်)?)/iu;
+const PRIVATE_CHANNEL_PATTERN = /(?:\b(?:my|a|this)\s+(?:private|personal|new|temporary|other|alternate)\s+(?:phone\s+)?(?:number|line|account)\b|\b(?:private|personal|new|temporary|other|alternate)\s+(?:phone\s+)?(?:number|line|account)\b|\b(?:texting|messaging|contacting|writing)\s+(?:you\s+)?from\s+(?:my|a|this)\s+(?:private|personal|new|temporary|other|alternate)\b|(?:ကိုယ်ပိုင်|သီးသန့်|ပုဂ္ဂိုလ်ရေး|အသစ်|ယာယီ|အခြား)(?:ဖုန်း)?(?:နံပါတ်|လိုင်း|အကောင့်))/iu;
+const URGENCY_PATTERN = /(?:\b(?:urgent|urgency|urgently|immediate|immediately|as soon as possible|asap|time[ -]?sensitive|right away)\b|(?:အရေးကြီး|အရေးပေါ်|အမြန်|ချက်ချင်း|အခုပဲ))/iu;
+const REPLY_REQUEST_PATTERN = /(?:\b(?:reply|respond|get back to me|leave (?:me )?a message|message me|text me|acknowledge (?:this|receipt)|let me know once you (?:see|receive|read))\b|(?:စာပြန်|အကြောင်းပြန်|ပြန်လည်ဆက်သွယ်|ပြန်ဆက်သွယ်|မက်ဆေ့ချ်ပို့|မက်ဆေ့ချ်ထား))/iu;
 const MESSAGE_SPAM_TERMS = [
   ["password", 5],
   ["verify", 4],
@@ -262,6 +293,12 @@ function analyzeMessage(value) {
   const lowered = cleaned.toLowerCase();
   const phrases = [...PHRASE_SIGNALS.keys()].filter((phrase) => lowered.includes(phrase));
   const contextual = CONTEXT_SIGNALS.filter(([pattern]) => pattern.test(cleaned));
+  const authorityClaim = AUTHORITY_CLAIM_PATTERN.test(cleaned);
+  const privateChannel = PRIVATE_CHANNEL_PATTERN.test(cleaned);
+  const urgency = URGENCY_PATTERN.test(cleaned);
+  const replyRequest = REPLY_REQUEST_PATTERN.test(cleaned);
+  const authorityChannelImpersonation = authorityClaim && privateChannel && (urgency || replyRequest);
+  const authorityPressureImpersonation = authorityClaim && urgency && replyRequest;
   const phraseBoost = phrases.reduce((sum, phrase) => sum + PHRASE_SIGNALS.get(phrase), 0);
   const contextBoost = contextual.reduce((sum, [, boost]) => sum + boost, 0);
   let benignDiscount = Math.min(0.24, [...BENIGN_SIGNALS].reduce((sum, [phrase, weight]) => sum + (lowered.includes(phrase) ? weight : 0), 0));
@@ -277,16 +314,36 @@ function analyzeMessage(value) {
   if (cleaned.length > 120) probability -= 0.05;
 
   probability = Math.max(0.01, Math.min(0.99, probability + phraseBoost + Math.min(0.45, contextBoost) + combinationBoost - benignDiscount));
+  // Executive-impersonation scams often contain no link or payment request in
+  // their opening message. Score the behavior combination, not a person's name.
+  if (authorityChannelImpersonation) probability = Math.max(probability, 0.82);
+  else if (authorityPressureImpersonation) probability = Math.max(probability, 0.74);
   const isSpam = probability >= 0.50;
-  const indicators = [...phrases, ...contextual.map(([, , label]) => label), ...spamTerms(tokens)];
+  const behavioralIndicators = [];
+  if (authorityClaim) behavioralIndicators.push("Claims a senior or trusted identity");
+  if (privateChannel) behavioralIndicators.push("Uses a private or changed contact channel");
+  if (replyRequest) behavioralIndicators.push("Requests a reply before identity verification");
+  if (authorityChannelImpersonation || authorityPressureImpersonation) {
+    behavioralIndicators.unshift("Possible authority impersonation through an unverifiable channel");
+  }
+  const indicators = [...behavioralIndicators, ...phrases, ...contextual.map(([, , label]) => label), ...spamTerms(tokens)];
   const confidence = isSpam ? probability : 1 - probability;
   const risk = probability >= 0.70 ? "HIGH" : probability >= 0.50 ? "MEDIUM" : "LOW";
   const indicatorSet = new Set(indicators);
   let category = isSpam ? "Spam / Scam Message" : "Likely Safe Message";
   const categoryRules = [
+    ["Possible authority impersonation through an unverifiable channel", "Authority impersonation scam"],
     ["Requests an authentication secret", "Credential phishing"],
     ["Requests a wallet recovery secret", "Crypto wallet theft"],
     ["Requests payment for a job opportunity", "Job scam"],
+    ["Offers a fake task or rating job", "Task job scam"],
+    ["Requires payment to unlock task earnings", "Task job scam"],
+    ["Uses a fake delivery problem to request payment or data", "Delivery scam"],
+    ["Uses a fake toll charge and payment link", "Toll-payment scam"],
+    ["Impersonates an account alert to steal credentials", "Account phishing"],
+    ["Uses a fake subscription charge or cancellation link", "Subscription scam"],
+    ["Uses a fake refund to request financial information", "Refund scam"],
+    ["Threatens service disconnection to demand payment", "Utility-payment scam"],
     ["Uses a relationship to request money", "Romance scam"],
     ["Promises unrealistic investment returns", "Investment scam"],
     ["Impersonates support to request remote access", "Tech-support scam"],
@@ -549,6 +606,19 @@ function analyzePhone(value) {
 }
 
 function analyzePayload(scanType, content) {
+  const value = validateScanInput(scanType, content);
+
+  const primary = scanType === "message"
+    ? analyzeMessage(value)
+    : scanType === "link"
+      ? analyzeLink(value)
+      : scanType === "email"
+        ? analyzeEmail(value)
+        : analyzePhone(value);
+  return scanType === "message" ? primary : combineWithSpamLanguage(scanType, primary, value);
+}
+
+function validateScanInput(scanType, content) {
   if (!SUPPORTED_SCAN_TYPES.has(scanType)) {
     throw new Error("Scan type must be message, link, email, or phone.");
   }
@@ -561,15 +631,7 @@ function analyzePayload(scanType, content) {
   if (value.length > limits[scanType]) {
     throw new Error(`${scanType[0].toUpperCase()}${scanType.slice(1)} must be ${limits[scanType]} characters or fewer.`);
   }
-
-  const primary = scanType === "message"
-    ? analyzeMessage(value)
-    : scanType === "link"
-      ? analyzeLink(value)
-      : scanType === "email"
-        ? analyzeEmail(value)
-        : analyzePhone(value);
-  return scanType === "message" ? primary : combineWithSpamLanguage(scanType, primary, value);
+  return value;
 }
 
 function buildInvestigation(scanType, content, analysis, investigationTimeMs) {
@@ -685,7 +747,148 @@ export function runAgent(scanType, content) {
   return analysis;
 }
 
-export default function handler(req, res) {
+function cleanModelField(value, max) {
+  return String(value || "").normalize("NFKC").replace(/[\u0000-\u001F]/g, " ").trim().slice(0, max);
+}
+
+function normalizeOpenRouterResult(scanType, raw, model) {
+  const score = Math.max(0, Math.min(99, Math.round(Number(raw?.risk_score) || 0)));
+  const category = cleanModelField(raw?.category, 100) || (score >= 35 ? "Suspicious content" : "Likely Safe Message");
+  const reason = cleanModelField(raw?.reason, 320) || "OpenRouter completed the scan but returned no explanation.";
+  const indicators = Array.isArray(raw?.indicators)
+    ? raw.indicators.map((item) => cleanModelField(item, 140)).filter(Boolean).slice(0, 3)
+    : [];
+  const recommendedActions = Array.isArray(raw?.recommended_actions)
+    ? raw.recommended_actions.map((item) => cleanModelField(item, 180)).filter(Boolean).slice(0, 2)
+    : [];
+  const analysis = result(
+    scanType,
+    score,
+    category,
+    reason,
+    indicators.length ? indicators : ["No strong warning signal was identified"],
+    `openrouter:${cleanModelField(model, 120) || "configured-model"}`
+  );
+  return {
+    ...analysis,
+    agent_headline: category,
+    agent_summary: reason,
+    recommended_actions: recommendedActions,
+    is_spam: analysis.risk !== "LOW",
+    label: analysis.risk === "LOW" ? "not_spam" : "spam",
+    spam_probability: Number((score / 100).toFixed(4)),
+    nlp_stack: ["OpenRouter Chat Completions API", "Structured Outputs", "SafeMind verdict normalization"],
+    analysis_source: "openrouter_structured_scan",
+    provider: "openrouter",
+    fallback_used: false
+  };
+}
+
+function buildOpenRouterInvestigation(scanType, content, analysis, investigationTimeMs) {
+  const caseId = randomUUID();
+  const caseDate = new Date().toISOString().slice(0, 10).replaceAll("-", "");
+  const score = Math.max(0, Math.min(99, Number(analysis.risk_score) || 0));
+  const status = score >= 90 ? "Critical" : score >= 70 ? "High Risk" : score >= 35 ? "Suspicious" : "Not Scam";
+  return {
+    case_id: caseId,
+    case_number: `CASE-${caseDate}-${caseId.slice(0, 8).toUpperCase()}`,
+    status,
+    confidence: analysis.confidence,
+    threat_type: analysis.category,
+    investigation_time_ms: Number(Math.max(0, investigationTimeMs).toFixed(3)),
+    evidence_count: (analysis.indicators || []).length,
+    document: {
+      detected_type: scanType,
+      language: /[\u1000-\u109f]/.test(content) ? "my" : "en",
+      encoding: "unicode",
+      character_count: content.trim().length,
+      normalization: "NFKC",
+      entities_extracted: false
+    },
+    intelligence: {
+      local_reputation_checked: false,
+      external_feeds_configured: false,
+      note: "The verdict was generated from the current OpenRouter model response, not a fixed directory entry."
+    },
+    predictions: {
+      model: analysis.model,
+      probabilities: { safe_or_unknown: (100 - score) / 100, suspicious_or_scam: score / 100 },
+      calibration: "normalized_from_openrouter_risk_score"
+    },
+    evidence: (analysis.indicators || []).map((label) => ({
+      kind: "ai_indicator",
+      label,
+      severity: analysis.risk === "HIGH" ? "high" : analysis.risk === "MEDIUM" ? "medium" : "low",
+      value: null,
+      explanation: "Returned by the live OpenRouter scam assessment."
+    })),
+    scoring: [{ label: "OpenRouter model score", score, source: "model" }],
+    timeline: [
+      ["Input Agent", "Validating and normalizing input"],
+      ["OpenRouter Agent", "Sending evidence to the configured chat model"],
+      ["AI Analysis", "Classifying scam behavior and context"],
+      ["Schema Validator", "Validating the structured model response"],
+      ["Decision Agent", "Normalizing score and verdict fields"]
+    ].map(([agent, label]) => ({ agent, label, status: "completed", duration_ms: 0 })),
+    graph: { nodes: [{ id: "input", type: scanType, label: scanType[0].toUpperCase() + scanType.slice(1) }], edges: [] },
+    related_cases: { available: false, matches: [], reason: "No fixed or historical case result was used for this verdict." },
+    knowledge: { available: false, citations: [], reason: "No fixed knowledge-base verdict was used for this scan." },
+    checks_performed: [
+      "Input validation and Unicode normalization",
+      "Fresh OpenRouter chat-model assessment",
+      "Strict structured-output validation",
+      "SafeMind verdict-field normalization"
+    ],
+    limitations: [
+      "This AI assessment is decision support, not a guarantee.",
+      "Verify unexpected requests through an independently found official channel."
+    ]
+  };
+}
+
+export async function runSecurityScan(scanType, content, options = {}) {
+  const value = validateScanInput(scanType, content);
+  const key = createHash("sha256").update(`openrouter\0${scanType}\0${value}`).digest("hex");
+  const cached = OPENROUTER_AGENT_CACHE.get(key);
+  if (options.allowCache === true && !options.bypassCache && cached && Date.now() - cached.createdAt < AGENT_CACHE_TTL_MS) {
+    return structuredClone(cached.analysis);
+  }
+
+  try {
+    const ai = await scanWithOpenRouter(scanType, value, options);
+    const analysis = normalizeOpenRouterResult(scanType, ai.assessment, ai.model);
+    analysis.investigation = buildOpenRouterInvestigation(scanType, value, analysis, ai.durationMs);
+    if (options.allowCache === true) {
+      OPENROUTER_AGENT_CACHE.set(key, { createdAt: Date.now(), analysis: structuredClone(analysis) });
+      if (OPENROUTER_AGENT_CACHE.size > AGENT_CACHE_MAX) OPENROUTER_AGENT_CACHE.delete(OPENROUTER_AGENT_CACHE.keys().next().value);
+    }
+    return analysis;
+  } catch (error) {
+    const allowFallback = options.allowFallback ?? String(process.env.OPENROUTER_SCAN_FALLBACK || "disabled").toLowerCase() === "enabled";
+    if (!allowFallback) throw error;
+    return {
+      ...runAgent(scanType, value),
+      analysis_source: "local_safety_fallback",
+      provider: "local",
+      fallback_used: true,
+      fallback_reason: error?.code === "OPENROUTER_NOT_CONFIGURED" ? "openrouter_not_configured" : "openrouter_temporarily_unavailable"
+    };
+  }
+}
+
+async function readRequestBody(req) {
+  return await new Promise((resolve, reject) => {
+    let body = "";
+    req.on("data", (chunk) => {
+      body += chunk;
+      if (Buffer.byteLength(body, "utf8") > 40_000) reject(new Error("The request body is too large."));
+    });
+    req.on("end", () => resolve(body));
+    req.on("error", reject);
+  });
+}
+
+export default async function handler(req, res) {
   const method = String(req.method || "GET").toUpperCase();
 
   if (method === "OPTIONS") {
@@ -698,7 +901,8 @@ export default function handler(req, res) {
   if (method === "GET") {
     return jsonResponse(res, 200, {
       status: "ok",
-      model: "safemind-hybrid-security-v3",
+      model: isOpenRouterScanConfigured() ? (process.env.OPENROUTER_MODEL || "openai/gpt-5.6-luna-pro") : "unavailable",
+      provider: isOpenRouterScanConfigured() ? "openrouter" : "unavailable",
       scan_types: [...SUPPORTED_SCAN_TYPES]
     });
   }
@@ -717,29 +921,16 @@ export default function handler(req, res) {
     return jsonResponse(res, 415, { error: "Content-Type must be application/json." });
   }
 
-  let body = "";
-  req.on("data", (chunk) => {
-    body += chunk;
-    if (body.length > 40_000) {
-      req.destroy();
+  try {
+    const payload = JSON.parse(await readRequestBody(req) || "{}");
+    if (typeof payload !== "object" || Array.isArray(payload) || payload === null) {
+      throw new Error("The request body must be a JSON object.");
     }
-  });
-
-  req.on("end", () => {
-    try {
-      const payload = JSON.parse(body || "{}");
-      if (typeof payload !== "object" || Array.isArray(payload) || payload === null) {
-        throw new Error("The request body must be a JSON object.");
-      }
-      const scanType = payload.scan_type ?? (Object.prototype.hasOwnProperty.call(payload, "message") ? "message" : null);
-      const content = payload.content ?? payload.message;
-      return jsonResponse(res, 200, runAgent(scanType, content));
-    } catch (error) {
-      return jsonResponse(res, 400, { error: error.message || "Unable to analyze this message." });
-    }
-  });
-
-  req.on("error", () => {
-    jsonResponse(res, 500, { error: "Unable to analyze this message." });
-  });
+    const scanType = payload.scan_type ?? (Object.prototype.hasOwnProperty.call(payload, "message") ? "message" : null);
+    const content = payload.content ?? payload.message;
+    return jsonResponse(res, 200, await runSecurityScan(scanType, content));
+  } catch (error) {
+    const status = Number(error?.statusCode) >= 500 ? Number(error.statusCode) : 400;
+    return jsonResponse(res, status, { error: error.message || "Unable to analyze this message." });
+  }
 }

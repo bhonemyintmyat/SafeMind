@@ -42,7 +42,7 @@
 
         <nav id="mainNavigation">
             <a href="/#features">Features</a>
-            <a href="/#demo">Demo</a>
+            <a href="/#demo">AI Scan</a>
             <a href="/#verified-contacts">Contacts</a>
             <a href="/#trust">Trust</a>
             <a href="/#contact">Contact us</a>
@@ -71,7 +71,7 @@
 
                 <div class="hero-buttons">
                     <a class="primary-btn" href="/signup">Start Protecting</a>
-                    <a class="secondary-btn" href="/#demo">Try Demo</a>
+                    <a class="secondary-btn" href="/#demo">Check with AI</a>
                 </div>
 
                 <ul class="hero-features">
@@ -86,14 +86,14 @@
 
         <section class="demo-section reveal" id="demo">
             <div class="section-heading">
-                <p>Interactive Demo</p>
-                <h2>Test a suspicious input instantly</h2>
-                <span>Check phone numbers, messages, links, and email addresses against the SafeMind directory.</span>
+                <p>Live AI Scam Check</p>
+                <h2>Check suspicious content with OpenRouter</h2>
+                <span>Every submission receives a fresh AI assessment using the configured OpenRouter model.</span>
             </div>
 
             <div class="demo-layout">
                 <div class="demo-input-card">
-                    <div class="demo-tabs" role="tablist" aria-label="Demo modes">
+                    <div class="demo-tabs" role="tablist" aria-label="AI scan modes">
                         <button type="button" class="demo-tab is-active" id="demoTabPhone" role="tab" data-demo-mode="phone" aria-controls="demoInputPanel" aria-selected="true" tabindex="0">Phone Number</button>
                         <button type="button" class="demo-tab" id="demoTabMessage" role="tab" data-demo-mode="message" aria-controls="demoInputPanel" aria-selected="false" tabindex="-1">Message</button>
                         <button type="button" class="demo-tab" id="demoTabLink" role="tab" data-demo-mode="link" aria-controls="demoInputPanel" aria-selected="false" tabindex="-1">Link</button>
@@ -106,10 +106,7 @@
                     <p class="demo-hint" id="demoHint">Paste a number that looks suspicious or unfamiliar.</p>
 
                     <div class="demo-actions">
-                        <button type="button" class="primary-btn" id="demoAnalyze" data-input-action disabled>Analyze Demo</button>
-                        <button type="button" class="secondary-btn" data-demo-example="scam">Scam example</button>
-                        <button type="button" class="secondary-btn" data-demo-example="safe">Not scam</button>
-                        <button type="button" class="secondary-btn" data-demo-example="unknown">Not in database</button>
+                        <button type="button" class="primary-btn" id="demoAnalyze" data-input-action disabled>Check with AI</button>
                     </div>
                     </div>
                 </div>
@@ -117,9 +114,9 @@
                 <div class="demo-result-card">
                     <div class="demo-loading-bar" data-demo-loading></div>
                     <p class="demo-result-label">Result</p>
-                    <div class="result-pill" id="demoRisk">Risk: LOW</div>
-                    <h3 id="demoConfidence">Confidence: 0%</h3>
-                    <p id="demoCategory">Category: Awaiting input</p>
+                    <div class="result-pill" id="demoRisk">WAITING</div>
+                    <h3 id="demoConfidence">Enter content to begin</h3>
+                    <p id="demoCategory">Live OpenRouter assessment</p>
                     <p id="demoReason">Choose a checker and enter a value.</p>
                     <ul id="demoSignals"></ul>
                     <a class="primary-btn demo-report-link" id="demoReport" href="/login" hidden>Report to admin</a>
@@ -247,9 +244,9 @@
                 </article>
 
                 <article class="faq-item">
-                    <h3 class="faq-title"><button type="button" class="faq-question" data-faq-button aria-expanded="false">Do I need an account to use the demo?</button></h3>
+                    <h3 class="faq-title"><button type="button" class="faq-question" data-faq-button aria-expanded="false">Do I need an account to use the AI scanner?</button></h3>
                     <div class="faq-answer">
-                        <p>No. The demo sends only the content you enter for analysis and does not add it to your account history.</p>
+                        <p>No. The scanner sends only the content you enter to the configured OpenRouter model for analysis and does not add it to your account history.</p>
                     </div>
                 </article>
 
@@ -305,8 +302,7 @@
         <h2 id="tutorialTitle">How to use every main button</h2>
         <ol class="tutorial-steps">
             <li><strong>Phone, Message, Link, or Email</strong><span>Select the type of suspicious content you received.</span></li>
-            <li><strong>Analyze Demo</strong><span>Paste the suspicious content, then press this button to check it.</span></li>
-            <li><strong>Example buttons</strong><span>Load a safe, scam, or unknown example so you can practise.</span></li>
+            <li><strong>Check with AI</strong><span>Paste suspicious content, then request a fresh OpenRouter assessment.</span></li>
             <li><strong>Report to admin</strong><span>Send suspicious evidence for an administrator to review.</span></li>
             <li><strong>Language button</strong><span>Switch the whole interface between English and Burmese.</span></li>
             <li><strong>Login and Start Protecting</strong><span>Open your account and save investigation activity.</span></li>
@@ -329,7 +325,7 @@
                 <img src="/assets/green-logo.png" alt="" aria-hidden="true" loading="lazy" decoding="async">
                 <span>SafeMind</span>
             </a>
-            <p>Professional scam detection for modern teams and individuals.</p>
+            <p class="footer-description">Professional scam detection for modern teams and individuals.</p>
         </div>
         <div class="footer-meta"><p class="footer-copyright">© 2026 SafeMind</p></div>
     </footer>

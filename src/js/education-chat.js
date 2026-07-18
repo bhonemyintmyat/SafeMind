@@ -577,11 +577,13 @@ if (form && chatLog) {
     const previousHistory = history.slice(-8);
     chatLog.querySelector(".education-empty-actions")?.remove();
     chatLog.querySelector(".education-welcome")?.remove();
+    submitReadiness.setBusy(true);
+    questionInput.value = "";
+    questionInput.style.height = "auto";
+    questionInput.disabled = true;
     await appendMessage("user", userQuestion);
     history.push({ role: "user", content: userQuestion });
     persistChatHistory();
-    submitReadiness.setBusy(true);
-    questionInput.disabled = true;
     setStatus(chatStatus, copy("SafeMind is matching NLP signals and verified records...", "SafeMind သည် NLP လက္ခဏာများနှင့် အတည်ပြုမှတ်တမ်းများကို တိုက်စစ်နေသည်..."), "pending");
     const loadingMessage = createLoadingMessage();
     const directoryContext = await Promise.race([
@@ -688,7 +690,6 @@ if (form && chatLog) {
         persistChatHistory();
         addRecentAnalysis(userQuestion, lastAssessment);
         updateFollowUps(doneEvent?.follow_ups || []);
-        questionInput.value = "";
         setStatus(chatStatus, doneEvent?.response_complete === false
           ? copy("The response reached its limit. Use a follow-up to continue.", "အဖြေကန့်သတ်ချက်သို့ ရောက်သွားသည်။ ဆက်မေးရန် အောက်ပါမေးခွန်းများကို သုံးပါ။")
           : copy("Analysis complete.", "စိစစ်မှု ပြီးပါပြီ။"), doneEvent?.response_complete === false ? "pending" : "success");

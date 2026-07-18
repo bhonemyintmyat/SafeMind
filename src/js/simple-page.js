@@ -34,7 +34,7 @@ function close(dialog) { if (dialog?.open) dialog.close(); }
 async function analyzeWithNlpService(content) {
   const scanType = detectType(content);
   const controller = new AbortController();
-  const timeout = window.setTimeout(() => controller.abort(), 20_000);
+  const timeout = window.setTimeout(() => controller.abort(), 45_000);
   try {
     const response = await fetch(nlpServiceUrl, {
       method: "POST",
@@ -45,7 +45,7 @@ async function analyzeWithNlpService(content) {
       body: JSON.stringify({ scan_type: scanType, content })
     });
     const result = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(result.error || result.detail || "The NLP analysis service is unavailable.");
+    if (!response.ok) throw new Error(result.error || result.detail || "The OpenAI analysis service is unavailable.");
     return result;
   } finally {
     window.clearTimeout(timeout);
@@ -62,13 +62,30 @@ form.addEventListener("submit", async (event) => {
   }
   checkButton.disabled = true;
   checkButton.textContent = say("CHECKING…", "စစ်ဆေးနေသည်…");
-  status.textContent = say("SafeMind is checking this now…", "SafeMind က ယခု စစ်ဆေးနေသည်…");
+  const progressSteps = [
+    say("Connecting to AI…", "AI နှင့် ချိတ်ဆက်နေသည်…"),
+    say("Scanning warning signs…", "သတိပေးလက္ခဏာများ စစ်ဆေးနေသည်…"),
+    say("Preparing your result…", "သင့်ရလဒ်ကို ပြင်ဆင်နေသည်…")
+  ];
+  let progressIndex = 0;
+  status.textContent = progressSteps[progressIndex];
+  const progressTimer = window.setInterval(() => {
+    progressIndex = (progressIndex + 1) % progressSteps.length;
+    status.textContent = progressSteps[progressIndex];
+  }, 2200);
   answer.hidden = true;
   try {
     const result = await analyzeWithNlpService(content);
     const risky = isScamResult(result);
-    document.getElementById("simpleVerdict").textContent = risky ? say("SCAM", "လိမ်လည်မှု") : say("SAFE", "လုံခြုံသည်");
-    document.getElementById("simpleVerdict").dataset.risk = risky ? "warning" : "safe";
+    const risk = ["HIGH", "MEDIUM", "LOW"].includes(String(result.risk || "").toUpperCase())
+      ? String(result.risk).toUpperCase()
+      : risky ? "HIGH" : "LOW";
+    document.getElementById("simpleVerdict").textContent = risk === "HIGH"
+      ? say("SCAM · HIGH RISK", "လိမ်လည်မှု · အန္တရာယ်မြင့်")
+      : risk === "MEDIUM"
+        ? say("SCAM · MEDIUM RISK", "လိမ်လည်မှု · အန္တရာယ်အလယ်အလတ်")
+        : say("NOT SCAM · LOW RISK", "လိမ်လည်မှုမဟုတ် · အန္တရာယ်နည်း");
+    document.getElementById("simpleVerdict").dataset.risk = risk.toLowerCase();
     document.getElementById("simpleSummary").textContent = risky
       ? say("Stop. Do not click, reply, or send money until you verify this yourself.", "ရပ်တန့်ပါ။ ကိုယ်တိုင်အတည်မပြုမချင်း လင့်ခ်မနှိပ်၊ စာမပြန်၊ ငွေမပို့ပါနှင့်။")
       : say("No strong scam signs were found. Still verify unexpected requests yourself.", "ပြင်းထန်သော လိမ်လည်မှုလက္ခဏာ မတွေ့ပါ။ မမျှော်လင့်သော တောင်းဆိုချက်များကို ကိုယ်တိုင်အတည်ပြုပါ။");
@@ -84,6 +101,7 @@ form.addEventListener("submit", async (event) => {
       ? say("The check took too long. Please try again.", "စစ်ဆေးမှု အချိန်ကြာနေပါသည်။ ထပ်မံကြိုးစားပါ။")
       : say("We could not finish the check. Your content is still here. Please try again.", "စစ်ဆေးမှု မပြီးဆုံးနိုင်ပါ။ သင့်အကြောင်းအရာ မပျောက်ပါ။ ထပ်မံကြိုးစားပါ။");
   } finally {
+    window.clearInterval(progressTimer);
     checkButton.disabled = false;
     checkButton.textContent = say("CHECK NOW", "ယခု စစ်ဆေးရန်");
   }

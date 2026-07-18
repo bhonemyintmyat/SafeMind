@@ -53,7 +53,7 @@ Users can submit suspicious activity for review and attach supporting screenshot
 
 ### Bilingual AI Scam Coach
 
-The Education workspace lets users paste suspicious content or upload a victim screenshot and discuss it with an AI security coach in English or Burmese. Answers are grounded with SafeMind's NLP assessment and verified directory matches, then organized into an assessment, warning signs, immediate actions, and a reusable safety lesson.
+The Education workspace lets users paste suspicious content or upload a victim screenshot and discuss it with an AI security coach in English or Burmese. Answers are grounded with SafeMind's OpenRouter assessment and verified directory matches, then organized into an assessment, warning signs, immediate actions, and a reusable safety lesson.
 
 The coach starts with privacy instructions, accepts only restricted evidence formats, and reminds users that automated guidance cannot guarantee safety.
 
@@ -67,11 +67,11 @@ SafeMind uses a hybrid detection pipeline:
 
 1. The input is normalized and validated for its selected checker type.
 2. Deterministic security rules identify high-confidence indicators.
-3. The NLP layer evaluates language, intent, urgency, impersonation, and social-engineering patterns.
+3. The server-side OpenRouter scanner evaluates language, intent, urgency, impersonation, and social-engineering patterns through a strict structured-output contract.
 4. Evidence is combined into an explainable risk assessment.
 5. The decision layer produces a verdict, confidence level, and safe next steps.
 
-The local NLP service uses spaCy-compatible multilingual processing, NLTK stemming, and a trained Naive Bayes classifier. The architecture is modular so additional threat-intelligence providers and model adapters can be introduced without redesigning the user experience.
+The OpenRouter Chat Completions API is the website scanner, using the existing `OPENROUTER_API_KEY` and `OPENROUTER_MODEL`. Each website submission requests a fresh structured assessment. Fixed directory records and local heuristics do not decide website verdicts; the local rules remain only for offline regression testing and an explicitly enabled emergency fallback.
 
 ## Experience and design
 
@@ -95,7 +95,7 @@ SafeMind is organized into distinct product and analysis layers:
 | --- | --- |
 | Web client | Responsive interface, localization, validation, and investigation views |
 | Security API | Unified request validation and explainable analysis responses |
-| NLP service | Classification, intent detection, entity extraction, and security heuristics |
+| OpenRouter scan service | Structured classification, intent detection, impersonation analysis, and calibrated risk scoring |
 | Agent runtime | Investigation coordination, evidence evaluation, decision logic, and bilingual coaching |
 | Extension | Minimal-permission browser entry point |
 | PWA layer | Installable application metadata and offline-ready assets |
@@ -132,10 +132,11 @@ Users should independently verify unexpected requests through an organization’
 
 ## Engineering quality
 
-The project includes production build validation, NLP unit tests, browser-extension validation, health checks, responsive layouts, and explicit failure states. Core verification commands are available through the project scripts:
+The project includes production build validation, OpenRouter contract tests, local safety-fallback tests, browser-extension validation, health checks, responsive layouts, and explicit failure states. Core verification commands are available through the project scripts:
 
 ```bash
 npm run test:nlp
+npm run test:openrouter-scan
 npm run build:all
 npm run test:extension
 ```

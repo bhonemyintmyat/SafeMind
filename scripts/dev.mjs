@@ -6,11 +6,10 @@ import { readFileSync } from "node:fs";
 import { createConnection } from "node:net";
 import { createServer } from "node:http";
 import educationChatHandler from "../api/education-chat.js";
+import spamCheckHandler from "../api/spam-check.js";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const viteEntry = resolve(root, "node_modules/vite/bin/vite.js");
-const localPython = resolve(root, ".venv/bin/python");
-const python = process.env.PYTHON || (existsSync(localPython) ? localPython : "python3");
 const children = [];
 let stopping = false;
 let educationServer = null;
@@ -40,16 +39,15 @@ function portIsOpen(port, host) {
 }
 
 const webIsRunning = await portIsOpen(5173, "::1") || await portIsOpen(5173, "127.0.0.1");
-const apiIsRunning = await portIsOpen(5050, "127.0.0.1");
 const educationApiIsRunning = await portIsOpen(5051, "127.0.0.1");
 
-if (webIsRunning && apiIsRunning && educationApiIsRunning) {
+if (webIsRunning && educationApiIsRunning) {
   console.log("SafeMind is already running at http://localhost:5173");
   process.exit(0);
 }
 
-if (webIsRunning || apiIsRunning || educationApiIsRunning) {
-  const occupied = webIsRunning ? "5173 (website)" : apiIsRunning ? "5050 (analysis API)" : "5051 (education AI API)";
+if (webIsRunning || educationApiIsRunning) {
+  const occupied = webIsRunning ? "5173 (website)" : "5051 (SafeMind API)";
   console.error(`SafeMind cannot start because port ${occupied} is already in use.`);
   console.error("Stop the older development process with Ctrl+C, then run npm run dev again.");
   process.exit(1);
@@ -88,14 +86,14 @@ function stop(exitCode = 0) {
 process.on("SIGINT", () => stop(0));
 process.on("SIGTERM", () => stop(0));
 
-start(python, ["-u", "-m", "nlp_service.app"], "SafeMind analysis API");
 educationServer = createServer((request, response) => {
   const pathname = new URL(request.url || "/", "http://127.0.0.1").pathname;
+  if (pathname === "/api/spam-check" || pathname === "/health") return spamCheckHandler(request, response);
   if (pathname === "/api/education-chat") return educationChatHandler(request, response);
   response.writeHead(404, { "Content-Type": "application/json" });
   response.end(JSON.stringify({ error: "Not found." }));
 });
 educationServer.listen(5051, "127.0.0.1", () => {
-  console.log("SafeMind education AI API ready at http://127.0.0.1:5051");
+  console.log("SafeMind OpenRouter scan and education API ready at http://127.0.0.1:5051");
 });
 start(process.execPath, [viteEntry], "Vite");
