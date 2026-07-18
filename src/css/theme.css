@@ -800,6 +800,15 @@ html[data-theme="light"] footer {
   color: var(--text) !important;
 }
 
+html[data-theme="light"] .site-footer .footer-brand {
+  color:#111827 !important;
+}
+
+html[data-theme="light"] .site-footer .footer-description,
+html[data-theme="light"] .site-footer .footer-meta p {
+  color:#374151 !important;
+}
+
 html[data-theme="light"] .navbar > nav > a:hover {
   background: #F3F4F6 !important;
 }

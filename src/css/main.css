@@ -672,15 +672,15 @@ button:hover,
 .site-footer{
     display:grid;
     grid-template-columns:minmax(0,1fr) auto;
-    gap:24px;
-    align-items:flex-end;
+    gap:clamp(28px,5vw,72px);
+    align-items:center;
     padding:36px 70px 54px;
     border-top:1px solid rgba(255,255,255,.06);
     background:#000;
 }
 
 .site-footer p{
-    color:var(--muted);
+    color:#E5E7EB;
 }
 
 .terms-consent{
@@ -809,10 +809,11 @@ body.terms-dialog-open{overflow:hidden}
 }
 .terms-dialog-close:hover,.terms-dialog-close:focus-visible{border-color:#A9D35E;outline:3px solid rgba(169,211,94,.28)}
 
-.footer-identity{max-width:720px;text-align:left}
+.footer-identity{display:grid;min-width:0;max-width:720px;gap:14px;text-align:left}
+.footer-description{max-width:48ch;margin:0;color:#E5E7EB;font-size:clamp(17px,1.4vw,20px);font-weight:500;line-height:1.65;overflow-wrap:anywhere}
 .footer-copyright{justify-self:end}
 .footer-meta{display:grid;justify-items:end;gap:8px}
-.footer-meta p{margin:0}
+.footer-meta p{margin:0;color:#D1D5DB;font-size:16px;font-weight:600;line-height:1.5}
 .footer-meta a{color:inherit;background-color:transparent;text-decoration:underline;text-underline-offset:3px}
 .faq-title{margin:0}
 
@@ -823,21 +824,22 @@ body.terms-dialog-open{overflow:hidden}
 .sitemap-content a{color:var(--text);background-color:transparent;text-decoration:underline;text-underline-offset:3px}
 
 .footer-brand{
-    margin-bottom:10px;
+    display:inline-flex;
+    width:max-content;
+    max-width:100%;
+    margin:0;
+    gap:14px;
+    color:#FFFFFF;
+    font-size:clamp(23px,2vw,29px);
+    font-weight:800;
+    line-height:1.2;
 }
 
-/* Float the logo only where the desktop section gutter leaves safe space. */
-@media (min-width:901px){
-    .footer-brand img{
-        position:fixed;
-        bottom:24px;
-        left:24px;
-        z-index:40;
-    }
-
-    body.footer-in-view .footer-brand img{
-        position:static;
-    }
+.footer-brand img{
+    position:static;
+    flex:0 0 auto;
+    width:56px;
+    height:56px;
 }
 
 .reveal{
@@ -1035,6 +1037,8 @@ footer{
     .terms-actions button{width:100%;min-width:0}
     .footer-copyright{justify-self:start}
     .footer-meta{justify-items:start}
+    .footer-brand{font-size:24px}
+    .footer-brand img{width:52px;height:52px}
 }
 
 @media(max-width:560px){
