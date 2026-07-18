@@ -1491,6 +1491,42 @@ body.auth-page .auth-form input:focus {
   box-shadow: 0 0 0 4px rgba(169, 211, 94, .2) !important;
 }
 
+/* Dark dashboard utilities blend into the sidebar; only the chosen theme glows. */
+html[data-theme="dark"] body.dashboard-page .dashboard-sidebar .theme-switcher {
+  background: rgba(255, 255, 255, .035) !important;
+  border-color: rgba(255, 255, 255, .16) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] body.dashboard-page .dashboard-sidebar .theme-switcher button:not([aria-pressed="true"]) {
+  color: #D7DAE8 !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] body.dashboard-page .dashboard-sidebar .theme-switcher button[aria-pressed="true"] {
+  color: #20300F !important;
+  background: #A9D35E !important;
+  border-color: #BCE477 !important;
+  box-shadow: 0 0 0 3px rgba(169, 211, 94, .2), 0 8px 20px rgba(104, 141, 43, .22) !important;
+}
+
+html[data-theme="dark"] body.dashboard-page .dashboard-sidebar .sidebar-control {
+  color: #E5E7EB !important;
+  background: transparent !important;
+  border-color: rgba(229, 231, 235, .22) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] body.dashboard-page .dashboard-sidebar .sidebar-control:hover,
+html[data-theme="dark"] body.dashboard-page .dashboard-sidebar .sidebar-control:focus-visible {
+  color: #FFFFFF !important;
+  background: rgba(255, 255, 255, .07) !important;
+  border-color: rgba(229, 231, 235, .38) !important;
+  box-shadow: none !important;
+}
+
 /* Keep every dark-mode action green while preserving visible readiness states. */
 html[data-theme="dark"] body:not(.splash) button[data-input-action][data-action-state="waiting"],
 html[data-theme="dark"] body:not(.splash) button[data-input-action][data-action-state="busy"],
