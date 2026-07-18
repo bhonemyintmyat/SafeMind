@@ -277,6 +277,14 @@ if (typingTarget) {
     });
     typeHeading();
 }
+const backToTop = document.querySelector("[data-back-to-top]");
+if (backToTop) {
+    const toggleBackToTop = () => backToTop.classList.toggle("is-visible", window.scrollY > 300);
+    window.addEventListener("scroll", toggleBackToTop, { passive: true });
+    toggleBackToTop();
+    backToTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+}
+
 const siteFooter = document.querySelector(".site-footer");
 if (siteFooter && "IntersectionObserver" in window) {
     new IntersectionObserver(([entry]) => {

@@ -301,7 +301,7 @@ table { width: 100%; border-collapse: collapse; }
 html[lang="my"] :where(p, li, h1, h2, h3, h4, button, label) { word-break:normal; }
 
 /* Unified production controls */
-body:not(.splash) button:not(.modal-close) {
+body:not(.splash) button:not(.modal-close):not(.back-to-top) {
   min-height: 48px;
   border: 1px solid #DADADA;
   border-radius: 14px;
@@ -310,7 +310,7 @@ body:not(.splash) button:not(.modal-close) {
   font-weight: 600;
   line-height: 1.2;
 }
-body:not(.splash) button:not(.modal-close):hover { background: #F7EDC2; transform: translateY(-1px); }
+body:not(.splash) button:not(.modal-close):not(.back-to-top):hover { background: #F7EDC2; transform: translateY(-1px); }
 body:not(.splash) :where(.primary-btn, .primary-button, .auth-button, button.primary-action) {
   min-height: 48px;
   color: #FFFFFF !important;
