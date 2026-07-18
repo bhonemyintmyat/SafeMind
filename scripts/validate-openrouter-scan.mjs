@@ -20,8 +20,8 @@ const fakeFetch = async (url, request) => {
               risk_score: 91,
               category: "Authority impersonation scam",
               reason: "The sender claims senior authority, uses an unverifiable private channel, creates urgency, and requests a reply.",
-              indicators: ["Senior authority claim", "Private-number pretext", "Urgency"],
-              recommended_actions: ["Do not reply.", "Verify through the university's official website."]
+              indicators: ["Senior authority claim", "Private-number pretext", "Urgency", "Reply request"],
+              recommended_actions: ["Do not reply.", "Verify through the university's official website.", "Report the message."]
             })
           }
         }]
@@ -45,7 +45,8 @@ assert.equal(capturedRequest.body.response_format.json_schema.strict, true);
 assert.equal(capturedRequest.body.provider.require_parameters, true);
 assert.equal(capturedRequest.body.provider.sort, "throughput");
 assert.deepEqual(capturedRequest.body.provider.preferred_max_latency, { p50: 4, p90: 10 });
-assert.equal(capturedRequest.body.max_tokens, 320);
+assert.equal(capturedRequest.body.max_tokens, 420);
+assert.deepEqual(capturedRequest.body.plugins, [{ id: "response-healing" }]);
 assert.match(capturedRequest.body.messages[1].content, /private number/);
 assert.equal(result.provider, "openrouter");
 assert.equal(result.analysis_source, "openrouter_structured_scan");
@@ -55,6 +56,7 @@ assert.equal(result.risk_score, 91);
 assert.equal(result.label, "spam");
 assert.equal(result.is_spam, true);
 assert.equal(result.category, "Authority impersonation scam");
+assert.equal(result.indicators.length, 3);
 assert.deepEqual(result.recommended_actions, ["Do not reply.", "Verify through the university's official website."]);
 
 await runSecurityScan("message", authorityMessage, {

@@ -1,6 +1,6 @@
 const OPENROUTER_CHAT_URL = "https://openrouter.ai/api/v1/chat/completions";
 const DEFAULT_OPENROUTER_MODEL = "openai/gpt-5.6-luna-pro";
-const DEFAULT_TIMEOUT_MS = 25_000;
+const DEFAULT_TIMEOUT_MS = 38_000;
 const MAX_RETRIES = 2;
 
 const SCAN_SCHEMA = Object.freeze({
@@ -85,21 +85,20 @@ function outputText(payload) {
 }
 
 function validateAssessment(value) {
-  const validText = (item, max) => typeof item === "string" && item.trim().length > 0 && item.length <= max;
-  const validList = (items, min, max, itemMax) => Array.isArray(items)
+  const validText = (item) => typeof item === "string" && item.trim().length > 0;
+  const validList = (items, min) => Array.isArray(items)
     && items.length >= min
-    && items.length <= max
-    && items.every((item) => validText(item, itemMax));
+    && items.every((item) => validText(item));
   const valid = value
     && typeof value === "object"
     && !Array.isArray(value)
     && Number.isInteger(value.risk_score)
     && value.risk_score >= 0
     && value.risk_score <= 99
-    && validText(value.category, 100)
-    && validText(value.reason, 320)
-    && validList(value.indicators, 0, 3, 140)
-    && validList(value.recommended_actions, 1, 2, 180);
+    && validText(value.category)
+    && validText(value.reason)
+    && validList(value.indicators, 0)
+    && validList(value.recommended_actions, 1);
   if (!valid) {
     throw Object.assign(new Error("OpenRouter returned a scan result that did not match the required schema."), {
       code: "OPENROUTER_INVALID_SCAN_RESULT",
@@ -152,7 +151,7 @@ export async function scanWithOpenRouter(scanType, content, options = {}) {
   const timeoutMs = Math.max(2_000, Math.min(55_000, Number(options.timeoutMs) || DEFAULT_TIMEOUT_MS));
   const requestBody = {
     model: configured.model,
-    max_tokens: 320,
+    max_tokens: 420,
     temperature: 0.1,
     stream: false,
     messages: [
@@ -171,6 +170,7 @@ export async function scanWithOpenRouter(scanType, content, options = {}) {
         strict: true
       }
     },
+    plugins: [{ id: "response-healing" }],
     provider: {
       require_parameters: true,
       sort: "throughput",
@@ -180,7 +180,10 @@ export async function scanWithOpenRouter(scanType, content, options = {}) {
 
   let lastError;
   const started = Date.now();
+  const deadline = started + timeoutMs;
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt += 1) {
+    const remainingMs = deadline - Date.now();
+    if (remainingMs < 2_000) break;
     try {
       const response = await fetchImpl(OPENROUTER_CHAT_URL, {
         method: "POST",
@@ -191,7 +194,7 @@ export async function scanWithOpenRouter(scanType, content, options = {}) {
           "X-Title": "SafeMind Scam Detection"
         },
         body: JSON.stringify(requestBody),
-        signal: AbortSignal.timeout(timeoutMs)
+        signal: AbortSignal.timeout(remainingMs)
       });
       if (!response.ok) {
         const failure = await response.json().catch(() => ({}));
@@ -204,7 +207,8 @@ export async function scanWithOpenRouter(scanType, content, options = {}) {
         }));
         lastError = Object.assign(new Error("OpenRouter scan request failed."), { statusCode: response.status, upstreamMessage });
         if (attempt < MAX_RETRIES && retryable(response.status)) {
-          await new Promise((resolve) => setTimeout(resolve, retryDelay(response, attempt)));
+          const delayMs = Math.min(retryDelay(response, attempt), Math.max(0, deadline - Date.now() - 2_000));
+          if (delayMs > 0) await new Promise((resolve) => setTimeout(resolve, delayMs));
           continue;
         }
         throw lastError;
