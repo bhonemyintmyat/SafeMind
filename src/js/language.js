@@ -1036,7 +1036,31 @@ Object.assign(translations, {
   "Result copied.": "ရလဒ်ကို မိတ္တူကူးပြီးပါပြီ။"
 });
 
+Object.assign(translations, {
+  "Administrator review": "စီမံသူ စစ်ဆေးမှု",
+  "Classify submitted reports": "ပို့ထားသော တိုင်ကြားချက်များကို အမျိုးအစားသတ်မှတ်ရန်",
+  "Mark each report as scam or not scam. Supabase records the reviewer and review time automatically.": "တိုင်ကြားချက်တစ်ခုစီကို လိမ်လည်မှု သို့မဟုတ် လိမ်လည်မှုမဟုတ်ဟု သတ်မှတ်ပါ။ Supabase က စစ်ဆေးသူနှင့် စစ်ဆေးချိန်ကို အလိုအလျောက် မှတ်တမ်းတင်သည်။",
+  "Refresh reports": "တိုင်ကြားချက်များ ပြန်ဖွင့်ရန်",
+  "No submitted reports are waiting for review.": "စစ်ဆေးရန် စောင့်နေသော တိုင်ကြားချက် မရှိပါ။",
+  "Loading submitted reports...": "ပို့ထားသော တိုင်ကြားချက်များကို ဖွင့်နေသည်...",
+  "Reports could not be loaded. Apply the latest Supabase admin-reports migration.": "တိုင်ကြားချက်များကို ဖွင့်မရပါ။ နောက်ဆုံး Supabase admin-reports migration ကို အသုံးပြုပါ။",
+  "Saving classification...": "အမျိုးအစား သတ်မှတ်ချက်ကို သိမ်းနေသည်...",
+  "The classification could not be saved.": "အမျိုးအစား သတ်မှတ်ချက်ကို မသိမ်းနိုင်ပါ။",
+  "Classification saved in Supabase.": "အမျိုးအစား သတ်မှတ်ချက်ကို Supabase တွင် သိမ်းပြီးပါပြီ။",
+  "Mark as scam": "လိမ်လည်မှုအဖြစ် သတ်မှတ်ရန်",
+  "Mark as not scam": "လိမ်လည်မှုမဟုတ်ဟု သတ်မှတ်ရန်",
+  "Submitted recently": "မကြာသေးမီက ပို့ထားသည်",
+  "Email address or email content": "အီးမေးလ်လိပ်စာ သို့မဟုတ် အီးမေးလ်အကြောင်းအရာ",
+  "QR destination or context": "QR ဦးတည်ရာ သို့မဟုတ် နောက်ခံအချက်အလက်",
+  "Screenshot context": "မျက်နှာပြင်ပုံ နောက်ခံအချက်အလက်",
+  "Paste the sender address or suspicious email content...": "ပို့သူလိပ်စာ သို့မဟုတ် သံသယဖြစ်ဖွယ် အီးမေးလ်အကြောင်းအရာကို ထည့်ပါ...",
+  "Paste the link from the QR code, or upload a screenshot...": "QR ကုဒ်မှ လင့်ခ်ကို ထည့်ပါ သို့မဟုတ် မျက်နှာပြင်ပုံ တင်ပါ...",
+  "Briefly describe where this screenshot came from (optional)...": "ဤမျက်နှာပြင်ပုံ ရရှိသည့်နေရာကို အကျဉ်းချုပ်ဖော်ပြပါ (မဖြစ်မနေ မဟုတ်ပါ)...",
+  "MEDIUM RISK": "အန္တရာယ် အလယ်အလတ်"
+});
+
 const originalText = new WeakMap();
+const renderedText = new WeakMap();
 const attributes = ["placeholder", "aria-label", "title", "alt"];
 const originalDocumentTitle = document.title;
 
@@ -1070,7 +1094,11 @@ function translatePattern(value) {
     [/^I found strong warning signals in this (.+)\. Treat it as unsafe unless (?:the organization verifies it|it is verified) through an official channel\.$/, (_, subject) => `ဤ${translateString(subject, "my")}တွင် ပြင်းထန်သော သတိပေးလက္ခဏာများ တွေ့ရှိသည်။ တရားဝင်လမ်းကြောင်းမှ အတည်မပြုမချင်း အန္တရာယ်ရှိသည်ဟု သတ်မှတ်ပါ။`],
     [/^I found warning signals in this (.+), but the evidence is not conclusive\. Pause and verify it independently(?: before acting)?\.$/, (_, subject) => `ဤ${translateString(subject, "my")}တွင် သတိပေးလက္ခဏာများ တွေ့ရှိသော်လည်း သက်သေမခိုင်လုံသေးပါ။ ရပ်တန့်ပြီး သီးခြားအတည်ပြုပါ။`],
     [/^I did not find strong automated warning signals in this (.+)\. This (?:is not a guarantee of safety, especially for unexpected requests|does not guarantee that it is safe)\.$/, (_, subject) => `ဤ${translateString(subject, "my")}တွင် ပြင်းထန်သော အလိုအလျောက်သတိပေးလက္ခဏာ မတွေ့ပါ။ သို့သော် လုံခြုံသည်ဟု အာမခံခြင်း မဟုတ်ပါ။`],
-    [/^Saved (.+) as (.+)\.$/, (_, value, type) => `${value} ကို ${translateString(type, "my")} အဖြစ် သိမ်းပြီးပါပြီ။`]
+    [/^Saved (.+) as (.+)\.$/, (_, value, type) => `${value} ကို ${translateString(type, "my")} အဖြစ် သိမ်းပြီးပါပြီ။`],
+    [/^(.+) report #(\d+)$/, (_, type, id) => `${translateString(type, "my")} တိုင်ကြားချက် #${id}`],
+    [/^Submitted (.+)$/, (_, date) => `${date} တွင် ပို့ထားသည်`],
+    [/^Context: (.+)$/, (_, context) => `နောက်ခံအချက်အလက်: ${context}`],
+    [/^(\d+) reports loaded\.$/, (_, count) => `တိုင်ကြားချက် ${count} ခု ဖွင့်ပြီးပါပြီ။`]
   ];
   for (const [pattern, replacement] of patterns) {
     if (pattern.test(value)) return value.replace(pattern, replacement);
@@ -1089,6 +1117,7 @@ function translateTextNode(node, language) {
   const original = originalText.get(node);
   if (language === "en") {
     if (node.nodeValue !== original) node.nodeValue = original;
+    renderedText.set(node, node.nodeValue);
     return;
   }
   const trimmed = original.trim();
@@ -1098,6 +1127,7 @@ function translateTextNode(node, language) {
     const nextValue = original.replace(trimmed, translated);
     if (node.nodeValue !== nextValue) node.nodeValue = nextValue;
   }
+  renderedText.set(node, node.nodeValue);
 }
 
 function translateElement(element, language) {
@@ -1149,6 +1179,13 @@ export function initLanguage() {
   const observer = new MutationObserver((records) => {
     if (language !== "my") return;
     records.forEach((record) => {
+      if (record.type === "characterData") {
+        const value = record.target.nodeValue;
+        if (value !== renderedText.get(record.target)) {
+          originalText.set(record.target, value);
+        }
+        return;
+      }
       if (record.type !== "attributes" || !attributes.includes(record.attributeName)) return;
       const value = record.target.getAttribute(record.attributeName);
       if (!value || translateString(value, "my") === value) return;

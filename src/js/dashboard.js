@@ -35,6 +35,7 @@ let reportScreenshotUrl = "";
 let recentActivityRows = [];
 let activitySearchTerm = "";
 let activityRisk = "all";
+let adminReportRows = [];
 
 function setupMobileDrawer() {
     if (!dashboardSidebar || !dashboardHeader || document.querySelector(".dashboard-drawer-toggle")) return;
@@ -276,6 +277,100 @@ async function loadRecentActivity() {
     setText("dashboardLatestScanTime", Number.isNaN(latestCreatedAt.getTime()) ? "Recently" : latestCreatedAt.toLocaleString());
 }
 
+function formatReportVerdict(value) {
+    if (value === "scam") return "Scam";
+    if (value === "not_scam") return "Not scam";
+    return "Pending classification";
+}
+
+function buildAdminReportCard(row) {
+    const card = document.createElement("article");
+    card.className = "admin-report-card";
+    const header = document.createElement("header");
+    const heading = document.createElement("h3");
+    const verdict = document.createElement("span");
+    heading.textContent = `${String(row.report_type || "other")} report #${row.id}`;
+    verdict.className = "admin-report-verdict";
+    verdict.textContent = formatReportVerdict(row.verdict);
+    header.append(heading, verdict);
+    const content = document.createElement("p");
+    content.className = "admin-report-content";
+    content.textContent = row.content;
+    const meta = document.createElement("p");
+    meta.className = "admin-report-meta";
+    const created = new Date(row.created_at);
+    meta.textContent = Number.isNaN(created.getTime()) ? "Submitted recently" : `Submitted ${created.toLocaleString()}`;
+    const actions = document.createElement("div");
+    actions.className = "admin-report-actions";
+    [["scam", "Mark as scam"], ["not_scam", "Mark as not scam"]].forEach(([value, label]) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = label;
+        button.classList.toggle("is-selected", row.verdict === value);
+        button.setAttribute("aria-pressed", String(row.verdict === value));
+        button.addEventListener("click", () => classifyAdminReport(row.id, value, button));
+        actions.append(button);
+    });
+    card.append(header, content);
+    if (row.notes) {
+        const notes = document.createElement("p");
+        notes.textContent = `Context: ${row.notes}`;
+        card.append(notes);
+    }
+    card.append(meta, actions);
+    return card;
+}
+
+function renderAdminReports() {
+    const list = document.getElementById("adminReportReviewList");
+    if (!list) return;
+    if (!adminReportRows.length) {
+        const empty = document.createElement("p");
+        empty.className = "empty-state";
+        empty.textContent = "No submitted reports are waiting for review.";
+        list.replaceChildren(empty);
+        return;
+    }
+    list.replaceChildren(...adminReportRows.map(buildAdminReportCard));
+}
+
+async function loadAdminReports() {
+    const status = document.getElementById("adminReportsStatus");
+    if (!supabase || !status) return;
+    setStatus(status, "Loading submitted reports...");
+    const { data, error } = await supabase.from("admin_reports")
+        .select("id,report_type,content,notes,status,verdict,created_at,reviewed_at")
+        .order("created_at", { ascending: false })
+        .limit(100);
+    if (error) {
+        setStatus(status, "Reports could not be loaded. Apply the latest Supabase admin-reports migration.", "error");
+        return;
+    }
+    adminReportRows = data || [];
+    setStatus(status, `${adminReportRows.length} reports loaded.`, "success");
+    renderAdminReports();
+}
+
+async function classifyAdminReport(id, verdict, button) {
+    const status = document.getElementById("adminReportsStatus");
+    if (!supabase || !status) return;
+    const buttons = button.closest(".admin-report-actions")?.querySelectorAll("button") || [];
+    buttons.forEach((item) => { item.disabled = true; });
+    setStatus(status, "Saving classification...");
+    const { error } = await supabase.from("admin_reports").update({ verdict }).eq("id", id);
+    buttons.forEach((item) => { item.disabled = false; });
+    if (error) {
+        setStatus(status, "The classification could not be saved.", "error");
+        return;
+    }
+    const row = adminReportRows.find((item) => item.id === id);
+    if (row) row.verdict = verdict;
+    renderAdminReports();
+    setStatus(status, "Classification saved in Supabase.", "success");
+}
+
+document.getElementById("adminReportsRefresh")?.addEventListener("click", loadAdminReports);
+
 function refreshCheckData() {
     window.setTimeout(() => { void Promise.all([loadProgress(), loadRecentActivity()]); }, 120);
 }
@@ -442,7 +537,13 @@ async function initializePage(activeUser) {
         await loadEducation();
     }
     if (page === "education-article") await loadArticle();
-    if (page === "reports") loadPendingReport();
+    if (page === "reports") {
+        loadPendingReport();
+        const admin = await checkAdminAccess();
+        const review = document.getElementById("adminReportReview");
+        if (review) review.hidden = !admin;
+        if (admin) await loadAdminReports();
+    }
     if (page === "profile") {
         document.getElementById("profileName").value = name;
         document.getElementById("profileEmail").value = user.email || "";

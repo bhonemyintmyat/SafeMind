@@ -67,6 +67,11 @@
                         <p class="form-status" id="reportStatus" role="status" aria-live="polite"></p>
                     </form>
                 </section>
+                <section class="content-card" id="adminReportReview" hidden>
+                    <div class="section-title"><div><p>Administrator review</p><h2>Classify submitted reports</h2><span>Mark each report as scam or not scam. Supabase records the reviewer and review time automatically.</span></div><button type="button" id="adminReportsRefresh">Refresh reports</button></div>
+                    <p class="form-status" id="adminReportsStatus" role="status" aria-live="polite"></p>
+                    <div class="admin-report-review-list" id="adminReportReviewList"></div>
+                </section>
             </main>
         </div>
     </div>

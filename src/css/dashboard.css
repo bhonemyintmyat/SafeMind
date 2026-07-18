@@ -1841,6 +1841,38 @@ body.dashboard-page .empty-state { max-width:58ch; }
 .quick-scan-actions { grid-column:2 / -1; display:flex; flex-wrap:wrap; gap:8px; }
 .quick-scan-actions .primary-button { margin-left:auto; }
 
+/* Investigation actions use the SafeMind green treatment consistently. */
+.dashboard-investigation button,
+.dashboard-investigation :where(.primary-button,.secondary-action,.danger-action) {
+  color:#20300F !important;
+  background:#A9D35E !important;
+  border-color:#8DB547 !important;
+  box-shadow:0 6px 16px rgba(104,141,43,.18);
+}
+.dashboard-investigation button:hover:not(:disabled),
+.dashboard-investigation button:focus-visible:not(:disabled) {
+  color:#17220B !important;
+  background:#B8DF72 !important;
+  border-color:#789D39 !important;
+  outline-color:#789D39;
+}
+.dashboard-investigation button:disabled {
+  color:#405126 !important;
+  background:#D6E8B6 !important;
+  border-color:#B8CD91 !important;
+}
+
+.admin-report-review-list { display:grid; gap:14px; }
+.admin-report-card { display:grid; gap:12px; padding:18px; border:1px solid var(--border); border-radius:16px; background:var(--surface-raised); }
+.admin-report-card header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+.admin-report-card h3,.admin-report-card p { margin:0; }
+.admin-report-card header span,.admin-report-meta { color:var(--muted); font-size:13px; }
+.admin-report-content { padding:12px; border-radius:10px; background:var(--surface); white-space:pre-wrap; overflow-wrap:anywhere; }
+.admin-report-actions { display:flex; flex-wrap:wrap; gap:8px; }
+.admin-report-actions button { color:#20300F; background:#A9D35E; border-color:#8DB547; }
+.admin-report-actions button.is-selected { box-shadow:0 0 0 3px color-mix(in srgb,#A9D35E 42%,transparent); }
+.admin-report-verdict { padding:4px 9px; border-radius:999px; color:#303247; background:#DCECBF; font-weight:700; }
+
 @media (max-width:900px) {
   .scanner-progress ol { grid-template-columns:1fr; }
   .scanner-progress li { min-height:48px; justify-content:flex-start; text-align:left; }
