@@ -15,6 +15,7 @@ const status = document.getElementById("simpleStatus");
 const answer = document.getElementById("simpleAnswer");
 const tutorial = document.getElementById("simpleTutorial");
 const emergency = document.getElementById("simpleEmergency");
+const nlpServiceUrl = import.meta.env.VITE_NLP_API_URL || "/api/spam-check";
 const locale = () => document.documentElement.lang === "my" ? "my" : "en";
 const say = (en, my) => locale() === "my" ? my : en;
 
@@ -29,6 +30,20 @@ function detectType(value) {
 function show(dialog) { if (dialog && !dialog.open) dialog.showModal(); }
 function close(dialog) { if (dialog?.open) dialog.close(); }
 
+async function analyzeWithNlpService(content) {
+  const scanType = detectType(content);
+  const response = await fetch(nlpServiceUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "same-origin",
+    cache: "no-store",
+    body: JSON.stringify({ scan_type: scanType, content })
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(result.error || result.detail || "The NLP analysis service is unavailable.");
+  return result;
+}
+
 input.addEventListener("input", () => { checkButton.disabled = input.value.trim().length < 3; });
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -39,9 +54,7 @@ form.addEventListener("submit", async (event) => {
   status.textContent = say("SafeMind is checking this now…", "SafeMind က ယခု စစ်ဆေးနေသည်…");
   answer.hidden = true;
   try {
-    const response = await fetch("/api/spam-check", { method:"POST", headers:{"Content-Type":"application/json"}, credentials:"same-origin", cache:"no-store", body:JSON.stringify({ scan_type:detectType(content), content }) });
-    const result = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error();
+    const result = await analyzeWithNlpService(content);
     const risky = isScamResult(result);
     document.getElementById("simpleVerdict").textContent = risky ? say("SCAM", "လိမ်လည်မှု") : say("SAFE", "လုံခြုံသည်");
     document.getElementById("simpleVerdict").dataset.risk = risky ? "warning" : "safe";
