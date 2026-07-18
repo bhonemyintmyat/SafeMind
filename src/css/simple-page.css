@@ -29,7 +29,6 @@ body.simple-experience .simple-menu button[data-set-theme][aria-pressed="false"]
   }
 }
 
-.simple-dialog { overflow-y:auto; }
 .dialog-exit {
   position:absolute;
   top:14px;
@@ -56,19 +55,147 @@ body.simple-experience .simple-menu button[data-set-theme][aria-pressed="false"]
   stroke-linecap:round;
   stroke-linejoin:round;
 }
-.simple-tutorial-video { display:grid; gap:10px; margin:20px 0 24px; }
-.simple-tutorial-video h3 { margin:0; color:var(--heading); font-size:24px; text-align:center; }
+#simpleTutorial {
+  width:min(96vw,980px);
+  height:min(92dvh,720px);
+  max-height:calc(100dvh - 24px);
+  padding:clamp(24px,3.2vw,40px);
+  overflow:hidden;
+  box-sizing:border-box;
+}
+#simpleTutorial[open] {
+  display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(250px,.85fr);
+  grid-template-rows:auto minmax(0,1fr) auto;
+  grid-template-areas:
+    "title title"
+    "video steps"
+    "link link";
+  gap:clamp(10px,2vw,22px);
+}
+#simpleTutorialTitle {
+  grid-area:title;
+  margin:0;
+  padding-inline:92px;
+  font-size:clamp(30px,4vw,40px);
+  line-height:1.15;
+}
+.simple-tutorial-video {
+  grid-area:video;
+  min-width:0;
+  min-height:0;
+  display:grid;
+  align-content:center;
+  gap:8px;
+  margin:0;
+}
+.simple-tutorial-video h3 { margin:0; color:var(--heading); font-size:clamp(18px,2vw,24px); line-height:1.2; text-align:center; }
 .simple-tutorial-video video {
   width:100%;
-  max-height:48vh;
+  max-width:100%;
+  max-height:100%;
   display:block;
   border:2px solid var(--border);
   border-radius:18px;
   background:#000;
+  object-fit:contain;
+  box-sizing:border-box;
+}
+#simpleTutorialSteps {
+  grid-area:steps;
+  min-width:0;
+  align-self:center;
+  margin:0;
+  padding-left:clamp(24px,3vw,38px);
+}
+#simpleTutorialSteps li {
+  margin:clamp(5px,1vh,10px) 0;
+  font-size:clamp(16px,1.8vw,20px);
+  line-height:1.35;
+}
+#simpleTutorial > a {
+  grid-area:link;
+  min-height:44px;
+  line-height:1.25;
+  text-align:center;
 }
 
 @media (max-width:700px) {
-  .simple-dialog { padding-top:76px; }
-  .simple-dialog h2 { font-size:32px; }
-  .simple-tutorial-video video { max-height:38vh; }
+  #simpleTutorial {
+    width:calc(100vw - 16px);
+    height:calc(100dvh - 16px);
+    max-height:none;
+    padding:62px 14px 12px;
+    border-radius:20px;
+  }
+  #simpleTutorial[open] {
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:auto auto minmax(0,1fr) auto;
+    grid-template-areas:
+      "title"
+      "video"
+      "steps"
+      "link";
+    gap:8px;
+  }
+  #simpleTutorialTitle {
+    padding:0;
+    font-size:clamp(24px,7vw,30px);
+    line-height:1.1;
+  }
+  .dialog-exit {
+    top:9px;
+    right:9px;
+    min-height:44px !important;
+    padding:7px 11px;
+    font-size:15px !important;
+  }
+  .dialog-exit svg { width:21px; height:21px; }
+  .simple-tutorial-video { gap:4px; }
+  .simple-tutorial-video h3 { font-size:17px; }
+  .simple-tutorial-video video {
+    width:auto;
+    max-width:100%;
+    height:clamp(88px,20dvh,150px);
+    margin-inline:auto;
+    border-radius:12px;
+  }
+  #simpleTutorialSteps {
+    width:100%;
+    align-self:center;
+    padding-left:24px;
+  }
+  #simpleTutorialSteps li {
+    margin:2px 0;
+    font-size:clamp(12px,3.4vw,15px);
+    line-height:1.25;
+  }
+  #simpleTutorial > a {
+    min-height:40px;
+    font-size:clamp(13px,3.6vw,16px);
+  }
+}
+
+@media (max-height:600px) and (orientation:landscape) {
+  #simpleTutorial {
+    width:calc(100vw - 12px);
+    height:calc(100dvh - 12px);
+    padding:50px 12px 8px;
+    border-radius:16px;
+  }
+  #simpleTutorial[open] {
+    grid-template-columns:minmax(0,1.1fr) minmax(220px,.9fr);
+    grid-template-rows:auto minmax(0,1fr) auto;
+    grid-template-areas:
+      "title title"
+      "video steps"
+      "link link";
+    gap:6px 12px;
+  }
+  #simpleTutorialTitle { font-size:22px; }
+  .simple-tutorial-video h3 { font-size:14px; }
+  .simple-tutorial-video video { width:100%; height:auto; max-height:calc(100dvh - 122px); }
+  #simpleTutorialSteps { padding-left:22px; }
+  #simpleTutorialSteps li { margin:1px 0; font-size:clamp(11px,1.8vw,14px); line-height:1.2; }
+  #simpleTutorial > a { min-height:34px; font-size:13px; }
 }
