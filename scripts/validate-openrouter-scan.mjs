@@ -20,7 +20,7 @@ const fakeFetch = async (url, request) => {
               risk_score: 91,
               category: "Authority impersonation scam",
               reason: "The sender claims senior authority, uses an unverifiable private channel, creates urgency, and requests a reply.",
-              indicators: ["Senior authority claim", "Private-number pretext", "Urgency", "Reply request"],
+              indicators: ["Senior authority claim", "Private-number pretext", "Urgency"],
               recommended_actions: ["Do not reply.", "Verify through the university's official website."]
             })
           }
@@ -45,7 +45,7 @@ assert.equal(capturedRequest.body.response_format.json_schema.strict, true);
 assert.equal(capturedRequest.body.provider.require_parameters, true);
 assert.equal(capturedRequest.body.provider.sort, "throughput");
 assert.deepEqual(capturedRequest.body.provider.preferred_max_latency, { p50: 4, p90: 10 });
-assert.equal(capturedRequest.body.max_tokens, 420);
+assert.equal(capturedRequest.body.max_tokens, 320);
 assert.match(capturedRequest.body.messages[1].content, /private number/);
 assert.equal(result.provider, "openrouter");
 assert.equal(result.analysis_source, "openrouter_structured_scan");

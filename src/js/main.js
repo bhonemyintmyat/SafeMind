@@ -101,6 +101,7 @@ async function analyzeDemo() {
             const verdict = analysis.label === "spam" || analysis.is_spam === true ? "scam" : "safe";
             return {
                 verdict,
+                risk: analysis.risk,
                 title: verdict === "scam" ? "AI detected scam risk" : "AI found no strong scam pattern",
                 confidence: analysis.confidence,
                 riskScore: analysis.risk_score,
@@ -126,8 +127,9 @@ async function analyzeDemo() {
 
 function renderResult(result) {
     latestDemoResult = result;
-    demoRisk.textContent = result.verdict === "safe" ? "NOT SCAM" : result.verdict === "scam" ? "SCAM" : result.verdict === "error" ? "NO RESULT" : "WAITING";
-    demoRisk.dataset.risk = result.verdict === "safe" ? "low" : result.verdict === "scam" ? "high" : "medium";
+    const risk = ["LOW", "MEDIUM", "HIGH"].includes(result.risk) ? result.risk : null;
+    demoRisk.textContent = result.verdict === "safe" ? `NOT SCAM · ${risk || "LOW"} RISK` : result.verdict === "scam" ? `SCAM · ${risk || "HIGH"} RISK` : result.verdict === "error" ? "NO RESULT" : "WAITING";
+    demoRisk.dataset.risk = risk?.toLowerCase() || (result.verdict === "error" ? "medium" : "low");
     demoConfidence.textContent = result.title;
     demoCategory.textContent = result.verdict === "error" ? result.category : `${result.category || "AI assessment"} · Confidence ${result.confidence}%`;
     demoReason.textContent = result.reason;

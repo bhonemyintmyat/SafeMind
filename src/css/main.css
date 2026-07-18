@@ -558,8 +558,7 @@ button:hover,
     gap:8px;
     padding:8px 14px;
     border-radius:999px;
-    background:rgba(241,32,57,.12);
-    color:#fff;
+    border:2px solid transparent;
     font-size:12px;
     font-weight:700;
     letter-spacing:.08em;
@@ -567,15 +566,21 @@ button:hover,
 }
 
 .result-pill[data-risk="high"]{
-    background:rgba(241,32,57,.22);
+    color:#991B1B;
+    background:#FEE2E2;
+    border-color:#EF4444;
 }
 
 .result-pill[data-risk="medium"]{
-    background:rgba(255,172,42,.18);
+    color:#713F12;
+    background:#FEF3C7;
+    border-color:#EAB308;
 }
 
 .result-pill[data-risk="low"]{
-    background:rgba(57,255,136,.12);
+    color:#166534;
+    background:#DCFCE7;
+    border-color:#22C55E;
 }
 
 #demoSignals{

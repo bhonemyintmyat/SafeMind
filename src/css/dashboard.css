@@ -1828,6 +1828,13 @@ body.dashboard-page .empty-state { max-width:58ch; }
 .scanner-findings ul,.scanner-findings ol { margin:0; padding-left:20px; color:var(--text); }
 .scanner-findings li + li { margin-top:8px; }
 .finding-risk { background:color-mix(in srgb,#F7EDC2 50%,var(--surface)) !important; }
+.finding-risk > span[data-risk] { display:inline-flex; width:max-content; margin-top:8px; padding:6px 10px; border:2px solid; border-radius:999px; font-weight:800; }
+.finding-risk > span[data-risk="high"] { color:#991B1B; background:#FEE2E2; border-color:#EF4444; }
+.finding-risk > span[data-risk="medium"] { color:#713F12; background:#FEF3C7; border-color:#EAB308; }
+.finding-risk > span[data-risk="low"] { color:#166534; background:#DCFCE7; border-color:#22C55E; }
+.finding-risk:has(> span[data-risk="high"]) > strong { color:#DC2626; }
+.finding-risk:has(> span[data-risk="medium"]) > strong { color:#CA8A04; }
+.finding-risk:has(> span[data-risk="low"]) > strong { color:#16A34A; }
 .finding-actions { grid-column:1 / -1; display:flex; justify-content:center; gap:12px; }
 .investigation-results-dialog .modal-content > h2 { margin:4px 52px 6px 0; color:var(--heading); font-size:clamp(25px,4vw,36px); }
 .results-dialog-intro { max-width:62ch; margin:0; color:var(--muted); }

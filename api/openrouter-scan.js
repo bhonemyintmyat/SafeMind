@@ -21,20 +21,20 @@ const SCAN_SCHEMA = Object.freeze({
     reason: {
       type: "string",
       minLength: 1,
-      maxLength: 500,
-      description: "Concise evidence-based explanation. Never claim guaranteed safety."
+      maxLength: 320,
+      description: "One or two short evidence-based sentences. Never claim guaranteed safety."
     },
     indicators: {
       type: "array",
-      maxItems: 4,
-      items: { type: "string", minLength: 1, maxLength: 180 },
+      maxItems: 3,
+      items: { type: "string", minLength: 1, maxLength: 140 },
       description: "Specific warning signals found in the submitted content."
     },
     recommended_actions: {
       type: "array",
       minItems: 1,
-      maxItems: 3,
-      items: { type: "string", minLength: 1, maxLength: 240 },
+      maxItems: 2,
+      items: { type: "string", minLength: 1, maxLength: 180 },
       description: "Short defensive next steps in the submitted content's main language."
     }
   },
@@ -54,7 +54,8 @@ Important calibration rules:
 - Treat the sender's identity claim as unverified. Do not assume a named person is genuine.
 - Do not classify an ordinary third-person mention of a president, manager, bank, job, hotel, payment, or link as a scam without suspicious behavior.
 - Explain only observable signals and uncertainty. Do not expose hidden reasoning.
-- Return the reason, indicators, and practical defensive actions in the main language of the submitted content.`;
+- Return the reason, indicators, and practical defensive actions in the main language of the submitted content.
+- Keep the response brief: one or two reason sentences, up to three warning signs, and up to two actions.`;
 
 function clean(value, max) {
   return String(value || "")
@@ -96,9 +97,9 @@ function validateAssessment(value) {
     && value.risk_score >= 0
     && value.risk_score <= 99
     && validText(value.category, 100)
-    && validText(value.reason, 500)
-    && validList(value.indicators, 0, 4, 180)
-    && validList(value.recommended_actions, 1, 3, 240);
+    && validText(value.reason, 320)
+    && validList(value.indicators, 0, 3, 140)
+    && validList(value.recommended_actions, 1, 2, 180);
   if (!valid) {
     throw Object.assign(new Error("OpenRouter returned a scan result that did not match the required schema."), {
       code: "OPENROUTER_INVALID_SCAN_RESULT",
@@ -151,7 +152,7 @@ export async function scanWithOpenRouter(scanType, content, options = {}) {
   const timeoutMs = Math.max(2_000, Math.min(55_000, Number(options.timeoutMs) || DEFAULT_TIMEOUT_MS));
   const requestBody = {
     model: configured.model,
-    max_tokens: 420,
+    max_tokens: 320,
     temperature: 0.1,
     stream: false,
     messages: [

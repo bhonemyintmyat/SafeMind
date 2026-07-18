@@ -754,12 +754,12 @@ function cleanModelField(value, max) {
 function normalizeOpenRouterResult(scanType, raw, model) {
   const score = Math.max(0, Math.min(99, Math.round(Number(raw?.risk_score) || 0)));
   const category = cleanModelField(raw?.category, 100) || (score >= 35 ? "Suspicious content" : "Likely Safe Message");
-  const reason = cleanModelField(raw?.reason, 500) || "OpenRouter completed the scan but returned no explanation.";
+  const reason = cleanModelField(raw?.reason, 320) || "OpenRouter completed the scan but returned no explanation.";
   const indicators = Array.isArray(raw?.indicators)
-    ? raw.indicators.map((item) => cleanModelField(item, 180)).filter(Boolean).slice(0, 4)
+    ? raw.indicators.map((item) => cleanModelField(item, 140)).filter(Boolean).slice(0, 3)
     : [];
   const recommendedActions = Array.isArray(raw?.recommended_actions)
-    ? raw.recommended_actions.map((item) => cleanModelField(item, 240)).filter(Boolean).slice(0, 3)
+    ? raw.recommended_actions.map((item) => cleanModelField(item, 180)).filter(Boolean).slice(0, 2)
     : [];
   const analysis = result(
     scanType,

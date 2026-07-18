@@ -77,8 +77,15 @@ form.addEventListener("submit", async (event) => {
   try {
     const result = await analyzeWithNlpService(content);
     const risky = isScamResult(result);
-    document.getElementById("simpleVerdict").textContent = risky ? say("SCAM", "လိမ်လည်မှု") : say("SAFE", "လုံခြုံသည်");
-    document.getElementById("simpleVerdict").dataset.risk = risky ? "warning" : "safe";
+    const risk = ["HIGH", "MEDIUM", "LOW"].includes(String(result.risk || "").toUpperCase())
+      ? String(result.risk).toUpperCase()
+      : risky ? "HIGH" : "LOW";
+    document.getElementById("simpleVerdict").textContent = risk === "HIGH"
+      ? say("SCAM · HIGH RISK", "လိမ်လည်မှု · အန္တရာယ်မြင့်")
+      : risk === "MEDIUM"
+        ? say("SCAM · MEDIUM RISK", "လိမ်လည်မှု · အန္တရာယ်အလယ်အလတ်")
+        : say("NOT SCAM · LOW RISK", "လိမ်လည်မှုမဟုတ် · အန္တရာယ်နည်း");
+    document.getElementById("simpleVerdict").dataset.risk = risk.toLowerCase();
     document.getElementById("simpleSummary").textContent = risky
       ? say("Stop. Do not click, reply, or send money until you verify this yourself.", "ရပ်တန့်ပါ။ ကိုယ်တိုင်အတည်မပြုမချင်း လင့်ခ်မနှိပ်၊ စာမပြန်၊ ငွေမပို့ပါနှင့်။")
       : say("No strong scam signs were found. Still verify unexpected requests yourself.", "ပြင်းထန်သော လိမ်လည်မှုလက္ခဏာ မတွေ့ပါ။ မမျှော်လင့်သော တောင်းဆိုချက်များကို ကိုယ်တိုင်အတည်ပြုပါ။");
