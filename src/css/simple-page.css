@@ -19,3 +19,56 @@ html[data-theme="dark"] .simple-experience button:not(.simple-emergency):not(.ho
 body.simple-experience .simple-menu button[data-set-theme][aria-pressed="true"] { color:#20300F !important; background:#8ADE41 !important; border-color:#78A934 !important; }
 body.simple-experience .simple-menu button[data-set-theme][aria-pressed="false"] { color:var(--text) !important; background:var(--surface-2) !important; border-color:var(--border) !important; }
 body.simple-experience .simple-menu button[data-set-theme][aria-pressed="false"]:hover { border-color:#8DB547 !important; }
+
+/* Keep the longer Burmese title readable on one desktop line. */
+@media (min-width:701px) {
+  html[lang="my"] .simple-intro h1 {
+    max-width:none;
+    font-size:clamp(32px,4.2vw,48px);
+    white-space:nowrap;
+  }
+}
+
+.simple-dialog { overflow-y:auto; }
+.dialog-exit {
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:auto;
+  min-height:50px !important;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 14px;
+  border:2px solid #8DB547 !important;
+  border-radius:14px !important;
+  color:#20300F !important;
+  background:#A9D35E !important;
+  font-size:17px !important;
+  font-weight:900;
+}
+.dialog-exit svg {
+  width:24px;
+  height:24px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.simple-tutorial-video { display:grid; gap:10px; margin:20px 0 24px; }
+.simple-tutorial-video h3 { margin:0; color:var(--heading); font-size:24px; text-align:center; }
+.simple-tutorial-video video {
+  width:100%;
+  max-height:48vh;
+  display:block;
+  border:2px solid var(--border);
+  border-radius:18px;
+  background:#000;
+}
+
+@media (max-width:700px) {
+  .simple-dialog { padding-top:76px; }
+  .simple-dialog h2 { font-size:32px; }
+  .simple-tutorial-video video { max-height:38vh; }
+}

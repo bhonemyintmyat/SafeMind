@@ -71,9 +71,19 @@
   <button type="button" class="simple-emergency" data-open-emergency>🚨 Someone is asking me for money</button>
 
   <dialog class="simple-dialog" id="simpleTutorial" aria-labelledby="simpleTutorialTitle">
-    <button type="button" class="dialog-close" data-close-simple-tutorial aria-label="Close tutorial">×</button>
+    <button type="button" class="dialog-close dialog-exit" data-close-simple-tutorial aria-label="Exit tutorial">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5M14 8l4 4-4 4m4-4H9"/></svg>
+      <span>Exit</span>
+    </button>
     <h2 id="simpleTutorialTitle">How to use SafeMind</h2>
-    <ol>
+    <section class="simple-tutorial-video" aria-labelledby="simpleTutorialVideoTitle">
+      <h3 id="simpleTutorialVideoTitle">Video tutorial</h3>
+      <video id="simpleTutorialVideo" controls preload="metadata" playsinline aria-describedby="simpleTutorialSteps">
+        <source src="/assets/video.mp4" type="video/mp4">
+        Your browser cannot play this tutorial video. Follow the written steps below instead.
+      </video>
+    </section>
+    <ol id="simpleTutorialSteps">
       <li>Copy the suspicious message, number, link, or email.</li>
       <li>Paste it into the large box.</li>
       <li>Press the green “CHECK NOW” button.</li>
