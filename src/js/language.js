@@ -1059,52 +1059,6 @@ Object.assign(translations, {
   "MEDIUM RISK": "အန္တရာယ် အလယ်အလတ်"
 });
 
-Object.assign(translations, {
-  "SafeMind | Check if a Message Is a Scam": "SafeMind | စာတစ်စောင် လိမ်လည်မှု ဟုတ်မဟုတ် စစ်ဆေးရန်",
-  "Skip to scam checker": "လိမ်လည်မှု စစ်ဆေးရန်သို့ ကျော်သွားရန်",
-  "Check Scam": "လိမ်လည်မှု စစ်ဆေးရန်",
-  "Emergency Help": "အရေးပေါ် အကူအညီ",
-  "Unsure about something you received?": "သင်ရရှိထားသော အကြောင်းအရာကို မသေချာဘူးလား။",
-  "Check if this is a Scam": "ဤအရာ လိမ်လည်မှု ဟုတ်မဟုတ် စစ်ဆေးပါ",
-  "Paste a message, phone number, website, or email, or upload a screenshot. SafeMind will detect everything automatically.": "စာတို၊ ဖုန်းနံပါတ်၊ ဝဘ်ဆိုက် သို့မဟုတ် အီးမေးလ်ကို ထည့်ပါ၊ သို့မဟုတ် စခရင်ရှော့တင်ပါ။ SafeMind က အမျိုးအစားကို အလိုအလျောက် သိရှိစစ်ဆေးပေးမည်။",
-  "Paste anything suspicious": "သံသယဖြစ်ဖွယ်အရာကို ထည့်ပါ",
-  OR: "သို့မဟုတ်",
-  "Speak Instead": "အသံဖြင့် ထည့်ရန်",
-  "Do not paste passwords, OTP codes, or bank details.": "စကားဝှက်၊ OTP ကုဒ် သို့မဟုတ် ဘဏ်အချက်အလက်များကို မထည့်ပါနှင့်။",
-  "CHECK NOW": "ယခု စစ်ဆေးရန်",
-  RESULT: "ရလဒ်",
-  "Likely Scam": "လိမ်လည်မှု ဖြစ်နိုင်သည်",
-  "Why we think this": "ဤသို့ ယူဆရသည့် အကြောင်းရင်း",
-  "What you should do now": "ယခု လုပ်ဆောင်သင့်သည့်အရာ",
-  BLOCK: "ပိတ်ဆို့ရန်",
-  REPORT: "တိုင်ကြားရန်",
-  "LEARN WHY": "အကြောင်းရင်း လေ့လာရန်",
-  "Check something else": "အခြားတစ်ခု စစ်ဆေးရန်",
-  Automatic: "အလိုအလျောက်",
-  "No type selection needed.": "အမျိုးအစား ရွေးရန် မလိုပါ။",
-  Simple: "ရိုးရှင်း",
-  "Clear words and next steps.": "ရှင်းလင်းသော စကားလုံးများနှင့် နောက်တစ်ဆင့် လုပ်ဆောင်ချက်များ။",
-  "Only submit what is needed.": "လိုအပ်သော အချက်အလက်ကိုသာ ပေးပို့ပါ။",
-  "Someone is asking me for money": "တစ်စုံတစ်ယောက်က ကျွန်ုပ်ထံ ငွေတောင်းနေသည်",
-  STOP: "ရပ်တန့်ပါ",
-  "Do not transfer money.": "ငွေ မလွှဲပါနှင့်။",
-  "Call the company yourself using its official number.": "ကုမ္ပဏီ၏ တရားဝင်ဖုန်းနံပါတ်ကို ကိုယ်တိုင်ခေါ်ပါ။",
-  "Never share an OTP or password.": "OTP သို့မဟုတ် စကားဝှက်ကို မည်သည့်အခါမျှ မမျှဝေပါနှင့်။",
-  "Talk to a trusted family member before acting.": "မလုပ်ဆောင်မီ ယုံကြည်ရသော မိသားစုဝင်နှင့် တိုင်ပင်ပါ။",
-  "Check the message": "စာကို စစ်ဆေးရန်",
-  "Call someone you trust": "ယုံကြည်ရသူတစ်ဦးကို ဖုန်းခေါ်ရန်",
-  "Never submit passwords, OTP codes, recovery phrases, private keys, payment-card details, or banking credentials.": "စကားဝှက်၊ OTP ကုဒ်၊ ပြန်လည်ရယူစာစု၊ private key၊ ငွေပေးချေကတ် သို့မဟုတ် ဘဏ်အချက်အလက်များကို မပေးပို့ပါနှင့်။",
-  "Do not use SafeMind to target, deceive, harass, impersonate, or harm another person.": "SafeMind ကို အခြားသူအား ပစ်မှတ်ထားရန်၊ လှည့်ဖြားရန်၊ နှောင့်ယှက်ရန်၊ အယောင်ဆောင်ရန် သို့မဟုတ် ထိခိုက်စေရန် မသုံးပါနှင့်။",
-  "Simple help for suspicious messages and requests.": "သံသယဖြစ်ဖွယ် စာများနှင့် တောင်းဆိုချက်များအတွက် ရိုးရှင်းသော အကူအညီ။",
-  "Learn about scams": "လိမ်လည်မှုများအကြောင်း လေ့လာရန်",
-  Terms: "စည်းကမ်းချက်များ",
-  "📋 Paste anything...": "📋 သံသယဖြစ်ဖွယ်အရာကို ထည့်ပါ...",
-  "Checking your content": "သင့်အကြောင်းအရာကို စစ်ဆေးနေသည်",
-  "SafeMind promises": "SafeMind ၏ ကတိကဝတ်များ",
-  "Close emergency help": "အရေးပေါ်အကူအညီကို ပိတ်ရန်",
-  "Footer navigation": "အောက်ခြေ လမ်းညွှန်မီနူး"
-});
-
 const originalText = new WeakMap();
 const renderedText = new WeakMap();
 const attributes = ["placeholder", "aria-label", "title", "alt"];
