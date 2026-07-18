@@ -1,5 +1,5 @@
 import { initLanguage } from "./language.js";
-import "./theme-toggle.js";
+import { isScamResult } from "./result-verdict.js";
 
 const TERMS_KEY = "safemind-terms-choice-v3";
 const EXPERIENCE_KEY = "safemind-page-experience-v1";
@@ -42,9 +42,8 @@ form.addEventListener("submit", async (event) => {
     const response = await fetch("/api/spam-check", { method:"POST", headers:{"Content-Type":"application/json"}, credentials:"same-origin", cache:"no-store", body:JSON.stringify({ scan_type:detectType(content), content }) });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error();
-    const risk = String(result.risk || "LOW").toUpperCase();
-    const risky = risk === "HIGH" || risk === "MEDIUM" || ["scam","suspicious"].includes(result.verdict);
-    document.getElementById("simpleVerdict").textContent = risky ? say("Likely Scam", "လိမ်လည်မှု ဖြစ်နိုင်သည်") : say("Probably Safe", "လုံခြုံနိုင်ဖွယ် ရှိသည်");
+    const risky = isScamResult(result);
+    document.getElementById("simpleVerdict").textContent = risky ? say("SCAM", "လိမ်လည်မှု") : say("SAFE", "လုံခြုံသည်");
     document.getElementById("simpleVerdict").dataset.risk = risky ? "warning" : "safe";
     document.getElementById("simpleSummary").textContent = risky
       ? say("Stop. Do not click, reply, or send money until you verify this yourself.", "ရပ်တန့်ပါ။ ကိုယ်တိုင်အတည်မပြုမချင်း လင့်ခ်မနှိပ်၊ စာမပြန်၊ ငွေမပို့ပါနှင့်။")
@@ -71,4 +70,3 @@ document.querySelectorAll("[data-open-emergency]").forEach((button) => button.ad
 document.querySelectorAll("[data-close-emergency]").forEach((button) => button.addEventListener("click", () => close(emergency)));
 document.querySelector("[data-emergency-check]").addEventListener("click", () => { close(emergency); input.focus(); form.scrollIntoView({behavior:"smooth"}); });
 initLanguage();
-
