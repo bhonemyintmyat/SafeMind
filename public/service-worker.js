@@ -1,4 +1,4 @@
-const CACHE_NAME = "safemind-v5";
+const CACHE_NAME = "safemind-v6";
 const APP_SHELL = [
   "/welcome",
   "/",
@@ -16,6 +16,10 @@ self.addEventListener("activate", (event) => event.waitUntil(
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
   if (event.request.method !== "GET" || url.origin !== self.location.origin || url.pathname.startsWith("/api/")) return;
+  if (url.pathname === "/simple" || url.pathname.startsWith("/assets/simple-")) {
+    event.respondWith(fetch(event.request, { cache: "no-store" }));
+    return;
+  }
   event.respondWith(fetch(event.request).then((response) => {
     const copy = response.clone();
     if (response.ok && response.type === "basic" && !response.headers.get("Cache-Control")?.includes("no-store")) {

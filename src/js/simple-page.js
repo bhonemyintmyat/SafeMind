@@ -33,23 +33,33 @@ function close(dialog) { if (dialog?.open) dialog.close(); }
 
 async function analyzeWithNlpService(content) {
   const scanType = detectType(content);
-  const response = await fetch(nlpServiceUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "same-origin",
-    cache: "no-store",
-    body: JSON.stringify({ scan_type: scanType, content })
-  });
-  const result = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(result.error || result.detail || "The NLP analysis service is unavailable.");
-  return result;
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 20_000);
+  try {
+    const response = await fetch(nlpServiceUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      cache: "no-store",
+      signal: controller.signal,
+      body: JSON.stringify({ scan_type: scanType, content })
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.error || result.detail || "The NLP analysis service is unavailable.");
+    return result;
+  } finally {
+    window.clearTimeout(timeout);
+  }
 }
 
-input.addEventListener("input", () => { checkButton.disabled = input.value.trim().length < 3; });
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const content = input.value.trim();
-  if (content.length < 3) return;
+  if (content.length < 3) {
+    status.textContent = say("Paste a message before checking.", "မစစ်ဆေးမီ စာသားတစ်ခု ထည့်ပါ။");
+    input.focus();
+    return;
+  }
   checkButton.disabled = true;
   checkButton.textContent = say("CHECKING…", "စစ်ဆေးနေသည်…");
   status.textContent = say("SafeMind is checking this now…", "SafeMind က ယခု စစ်ဆေးနေသည်…");
@@ -69,10 +79,12 @@ form.addEventListener("submit", async (event) => {
     answer.hidden = false;
     answer.scrollIntoView({ behavior:"smooth", block:"start" });
     status.textContent = say("Check complete.", "စစ်ဆေးမှု ပြီးပါပြီ။");
-  } catch {
-    status.textContent = say("We could not finish the check. Your content is still here. Please try again.", "စစ်ဆေးမှု မပြီးဆုံးနိုင်ပါ။ သင့်အကြောင်းအရာ မပျောက်ပါ။ ထပ်မံကြိုးစားပါ။");
+  } catch (error) {
+    status.textContent = error?.name === "AbortError"
+      ? say("The check took too long. Please try again.", "စစ်ဆေးမှု အချိန်ကြာနေပါသည်။ ထပ်မံကြိုးစားပါ။")
+      : say("We could not finish the check. Your content is still here. Please try again.", "စစ်ဆေးမှု မပြီးဆုံးနိုင်ပါ။ သင့်အကြောင်းအရာ မပျောက်ပါ။ ထပ်မံကြိုးစားပါ။");
   } finally {
-    checkButton.disabled = input.value.trim().length < 3;
+    checkButton.disabled = false;
     checkButton.textContent = say("CHECK NOW", "ယခု စစ်ဆေးရန်");
   }
 });

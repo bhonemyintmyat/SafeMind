@@ -6,4 +6,4 @@ if ("serviceWorker" in navigator) {
             .catch(() => {});
     });
 }
-import "./theme-toggle.js";
+if (document.body.dataset.page !== "simple") import("./theme-toggle.js");
