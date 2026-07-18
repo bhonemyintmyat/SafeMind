@@ -51,6 +51,12 @@ class SpamClassifierTests(unittest.TestCase):
         result = self.classifier.predict("ဘဏ်ဝန်ထမ်းပါ OTP ကုဒ်ကို ချက်ချင်း ပို့ပေးပါ")
         self.assertTrue(result["is_spam"])
 
+    def test_detects_burmese_prize_registration_top_up_link_scam(self):
+        result = self.classifier.predict("🎉ကမ္ဘာ့ဖလားချန်ပီယံအသင်းအကြောင်း အတွင်းလူအချက်အလက်များရယူရန် မှတ်ပုံတင်ရန်နှင့် ငွေဖြည့်ရန် လင့်ခ်ကို နှိပ်ပါ။ 🎁🔗 dljie.vip/kifh")
+        self.assertTrue(result["is_spam"])
+        self.assertEqual(result["risk"], "HIGH")
+        self.assertGreaterEqual(result["spam_probability"], 0.70)
+
     def test_detects_crypto_recovery_secret_theft(self):
         result = self.classifier.predict("Security alert: share your seed phrase to restore your crypto wallet now")
         self.assertTrue(result["is_spam"])

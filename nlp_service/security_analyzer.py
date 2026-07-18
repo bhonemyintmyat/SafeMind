@@ -13,7 +13,7 @@ except ImportError:  # Allows direct local execution from the project root.
 
 SUPPORTED_SCAN_TYPES = {"message", "link", "email", "phone"}
 SHORTENER_DOMAINS = {"bit.ly", "tinyurl.com", "t.co", "is.gd", "cutt.ly", "rb.gy", "ow.ly"}
-RISKY_TLDS = {"click", "country", "download", "gq", "loan", "men", "mom", "party", "rest", "review", "stream", "top", "work", "zip"}
+RISKY_TLDS = {"click", "country", "download", "gq", "loan", "men", "mom", "party", "rest", "review", "stream", "top", "vip", "work", "zip"}
 URL_BAIT_TERMS = {"account", "auth", "bank", "confirm", "login", "password", "payment", "reset", "secure", "signin", "update", "verify", "wallet"}
 BRAND_TERMS = {"amazon", "apple", "facebook", "google", "instagram", "microsoft", "netflix", "paypal", "telegram", "whatsapp"}
 FREE_MAIL_DOMAINS = {"gmail.com", "hotmail.com", "icloud.com", "outlook.com", "proton.me", "yahoo.com"}

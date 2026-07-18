@@ -12,7 +12,7 @@ const AGENT_CACHE = new Map();
 const AGENT_CACHE_TTL_MS = 300_000;
 const AGENT_CACHE_MAX = 256;
 const SHORTENER_DOMAINS = new Set(["bit.ly", "tinyurl.com", "t.co", "is.gd", "cutt.ly", "rb.gy", "ow.ly"]);
-const RISKY_TLDS = new Set(["click", "country", "download", "gq", "loan", "men", "mom", "party", "rest", "review", "stream", "top", "work", "zip"]);
+const RISKY_TLDS = new Set(["click", "country", "download", "gq", "loan", "men", "mom", "party", "rest", "review", "stream", "top", "vip", "work", "zip"]);
 const URL_BAIT_TERMS = new Set(["account", "auth", "bank", "confirm", "login", "password", "payment", "reset", "secure", "signin", "update", "verify", "wallet"]);
 const BRAND_TERMS = new Set(["amazon", "apple", "facebook", "google", "instagram", "microsoft", "netflix", "paypal", "telegram", "whatsapp"]);
 const FREE_MAIL_DOMAINS = new Set(["gmail.com", "hotmail.com", "icloud.com", "outlook.com", "proton.me", "yahoo.com"]);
@@ -29,6 +29,11 @@ const PHRASE_SIGNALS = new Map([
   ["အခုပဲ", 0.14],
   ["စကားဝှက်", 0.20],
   ["လင့်ခ်ကို နှိပ်", 0.20],
+  ["လင့်ခ်ကို နှိပ်ပါ", 0.24],
+  ["မှတ်ပုံတင်", 0.14],
+  ["ငွေဖြည့်", 0.28],
+  ["လက်ဆောင်", 0.16],
+  ["အချက်အလက်များရယူရန်", 0.12],
   ["one time password", 0.24],
   ["confirm your identity", 0.18],
   ["pay immediately", 0.20],
@@ -61,6 +66,10 @@ const CONTEXT_SIGNALS = [
   [/(?:ချက်ချင်း|အခုပဲ|မလုပ်ရင်|မပို့ရင်|အကောင့်ပိတ်|ပိတ်မယ်)/u, 0.16, "Uses urgency or pressure"],
   [/\b(?:guaranteed|double|risk.?free)\b.{0,30}\b(?:profit|return|investment|money)\b/i, 0.22, "Promises unrealistic financial returns"],
   [/(https?:\/\/|\bwww\.)/i, 0.06, "Contains a link requiring independent verification"],
+  [/(?:^|\s)(?:[a-z0-9-]+\.)+(?:com|net|org|info|top|vip|work|click)(?:\/[a-z0-9_/?=&%.-]*)?(?:\s|$)/i, 0.16, "Contains a bare website link requiring verification"],
+  [/(?:ဆု|လက်ဆောင်|အတွင်းလူအချက်အလက်).{0,80}(?:မှတ်ပုံတင်|ငွေဖြည့်|လင့်ခ်|နှိပ်)/u, 0.28, "Uses a reward lure to request registration or payment"],
+  [/(?:မှတ်ပုံတင်|စာရင်းသွင်း).{0,60}(?:ငွေဖြည့်|ငွေသွင်း|ပေးချေ)/u, 0.26, "Requests registration followed by a payment or top-up"],
+  [/(?:လင့်ခ်|ဝဘ်ဆိုက်).{0,35}(?:နှိပ်|ဖွင့်)(?:ပါ)?/u, 0.22, "Requests clicking an unverified link"],
   [/\b(?:bank|police|government|support|ceo|manager)\b.{0,45}\b(?:send|share|pay|install|transfer)\b/i, 0.20, "Claims authority while requesting action"],
   [/\b(?:secret|confidential|do not tell|keep this between us)\b/i, 0.16, "Requests secrecy"],
   [/\b(?:remote access|screen share|anydesk|teamviewer|access code)\b/i, 0.22, "Requests remote device access"],
@@ -569,6 +578,7 @@ function buildInvestigation(scanType, content, analysis, investigationTimeMs) {
     for (const match of content.match(regex) || []) evidence.push({ kind, label, severity, value: match.slice(0, 180), explanation });
   };
   addMatches(/https?:\/\/[^\s<>"']+/gi, "url", "URL found", "medium", "Inspect the destination independently.");
+  addMatches(/(?:^|\s)((?:[a-z0-9-]+\.)+(?:com|net|org|info|top|vip|work|click)(?:\/[a-z0-9_/?=&%.-]*)?)/gi, "url", "Bare URL found", "medium", "Do not open the destination until it is verified independently.");
   addMatches(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,63}/gi, "email", "Email address found", "low", "Verify the sender domain.");
   addMatches(/\b(?:bc1[a-z0-9]{25,62}|0x[a-f0-9]{40})\b/gi, "crypto_wallet", "Crypto wallet found", "high", "Crypto payments are difficult to reverse.");
   const behaviors = [
