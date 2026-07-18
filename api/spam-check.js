@@ -222,7 +222,7 @@ function result(scanType, score, category, reason, indicators, model) {
     requires_human_review: risk !== "LOW",
     is_spam: verdict === "scam" || verdict === "suspicious",
     label: verdict === "unknown" ? "not_spam" : "spam",
-    spam_probability: Number((confidence / 100).toFixed(4)),
+    spam_probability: Number((boundedScore / 100).toFixed(4)),
     nlp_stack: ["heuristic feature extractor", "phrase heuristics", "explainable risk scoring"]
   };
 }
