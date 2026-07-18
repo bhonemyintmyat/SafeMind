@@ -3,350 +3,318 @@ import { initLanguage } from "./language.js";
 import { createActionReadiness } from "./action-readiness.js";
 import "./theme-toggle.js";
 
-const demoTabs = [...document.querySelectorAll("[data-demo-mode]")];
-const demoInput = document.getElementById("demoInput");
-const demoLabel = document.getElementById("demoLabel");
-const demoHint = document.getElementById("demoHint");
-const demoInputPanel = document.getElementById("demoInputPanel");
-const demoRisk = document.getElementById("demoRisk");
-const demoConfidence = document.getElementById("demoConfidence");
-const demoCategory = document.getElementById("demoCategory");
-const demoReason = document.getElementById("demoReason");
-const demoSignals = document.getElementById("demoSignals");
-const demoAnalyze = document.getElementById("demoAnalyze");
-const demoReport = document.getElementById("demoReport");
+const form = document.getElementById("universalChecker");
+const input = document.getElementById("universalInput");
+const fileInput = document.getElementById("universalFile");
+const uploadButton = document.getElementById("universalUpload");
+const voiceButton = document.getElementById("universalVoice");
+const checkButton = document.getElementById("universalCheck");
+const status = document.getElementById("universalStatus");
+const resultSection = document.getElementById("check-result");
+const skeleton = document.getElementById("resultSkeleton");
+const answerCard = document.getElementById("answerCard");
+const securityApiUrl = import.meta.env.VITE_NLP_API_URL || "/api/spam-check";
+const educationApiUrl = import.meta.env.VITE_EDUCATION_API_URL || "/api/education-chat";
 const mobileMenuButton = document.querySelector(".mobile-menu-button");
 const mainNavigation = document.getElementById("mainNavigation");
-const typingTarget = document.getElementById("typingHeading");
-let activeDemoMode = "phone";
-let latestDemoResult = null;
-let demoReadiness;
-const securityApiUrl = import.meta.env.VITE_NLP_API_URL || "/api/spam-check";
+let selectedImage = null;
+let selectedFile = null;
+let latestResult = null;
+
+const locale = () => document.documentElement.lang === "my" ? "my" : "en";
+const say = (english, burmese) => locale() === "my" ? burmese : english;
+
+function setStatus(message = "", state = "") {
+  status.textContent = message;
+  status.dataset.state = state;
+}
+
+function formatBytes(bytes) {
+  return bytes < 1024 ? `${bytes} B` : `${(bytes / 1024).toFixed(1)} KB`;
+}
+
+function detectInputType(value) {
+  const text = String(value || "").trim();
+  if (/^(?:https?:\/\/|www\.)\S+/i.test(text)) return "link";
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/i.test(text)) return "email";
+  if (/^\+?[\d\s().-]{7,22}$/.test(text)) return "phone";
+  return "message";
+}
+
+const readiness = createActionReadiness({
+  button: checkButton,
+  controls: [input, fileInput],
+  isReady: () => Boolean(input.value.trim() || selectedImage)
+});
 
 mobileMenuButton?.addEventListener("click", () => {
-    const open = mobileMenuButton.getAttribute("aria-expanded") !== "true";
-    mobileMenuButton.setAttribute("aria-expanded", String(open));
-    mobileMenuButton.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
-    mainNavigation?.classList.toggle("is-open", open);
+  const open = mobileMenuButton.getAttribute("aria-expanded") !== "true";
+  mobileMenuButton.setAttribute("aria-expanded", String(open));
+  mobileMenuButton.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+  mainNavigation?.classList.toggle("is-open", open);
 });
 
-mainNavigation?.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => {
-    mobileMenuButton?.setAttribute("aria-expanded", "false");
-    mobileMenuButton?.setAttribute("aria-label", "Open navigation");
-    mainNavigation.classList.remove("is-open");
+mainNavigation?.querySelectorAll("a,button").forEach((control) => control.addEventListener("click", () => {
+  mobileMenuButton?.setAttribute("aria-expanded", "false");
+  mainNavigation.classList.remove("is-open");
 }));
 
-const copy = {
-    phone: ["Phone number", "Check a complete international phone number.", "+1 900 555 0100"],
-    message: ["Message", "Paste the full suspicious message.", "Your account will close today unless you verify now"],
-    link: ["Website link", "Paste the complete URL without opening it.", "https://secure-login.example.com/verify"],
-    email: ["Email address", "Check the sender or an official reporting address.", "phishing@paypal.com"]
-};
+uploadButton?.addEventListener("click", () => fileInput.click());
 
-const examples = {
-    phone: { scam: "+1 900 555 0100", safe: "+1 202 555 0147", unknown: "+95 9 765 432 101" },
-    message: { scam: "Your account will close today unless you verify now", safe: "Your requested monthly statement is ready in the official app", unknown: "Can we move our meeting to Friday?" },
-    link: { scam: "https://secure-login.example.com/verify", safe: "https://www.microsoft.com", unknown: "https://hackathon-demo.example.org" },
-    email: { scam: "microsoft-support@outlook-security.example", safe: "phishing@paypal.com", unknown: "hello@unknown-demo.example" }
-};
-
-const officialContacts = [
-    { organization: "Microsoft", email: "phish@office365.microsoft.com", purpose: "Phishing reports", source_url: "https://support.microsoft.com/en-us/security/protect-yourself-from-phishing" },
-    { organization: "PayPal", email: "phishing@paypal.com", purpose: "Suspicious email and text reports", source_url: "https://www.paypal.com/us/security/report-suspicious-messages" },
-    { organization: "Apple", email: "reportphishing@apple.com", purpose: "Phishing reports", source_url: "https://support.apple.com/en-us/102406" },
-    { organization: "Amazon", email: "stop-spoofing@amazon.com", purpose: "Suspicious email reports", source_url: "https://aws.amazon.com/security/report-suspicious-emails/" }
-];
-
-function normalize(mode, value) {
-    const trimmed = value.trim().toLowerCase();
-    return mode === "phone" ? trimmed.replace(/[^\d+]/g, "") : trimmed;
-}
-
-function safeOfficialUrl(value) {
-    try {
-        const url = new URL(value);
-        return url.protocol === "https:" ? url.href : null;
-    } catch {
-        return null;
-    }
-}
-
-function setMode(mode) {
-    activeDemoMode = mode;
-    demoTabs.forEach((button) => {
-        const selected = button.dataset.demoMode === mode;
-        button.classList.toggle("is-active", selected);
-        button.setAttribute("aria-selected", String(selected));
-        button.tabIndex = selected ? 0 : -1;
-    });
-    const activeTab = demoTabs.find((button) => button.dataset.demoMode === mode);
-    if (activeTab && demoInputPanel) demoInputPanel.setAttribute("aria-labelledby", activeTab.id);
-    demoLabel.textContent = copy[mode][0];
-    demoHint.textContent = copy[mode][1];
-    demoInput.placeholder = copy[mode][2];
-    demoInput.value = "";
-    demoReport.hidden = true;
-    demoReadiness?.sync();
-}
-
-demoReadiness = createActionReadiness({
-    button: demoAnalyze,
-    controls: [demoInput],
-    isReady: () => demoInput.value.trim().length > 0
+fileInput?.addEventListener("change", () => {
+  const file = fileInput.files?.[0];
+  if (!file) return;
+  if (!new Set(["image/png", "image/jpeg", "image/webp"]).has(file.type) || !file.size || file.size > 2 * 1024 * 1024) {
+    fileInput.value = "";
+    selectedImage = null;
+    selectedFile = null;
+    setStatus(say("Choose a PNG, JPEG, or WebP image smaller than 2 MB.", "2 MB ထက်ငယ်သော PNG၊ JPEG သို့မဟုတ် WebP ပုံကို ရွေးပါ။"), "error");
+    readiness.sync();
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    selectedFile = file;
+    selectedImage = { mime_type: file.type, data_url: String(reader.result || "") };
+    document.getElementById("universalFileImage").src = selectedImage.data_url;
+    document.getElementById("universalFileName").textContent = file.name;
+    document.getElementById("universalFileSize").textContent = formatBytes(file.size);
+    document.getElementById("universalFilePreview").hidden = false;
+    setStatus(say("Screenshot ready to check.", "စခရင်ရှော့ကို စစ်ဆေးရန် အသင့်ဖြစ်ပါပြီ။"), "success");
+    readiness.sync();
+  };
+  reader.onerror = () => setStatus(say("The screenshot could not be read.", "စခရင်ရှော့ကို ဖတ်မရပါ။"), "error");
+  reader.readAsDataURL(file);
 });
 
-async function checkDirectory(mode, value) {
-    if (!supabase) return null;
-    const { data, error } = await supabase
-        .from("threat_directory")
-        .select("verdict,organization,reason,source_url")
-        .eq("entry_type", mode)
-        .eq("normalized_value", normalize(mode, value))
-        .maybeSingle();
-    return error ? null : data;
+document.getElementById("universalFileRemove")?.addEventListener("click", () => {
+  selectedImage = null;
+  selectedFile = null;
+  fileInput.value = "";
+  document.getElementById("universalFilePreview").hidden = true;
+  readiness.sync();
+  setStatus("");
+});
+
+voiceButton?.addEventListener("click", () => {
+  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!Recognition) {
+    setStatus(say("Voice input is not available in this browser.", "ဤဘရောက်ဇာတွင် အသံဖြင့် ထည့်သွင်းမှုကို အသုံးမပြုနိုင်ပါ။"), "error");
+    return;
+  }
+  const recognition = new Recognition();
+  recognition.lang = locale() === "my" ? "my-MM" : "en-US";
+  recognition.interimResults = false;
+  voiceButton.disabled = true;
+  setStatus(say("Listening…", "နားထောင်နေသည်…"), "pending");
+  recognition.onresult = (event) => {
+    input.value = event.results[0][0].transcript;
+    setStatus(say("Voice added. Press Check Now.", "အသံမှ စာသားထည့်ပြီးပါပြီ။ ယခုစစ်ဆေးရန်ကို နှိပ်ပါ။"), "success");
+    readiness.sync();
+  };
+  recognition.onerror = () => setStatus(say("We could not hear that. Please try again.", "အသံကို မကြားရပါ။ ထပ်မံကြိုးစားပါ။"), "error");
+  recognition.onend = () => { voiceButton.disabled = false; };
+  recognition.start();
+});
+
+function friendlyReason(value) {
+  const text = String(value || "").toLowerCase();
+  if (/otp|password|passcode|authentication secret|verification code/.test(text)) return say("Asks for an OTP, password, or security code", "OTP၊ စကားဝှက် သို့မဟုတ် လုံခြုံရေးကုဒ် တောင်းထားသည်");
+  if (/urgent|immediate|pressure|today|account.*close/.test(text)) return say("Pressures you to act quickly", "အလျင်စလို လုပ်ဆောင်ရန် ဖိအားပေးထားသည်");
+  if (/payment|money|gift card|crypto|bank detail/.test(text)) return say("Asks for money or payment details", "ငွေ သို့မဟုတ် ငွေပေးချေမှုအချက်အလက် တောင်းထားသည်");
+  if (/authority|bank|support|impersonat/.test(text)) return say("May be pretending to be a trusted organization", "ယုံကြည်ရသော အဖွဲ့အစည်းအဖြစ် အယောင်ဆောင်ထားနိုင်သည်");
+  if (/link|url|domain|website/.test(text)) return say("Includes a link that should be checked separately", "သီးခြားစစ်ဆေးသင့်သော လင့်ခ် ပါဝင်သည်");
+  if (/remote access|device access/.test(text)) return say("Asks for control of your device", "သင့်စက်ကို ထိန်းချုပ်ခွင့် တောင်းထားသည်");
+  return String(value || "").trim();
 }
 
-function heuristicScam(mode, value) {
-    const text = value.toLowerCase();
-    if (mode === "message" && /(urgent|verify now|gift card|password|account.*close|suspended)/.test(text)) return "Urgency or credential-theft language detected";
-    if (mode === "link" && /(secure-login|verify-account|bit\.ly|tinyurl|xn--)/.test(text)) return "Phishing-style URL pattern detected";
-    if (mode === "email" && /support@.*\.(example|click|top)$/.test(text)) return "Impersonation-style sender domain detected";
-    return null;
+function resultActions(risky) {
+  return risky
+    ? [
+        say("Do not send money", "ငွေမပို့ပါနှင့်"),
+        say("Do not click links or reply", "လင့်ခ်မနှိပ်ပါနှင့်၊ ပြန်မဖြေပါနှင့်"),
+        say("Call the organization using its official number", "အဖွဲ့အစည်း၏ တရားဝင်ဖုန်းနံပါတ်ကို ကိုယ်တိုင်ခေါ်ပါ"),
+        say("Block the sender", "ပို့သူကို ပိတ်ဆို့ပါ")
+      ]
+    : [
+        say("Verify unexpected requests yourself", "မမျှော်လင့်သော တောင်းဆိုချက်ကို ကိုယ်တိုင်အတည်ပြုပါ"),
+        say("Keep OTP codes and passwords private", "OTP ကုဒ်နှင့် စကားဝှက်ကို လျှို့ဝှက်ထားပါ"),
+        say("Stop if anyone asks for money", "တစ်စုံတစ်ယောက်က ငွေတောင်းပါက ရပ်တန့်ပါ")
+      ];
 }
 
-async function analyzeDemo() {
-    const value = demoInput.value.trim();
-    if (!value) return { verdict: "waiting", title: "Awaiting input", confidence: 0, reason: "Enter a value to check.", signals: [] };
+async function checkText(content) {
+  const scanType = detectInputType(content);
+  const response = await fetch(securityApiUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "same-origin",
+    cache: "no-store",
+    body: JSON.stringify({ scan_type: scanType, content })
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || "Check failed");
+  return { ...data, detectedType: scanType };
+}
 
-    const row = await checkDirectory(activeDemoMode, value);
-    if (row) {
-        const safe = row.verdict === "safe";
-        return {
-            verdict: safe ? "safe" : "scam",
-            title: safe ? "Not scam — verified directory match" : "Scam — directory match",
-            confidence: 100,
-            reason: row.reason,
-            signals: [row.organization ? `Organization: ${row.organization}` : "Matched the SafeMind directory", "Database record found"]
-        };
-    }
-
-    const knownContact = activeDemoMode === "email" && officialContacts.find((item) => item.email === value.toLowerCase());
-    if (knownContact) return { verdict: "safe", title: "Not scam — verified official contact", confidence: 100, reason: knownContact.purpose, signals: [`Organization: ${knownContact.organization}`, "Published on the organization’s official website"] };
-
-    try {
-        const controller = new AbortController();
-        const timeout = window.setTimeout(() => controller.abort(), 12_000);
-        try {
-            const response = await fetch(securityApiUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ scan_type: activeDemoMode, content: value }),
-                cache: "no-store",
-                credentials: "same-origin",
-                signal: controller.signal
-            });
-            const analysis = await response.json().catch(() => ({}));
-            if (!response.ok) throw new Error(analysis.error || "Analysis failed");
-            const verdict = analysis.verdict === "scam" ? "scam" : analysis.verdict === "suspicious" ? "suspicious" : "unknown";
-            return {
-                verdict,
-                title: analysis.risk === "HIGH" ? "High-risk warning signs found" : analysis.risk === "MEDIUM" ? "Suspicious — use caution" : "No obvious warning signs",
-                confidence: analysis.confidence,
-                riskScore: analysis.risk_score,
-                reason: analysis.reason,
-                signals: analysis.indicators || [],
-                model: analysis.model
-            };
-        } finally {
-            window.clearTimeout(timeout);
-        }
-    } catch {
-        const warning = heuristicScam(activeDemoMode, value);
-        if (warning) return { verdict: "scam", title: "Likely scam — warning signs found", confidence: 72, reason: warning, signals: ["Local fallback analysis", "Automated pattern detection"] };
-    }
-
-    return { verdict: "unknown", title: "Not in database", confidence: 0, reason: "SafeMind has no verified record for this value.", signals: ["Unknown does not mean safe", "Send it to an admin for manual review"] };
+async function checkImage(context) {
+  const response = await fetch(educationApiUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "same-origin",
+    cache: "no-store",
+    body: JSON.stringify({
+      question: say("Check this screenshot for scam warning signs.", "ဤစခရင်ရှော့တွင် လိမ်လည်မှုသတိပေးလက္ခဏာ ရှိမရှိ စစ်ဆေးပါ။"),
+      evidence_text: context,
+      image: selectedImage,
+      scan_type: "auto",
+      language: locale(),
+      stream: false
+    })
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || "Image check failed");
+  const assessment = data.assessment || {};
+  const analysis = data.analysis || {};
+  const risk = assessment.risk || ({ high: "HIGH", warning: "MEDIUM", low: "LOW" }[analysis.riskLevel] || "LOW");
+  return {
+    ...assessment,
+    risk,
+    reason: assessment.reason || analysis.summary || data.answer,
+    indicators: assessment.indicators || analysis.warningSigns || [],
+    recommended_actions: assessment.recommended_actions || analysis.recommendedActions || [],
+    agent_summary: data.answer || analysis.summary || assessment.reason,
+    detectedType: "screenshot"
+  };
 }
 
 function renderResult(result) {
-    latestDemoResult = result;
-    demoRisk.textContent = result.verdict === "safe" ? "NOT SCAM" : result.verdict === "scam" ? "HIGH RISK" : result.verdict === "suspicious" ? "SUSPICIOUS" : result.verdict === "unknown" ? "NOT VERIFIED" : "WAITING";
-    demoRisk.dataset.risk = result.verdict === "safe" ? "low" : result.verdict === "scam" ? "high" : "medium";
-    demoConfidence.textContent = result.title;
-    demoCategory.textContent = result.confidence ? `Confidence: ${result.confidence}%` : "Manual review recommended";
-    demoReason.textContent = result.reason;
-    demoSignals.replaceChildren(...result.signals.map((text) => {
-        const item = document.createElement("li");
-        item.textContent = text;
-        return item;
-    }));
-    demoReport.hidden = !["unknown", "suspicious", "scam"].includes(result.verdict);
+  latestResult = result;
+  const risk = String(result.risk || "LOW").toUpperCase();
+  const risky = risk === "HIGH" || risk === "MEDIUM" || result.verdict === "scam" || result.verdict === "suspicious";
+  const reasons = [...new Set((result.indicators || []).map(friendlyReason).filter(Boolean))].slice(0, 4);
+  if (!reasons.length) reasons.push(risky
+    ? say("The request contains patterns often used in scams", "တောင်းဆိုပုံတွင် လိမ်လည်မှုများ၌ အသုံးများသော ပုံစံများ တွေ့ရသည်")
+    : say("No common scam warning signs were found", "အများတွေ့ရသော လိမ်လည်မှုသတိပေးလက္ခဏာ မတွေ့ရပါ"));
+  document.getElementById("answerKicker").textContent = risky ? say("WARNING", "သတိပေးချက်") : say("SAFE", "လုံခြုံနိုင်သည်");
+  const verdict = document.getElementById("answerVerdict");
+  verdict.dataset.verdict = risky ? "warning" : "safe";
+  verdict.querySelector("span").textContent = risky ? "🔴" : "🟢";
+  document.getElementById("resultHeading").textContent = risky ? say("Likely Scam", "လိမ်လည်မှု ဖြစ်နိုင်သည်") : say("Probably Safe", "လုံခြုံနိုင်ဖွယ် ရှိသည်");
+  document.getElementById("answerSummary").textContent = risky
+    ? say("This looks suspicious. Stop and verify it before you act.", "ဤအကြောင်းအရာသည် သံသယဖြစ်ဖွယ် ရှိပါသည်။ မလုပ်ဆောင်မီ ရပ်တန့်ပြီး အတည်ပြုပါ။")
+    : say("We did not find strong scam signs, but unexpected requests should still be verified.", "ပြင်းထန်သော လိမ်လည်မှုလက္ခဏာ မတွေ့ပါ။ သို့သော် မမျှော်လင့်သော တောင်းဆိုချက်ကို အတည်ပြုသင့်ပါသည်။");
+  document.getElementById("answerReasons").replaceChildren(...reasons.map((reason) => {
+    const item = document.createElement("li");
+    item.textContent = reason;
+    return item;
+  }));
+  document.getElementById("answerActions").replaceChildren(...resultActions(risky).map((action) => {
+    const item = document.createElement("li");
+    item.textContent = action;
+    return item;
+  }));
+  skeleton.hidden = true;
+  answerCard.hidden = false;
+  resultSection.hidden = false;
+  resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-async function loadContacts() {
-    let rows = officialContacts;
-    if (supabase) {
-        const response = await supabase.from("verified_organization_emails").select("organization,email,purpose,source_url").order("organization");
-        if (!response.error && response.data?.length) rows = response.data;
-    }
-    const list = document.getElementById("verifiedEmailList");
-    rows.forEach((row) => {
-        const card = document.createElement("article");
-        card.className = "verified-card";
-        const title = document.createElement("h3");
-        title.textContent = row.organization;
-        const email = document.createElement("a");
-        email.href = `mailto:${row.email}`;
-        email.textContent = row.email;
-        const purpose = document.createElement("p");
-        purpose.textContent = row.purpose;
-        card.append(title, email, purpose);
-        const sourceUrl = safeOfficialUrl(row.source_url);
-        if (sourceUrl) {
-            const source = document.createElement("a");
-            source.href = sourceUrl;
-            source.target = "_blank";
-            source.rel = "noopener noreferrer external";
-            source.referrerPolicy = "no-referrer";
-            source.textContent = "Official source";
-            card.append(source);
-        }
-        list.append(card);
-    });
-}
-
-demoTabs.forEach((button) => button.addEventListener("click", () => setMode(button.dataset.demoMode)));
-demoTabs.forEach((button, index) => button.addEventListener("keydown", (event) => {
-    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
-    event.preventDefault();
-    let nextIndex = index;
-    if (event.key === "ArrowLeft") nextIndex = (index - 1 + demoTabs.length) % demoTabs.length;
-    if (event.key === "ArrowRight") nextIndex = (index + 1) % demoTabs.length;
-    if (event.key === "Home") nextIndex = 0;
-    if (event.key === "End") nextIndex = demoTabs.length - 1;
-    const nextTab = demoTabs[nextIndex];
-    setMode(nextTab.dataset.demoMode);
-    nextTab.focus();
-}));
-document.querySelectorAll("[data-hero-feature]").forEach((button) => button.addEventListener("click", () => {
-    setMode(button.dataset.heroFeature);
-    document.getElementById("demo")?.scrollIntoView({ behavior: "smooth" });
-}));
-document.querySelectorAll("[data-demo-example]").forEach((button) => button.addEventListener("click", () => {
-    demoInput.value = examples[activeDemoMode][button.dataset.demoExample];
-    demoReadiness.sync();
-}));
-demoAnalyze?.addEventListener("click", async () => {
-    demoReadiness.setBusy(true);
-    demoAnalyze.textContent = "Checking…";
-    document.querySelector("[data-demo-loading]")?.classList.add("is-loading");
-    try {
-        renderResult(await analyzeDemo());
-    } finally {
-        document.querySelector("[data-demo-loading]")?.classList.remove("is-loading");
-        demoReadiness.setBusy(false);
-        demoAnalyze.textContent = "Analyze Demo";
-    }
-});
-demoReport?.addEventListener("click", () => {
-    sessionStorage.setItem("safemindPendingReport", JSON.stringify({ type: activeDemoMode, content: demoInput.value, result: latestDemoResult }));
+form?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const content = input.value.trim();
+  if (!content && !selectedImage) return;
+  readiness.setBusy(true);
+  checkButton.textContent = say("CHECKING…", "စစ်ဆေးနေသည်…");
+  const checkingMessage = say("SafeMind is checking this automatically…", "SafeMind က အလိုအလျောက် စစ်ဆေးနေသည်…");
+  setStatus(checkingMessage, "pending");
+  resultSection.hidden = false;
+  answerCard.hidden = true;
+  skeleton.hidden = false;
+  resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  try {
+    const result = selectedImage ? await checkImage(content) : await checkText(content);
+    renderResult(result);
+    setStatus(say("Check complete.", "စစ်ဆေးမှု ပြီးပါပြီ။"), "success");
+  } catch {
+    resultSection.hidden = true;
+    skeleton.hidden = true;
+    setStatus(say("We could not finish the check. Your content is still here—please try again.", "စစ်ဆေးမှုကို မပြီးဆုံးနိုင်ပါ။ သင့်အကြောင်းအရာ မပျောက်ပါ။ ထပ်မံကြိုးစားပါ။"), "error");
+  } finally {
+    readiness.setBusy(false);
+    checkButton.textContent = say("CHECK NOW", "ယခု စစ်ဆေးရန်");
+  }
 });
 
-document.querySelectorAll("[data-faq-button]").forEach((button) => button.addEventListener("click", () => {
-    const open = button.getAttribute("aria-expanded") !== "true";
-    button.setAttribute("aria-expanded", String(open));
-    button.closest(".faq-item")?.classList.toggle("is-open", open);
-}));
-
-document.querySelectorAll("[data-counter]").forEach((element) => {
-    const target = Number(element.dataset.counter || 0);
-    const suffix = element.dataset.suffix || "";
-    element.textContent = `${target.toLocaleString()}${suffix}`;
+document.getElementById("answerBlock")?.addEventListener("click", () => {
+  document.getElementById("answerNote").textContent = say("Open the sender's profile or message menu, then choose Block.", "ပို့သူ၏ ပရိုဖိုင် သို့မဟုတ် စာမီနူးကို ဖွင့်ပြီး ပိတ်ဆို့ရန်ကို ရွေးပါ။");
 });
 
-if (typingTarget) {
-    const headings = { en: "Your AI Shield Against Scams", my: "လိမ်လည်မှုများမှ ကာကွယ်ပေးမည့် သင့် AI ဒိုင်းလွှာ" };
-    let typingTimer;
-    let character = 0;
-    const typeHeading = () => {
-        const language = localStorage.getItem("safemindLanguage") === "my" ? "my" : "en";
-        const heading = headings[language];
-        typingTarget.textContent = heading.slice(0, character += 1);
-        if (character < heading.length) {
-            typingTimer = window.setTimeout(typeHeading, language === "my" ? 90 : 65);
-        } else {
-            typingTimer = window.setTimeout(() => {
-                character = 0;
-                typingTarget.textContent = "";
-                typingTimer = window.setTimeout(typeHeading, 550);
-            }, 1800);
-        }
-    };
-    window.addEventListener("safemind:language-change", () => {
-        window.clearTimeout(typingTimer);
-        character = 0;
-        typingTarget.textContent = "";
-        typeHeading();
-    });
-    typeHeading();
-}
-const backToTop = document.querySelector("[data-back-to-top]");
-if (backToTop) {
-    const toggleBackToTop = () => backToTop.classList.toggle("is-visible", window.scrollY > 300);
-    window.addEventListener("scroll", toggleBackToTop, { passive: true });
-    toggleBackToTop();
-    backToTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
-}
+document.getElementById("answerReport")?.addEventListener("click", async () => {
+  sessionStorage.setItem("safemindPendingReport", JSON.stringify({
+    type: latestResult?.detectedType || detectInputType(input.value),
+    content: input.value.trim() || `[${selectedFile?.name || "Screenshot"}]`,
+    result: latestResult
+  }));
+  const { data } = await supabase?.auth.getSession() || {};
+  window.location.href = data?.session ? "/reports" : "/login?returnTo=%2Freports";
+});
 
-const siteFooter = document.querySelector(".site-footer");
-if (siteFooter && "IntersectionObserver" in window) {
-    new IntersectionObserver(([entry]) => {
-        document.body.classList.toggle("footer-in-view", entry.isIntersecting);
-    }).observe(siteFooter);
-}
+document.getElementById("checkAnother")?.addEventListener("click", () => {
+  resultSection.hidden = true;
+  answerCard.hidden = true;
+  input.focus();
+  form?.scrollIntoView({ behavior: "smooth", block: "center" });
+});
+
+const emergencyDialog = document.getElementById("emergencyDialog");
+document.querySelectorAll("[data-open-emergency]").forEach((button) => button.addEventListener("click", () => {
+  if (!emergencyDialog.open) emergencyDialog.showModal();
+  document.body.classList.add("modal-open");
+}));
+const closeEmergency = () => { emergencyDialog.close(); document.body.classList.remove("modal-open"); };
+document.getElementById("emergencyClose")?.addEventListener("click", closeEmergency);
+document.getElementById("emergencyCheck")?.addEventListener("click", () => {
+  closeEmergency();
+  form?.scrollIntoView({ behavior: "smooth", block: "center" });
+  input.focus();
+});
+emergencyDialog?.addEventListener("close", () => document.body.classList.remove("modal-open"));
 
 const termsPanel = document.querySelector("[data-terms-consent]");
 if (termsPanel) {
-    const storageKey = "safemind-terms-choice-v3";
-    const status = termsPanel.querySelector("[data-terms-status]");
-    const choiceButtons = [...termsPanel.querySelectorAll("[data-terms-choice]")];
-    const renderChoice = (choice) => {
-        const language = document.documentElement.lang === "my" ? "my" : "en";
-        const messages = {
-            accepted: { en: "Terms accepted on this browser.", my: "ဤဘရောက်ဇာတွင် စည်းကမ်းချက်များကို လက်ခံထားသည်။" },
-            declined: { en: "Terms declined. Basic browsing remains available.", my: "စည်းကမ်းချက်များကို ငြင်းပယ်ထားသည်။ အခြေခံကြည့်ရှုမှုကို ဆက်လက်အသုံးပြုနိုင်သည်။" },
-            pending: { en: "No choice selected yet.", my: "ရွေးချယ်မှု မပြုလုပ်ရသေးပါ။" }
-        };
-        const selected = ["accepted", "declined"].includes(choice) ? choice : "pending";
-        termsPanel.dataset.choice = selected;
-        if (status) status.textContent = messages[selected][language];
-        choiceButtons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.termsChoice === selected)));
-    };
-    let savedChoice = "";
-    try { savedChoice = localStorage.getItem(storageKey) || ""; } catch { /* Consent controls remain usable without storage. */ }
-    const openTerms = () => {
-        if (typeof termsPanel.showModal === "function" && !termsPanel.open) termsPanel.showModal();
-        document.body.classList.add("terms-dialog-open");
-    };
-    const closeTerms = () => {
-        if (termsPanel.open) termsPanel.close();
-        document.body.classList.remove("terms-dialog-open");
-    };
-    choiceButtons.forEach((button) => button.addEventListener("click", () => {
-        savedChoice = button.dataset.termsChoice;
-        try { localStorage.setItem(storageKey, savedChoice); } catch { /* Keep the current in-page choice. */ }
-        renderChoice(savedChoice);
-        closeTerms();
-    }));
-    termsPanel.querySelector("[data-terms-close]")?.addEventListener("click", closeTerms);
-    termsPanel.addEventListener("close", () => document.body.classList.remove("terms-dialog-open"));
-    termsPanel.addEventListener("cancel", () => document.body.classList.remove("terms-dialog-open"));
-    document.querySelectorAll("[data-open-terms]").forEach((button) => button.addEventListener("click", openTerms));
-    window.addEventListener("safemind:language-change", () => renderChoice(savedChoice));
-    renderChoice(savedChoice);
-    if (!savedChoice) window.requestAnimationFrame(openTerms);
+  const storageKey = "safemind-terms-choice-v3";
+  const statusNode = termsPanel.querySelector("[data-terms-status]");
+  const buttons = [...termsPanel.querySelectorAll("[data-terms-choice]")];
+  let savedChoice = "";
+  try { savedChoice = localStorage.getItem(storageKey) || ""; } catch { /* Storage is optional. */ }
+  const renderChoice = () => {
+    const accepted = savedChoice === "accepted";
+    const declined = savedChoice === "declined";
+    statusNode.textContent = accepted
+      ? say("Terms accepted on this browser.", "ဤဘရောက်ဇာတွင် စည်းကမ်းချက်များကို လက်ခံထားသည်။")
+      : declined
+        ? say("Terms declined. Basic checking remains available.", "စည်းကမ်းချက်များကို ငြင်းပယ်ထားသည်။ အခြေခံစစ်ဆေးမှုကို ဆက်သုံးနိုင်သည်။")
+        : say("No choice selected yet.", "ရွေးချယ်မှု မပြုလုပ်ရသေးပါ။");
+    buttons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.termsChoice === savedChoice)));
+  };
+  const openTerms = () => { if (!termsPanel.open) termsPanel.showModal(); document.body.classList.add("terms-dialog-open"); };
+  const closeTerms = () => { termsPanel.close(); document.body.classList.remove("terms-dialog-open"); };
+  buttons.forEach((button) => button.addEventListener("click", () => {
+    savedChoice = button.dataset.termsChoice;
+    try { localStorage.setItem(storageKey, savedChoice); } catch { /* Keep the in-page choice. */ }
+    renderChoice();
+    closeTerms();
+  }));
+  termsPanel.querySelector("[data-terms-close]")?.addEventListener("click", closeTerms);
+  document.querySelectorAll("[data-open-terms]").forEach((button) => button.addEventListener("click", openTerms));
+  window.addEventListener("safemind:language-change", renderChoice);
+  renderChoice();
 }
-setMode(activeDemoMode);
-loadContacts();
-document.body.classList.add("is-ready");
+
+window.addEventListener("safemind:language-change", () => {
+  checkButton.textContent = say("CHECK NOW", "ယခု စစ်ဆေးရန်");
+  if (latestResult && !resultSection.hidden) renderResult(latestResult);
+});
+
 initLanguage();
