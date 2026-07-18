@@ -1617,3 +1617,40 @@ html[data-theme="dark"] body.dashboard-page .dashboard-section-nav button.is-act
   border-color: #BCE477 !important;
   box-shadow: 0 0 0 3px rgba(169, 211, 94, .2), 0 8px 20px rgba(104, 141, 43, .22) !important;
 }
+
+/* Summary-card links and buttons share one aligned, touch-friendly action style. */
+body.dashboard-page .dashboard-home-summary .dashboard-summary-card > :is(a, button) {
+  grid-column: 2 !important;
+  width: max-content !important;
+  min-width: 104px !important;
+  max-width: 100% !important;
+  min-height: 42px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  align-self: end !important;
+  justify-content: center !important;
+  justify-self: start !important;
+  margin-top: 10px !important;
+  padding: 9px 16px !important;
+  border: 1px solid #8DB547 !important;
+  border-radius: 13px !important;
+  color: #20300F !important;
+  background: #A9D35E !important;
+  box-shadow: 0 6px 16px rgba(104, 141, 43, .18) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .2s ease !important;
+}
+
+body.dashboard-page .dashboard-home-summary .dashboard-summary-card > :is(a, button):hover,
+body.dashboard-page .dashboard-home-summary .dashboard-summary-card > :is(a, button):focus-visible {
+  color: #17220B !important;
+  background: #B8DF72 !important;
+  border-color: #789D39 !important;
+  box-shadow: 0 8px 22px rgba(104, 141, 43, .28) !important;
+  text-decoration: none !important;
+  transform: translateY(-1px) !important;
+}
