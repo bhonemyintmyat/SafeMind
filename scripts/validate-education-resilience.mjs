@@ -75,6 +75,54 @@ try {
   assert.match(done.answer, /Risk Level/);
   assert.match(done.answer, /What You Should Do/);
   console.log("EduAI resilience passed: provider quota failure returns a completed assessment-backed response.");
+
+  process.env.OPENROUTER_MODEL = "test/leaky-primary";
+  process.env.OPENROUTER_FALLBACK_MODEL = "test/leaky-fallback";
+  let capturedBody = null;
+  globalThis.fetch = async (_url, options) => {
+    capturedBody = JSON.parse(options.body);
+    return new Response(JSON.stringify({
+      model: "test/leaky-primary",
+      choices: [{
+        finish_reason: "length",
+        message: {
+          content: "Risk Level\nHIGH · 94%\n\nReason\nThe message uses a wrong-number opener and asks for personal details, such as We need to continue exactly where we stopped. The previous answer was cut off and we must finish the remaining sections."
+        }
+      }]
+    }), { status: 200, headers: { "Content-Type": "application/json" } });
+  };
+  const leakRes = response();
+  await educationChatHandler(request({
+    question: "Why is the wrong-number message risky?",
+    scan_type: "message",
+    language: "en",
+    stream: true,
+    history: [{ role: "user", content: "Please check this message." }],
+    memory: {
+      evidence_retained: true,
+      last_assessment: {
+        risk: "HIGH",
+        confidence: 94,
+        category: "Wrong-number scam",
+        reason: "The message uses a wrong-number opener and asks for personal details.",
+        indicators: ["Unsolicited contact", "Requests personal information"],
+        recommended_actions: ["Do not reply.", "Do not share personal details.", "Block and report the sender."]
+      }
+    }
+  }), leakRes);
+  const leakEvents = (await leakRes.completed).trim().split(/\r?\n/).map((line) => JSON.parse(line));
+  const leakDone = leakEvents.find((event) => event.type === "done");
+  assert(leakDone, "A sanitized completed response is required.");
+  assert.doesNotMatch(leakDone.answer, /we need to continue|previous answer|remaining sections/iu);
+  assert.equal((leakDone.answer.match(/Risk Level/g) || []).length, 1);
+  assert.equal((leakDone.answer.match(/\nReason\n/g) || []).length, 1);
+  assert.equal((leakDone.answer.match(/What You Should Do/g) || []).length, 1);
+  assert.match(leakDone.answer, /HIGH · 94%/);
+  assert.doesNotMatch(leakDone.answer, /Risk Level\n\n/);
+  assert.equal((leakDone.answer.match(/^• /gm) || []).length, 3);
+  assert.equal(capturedBody.max_tokens, 240);
+  assert.equal(capturedBody.reasoning.enabled, false);
+  console.log("EduAI output guard passed: leaked continuation text is replaced with a short three-section answer.");
 } finally {
   globalThis.fetch = originalFetch;
   if (originalKey === undefined) delete process.env.OPENROUTER_API_KEY;
