@@ -15,6 +15,7 @@
     { "source": "/src/pages/onboarding.html", "destination": "/welcome", "permanent": true },
     { "source": "/src/pages/splash.html", "destination": "/intro", "permanent": true },
     { "source": "/src/pages/sitemap.html", "destination": "/sitemap", "permanent": true },
+    { "source": "/src/pages/simple.html", "destination": "/simple", "permanent": true },
     { "source": "/src/pages/scam-checker.html", "destination": "/dashboard?view=investigation", "permanent": true }
   ],
   "rewrites": [
@@ -28,7 +29,8 @@
     { "source": "/settings", "destination": "/src/pages/profile.html" },
     { "source": "/welcome", "destination": "/src/pages/onboarding.html" },
     { "source": "/intro", "destination": "/src/pages/splash.html" },
-    { "source": "/sitemap", "destination": "/src/pages/sitemap.html" }
+    { "source": "/sitemap", "destination": "/src/pages/sitemap.html" },
+    { "source": "/simple", "destination": "/src/pages/simple.html" }
   ],
   "headers": [
     {

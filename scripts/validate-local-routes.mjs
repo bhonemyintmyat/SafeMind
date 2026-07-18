@@ -22,7 +22,8 @@ const routes = new Map([
   ["/settings", "/src/pages/profile.html"],
   ["/welcome", "/src/pages/onboarding.html"],
   ["/intro", "/src/pages/splash.html"],
-  ["/sitemap", "/src/pages/sitemap.html"]
+  ["/sitemap", "/src/pages/sitemap.html"],
+  ["/simple", "/src/pages/simple.html"]
 ]);
 
 function run(url) {

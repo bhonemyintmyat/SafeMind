@@ -2,6 +2,7 @@ import { supabase } from "./backend-client.js";
 import { initLanguage } from "./language.js";
 import { createActionReadiness } from "./action-readiness.js";
 import "./theme-toggle.js";
+import "./audience-onboarding.js";
 
 const demoTabs = [...document.querySelectorAll("[data-demo-mode]")];
 const demoInput = document.getElementById("demoInput");
@@ -337,6 +338,7 @@ if (termsPanel) {
         try { localStorage.setItem(storageKey, savedChoice); } catch { /* Keep the current in-page choice. */ }
         renderChoice(savedChoice);
         closeTerms();
+        window.dispatchEvent(new CustomEvent("safemind:terms-choice", { detail: { choice: savedChoice } }));
     }));
     termsPanel.querySelector("[data-terms-close]")?.addEventListener("click", closeTerms);
     termsPanel.addEventListener("close", () => document.body.classList.remove("terms-dialog-open"));

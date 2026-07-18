@@ -27,6 +27,7 @@
     <link rel="stylesheet" href="/src/css/main.css">
     <link rel="stylesheet" href="/src/css/theme.css">
     <link rel="stylesheet" href="/src/css/brand-palette.css">
+    <link rel="stylesheet" href="/src/css/audience-onboarding.css">
 </head>
 <body class="landing-page" data-page="main">
     <header class="navbar">
@@ -46,6 +47,7 @@
             <a href="/#trust">Trust</a>
             <a href="/#contact">Contact us</a>
             <a href="/#faq">FAQ</a>
+            <button type="button" class="tutorial-nav-button" data-open-tutorial>How to use</button>
             <div class="mobile-nav-actions">
                 <button class="language-toggle" type="button" data-language-toggle title="Switch language">မြန်မာ</button>
                 <a href="/login">Login</a>
@@ -285,6 +287,35 @@
                 <button type="button" class="terms-decline" data-terms-choice="declined" aria-pressed="false">Decline</button>
             </div>
     </dialog>
+
+    <dialog class="age-dialog" id="ageRangeDialog" aria-labelledby="ageRangeTitle" aria-describedby="ageRangeDescription">
+        <p class="terms-kicker">Personalize SafeMind</p>
+        <h2 id="ageRangeTitle">Choose your age range</h2>
+        <p id="ageRangeDescription">We use this only to choose the most comfortable page layout. Your exact age is not requested.</p>
+        <div class="age-range-options">
+            <button type="button" data-age-range="18-35"><strong>18–35</strong><span>Use the standard SafeMind page</span></button>
+            <button type="button" data-age-range="36-49"><strong>36–49</strong><span>Use the simple, larger-text page</span></button>
+            <button type="button" data-age-range="50-plus"><strong>50+</strong><span>Use the simple, larger-text page</span></button>
+        </div>
+        <p class="age-privacy-note">You can change this later from “How to use”.</p>
+    </dialog>
+
+    <dialog class="tutorial-dialog" id="tutorialDialog" aria-labelledby="tutorialTitle">
+        <button type="button" class="terms-dialog-close" data-close-tutorial aria-label="Close tutorial">×</button>
+        <p class="terms-kicker">SafeMind tutorial</p>
+        <h2 id="tutorialTitle">How to use every main button</h2>
+        <ol class="tutorial-steps">
+            <li><strong>Phone, Message, Link, or Email</strong><span>Select the type of suspicious content you received.</span></li>
+            <li><strong>Analyze Demo</strong><span>Paste the suspicious content, then press this button to check it.</span></li>
+            <li><strong>Example buttons</strong><span>Load a safe, scam, or unknown example so you can practise.</span></li>
+            <li><strong>Report to admin</strong><span>Send suspicious evidence for an administrator to review.</span></li>
+            <li><strong>Language button</strong><span>Switch the whole interface between English and Burmese.</span></li>
+            <li><strong>Login and Start Protecting</strong><span>Open your account and save investigation activity.</span></li>
+        </ol>
+        <div class="tutorial-actions"><a class="primary-btn" href="#demo" data-tutorial-start>Start guided practice</a><button type="button" class="secondary-btn" data-change-age>Change age range</button></div>
+    </dialog>
+
+    <button type="button" class="tutorial-fab" data-open-tutorial aria-label="Open SafeMind tutorial">? <span>How to use</span></button>
 
     <button type="button" class="back-to-top" data-back-to-top aria-label="Back to top">
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

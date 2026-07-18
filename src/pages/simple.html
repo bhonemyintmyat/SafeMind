@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SafeMind Simple | Check for Scams</title>
+  <meta name="description" content="A simple, larger-text SafeMind page for checking suspicious messages, phone numbers, links, and emails.">
+  <meta name="theme-color" content="#A9D35E">
+  <script>(()=>{let t="";try{t=localStorage.getItem("safemind-theme")||""}catch{}if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=t})()</script>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="stylesheet" href="/src/css/main.css">
+  <link rel="stylesheet" href="/src/css/theme.css">
+  <link rel="stylesheet" href="/src/css/brand-palette.css">
+  <link rel="stylesheet" href="/src/css/simple-page.css">
+</head>
+<body class="simple-experience" data-page="simple">
+  <a class="skip-link" href="#simpleChecker">Skip to scam checker</a>
+  <header class="simple-header">
+    <a class="brand" href="/simple"><img src="/assets/green-logo.png" alt=""><span>SafeMind Simple</span></a>
+    <div>
+      <button type="button" data-open-simple-tutorial>How to use</button>
+      <button type="button" data-language-toggle title="Switch language">မြန်မာ</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="simple-intro">
+      <p class="simple-kicker">One easy safety check</p>
+      <h1>Check if this may be a scam</h1>
+      <p>Paste any suspicious message, phone number, website, or email below. SafeMind will choose the correct check automatically.</p>
+    </section>
+
+    <form class="simple-checker" id="simpleChecker">
+      <label for="simpleInput">Paste the suspicious content here</label>
+      <textarea id="simpleInput" rows="7" maxlength="10000" placeholder="Paste a suspicious message, number, link, or email..."></textarea>
+      <p>Do not enter passwords, OTP codes, or bank details.</p>
+      <button type="submit" id="simpleCheckButton" disabled>CHECK NOW</button>
+      <button type="button" class="how-link" data-tutorial-topic="check">How do I use this button?</button>
+      <p id="simpleStatus" role="status" aria-live="polite"></p>
+    </form>
+
+    <section class="simple-answer" id="simpleAnswer" hidden aria-labelledby="simpleVerdict">
+      <p class="answer-label">YOUR RESULT</p>
+      <h2 id="simpleVerdict"></h2>
+      <p id="simpleSummary"></p>
+      <h3>What to do now</h3>
+      <ul id="simpleActions"></ul>
+      <div class="simple-answer-buttons">
+        <a href="/reports">REPORT THIS</a>
+        <button type="button" id="simpleAgain">CHECK ANOTHER</button>
+      </div>
+      <button type="button" class="how-link" data-tutorial-topic="result">How do I use these buttons?</button>
+    </section>
+  </main>
+
+  <button type="button" class="simple-emergency" data-open-emergency>🚨 Someone is asking me for money</button>
+
+  <dialog class="simple-dialog" id="simpleTutorial" aria-labelledby="simpleTutorialTitle">
+    <button type="button" class="dialog-close" data-close-simple-tutorial aria-label="Close tutorial">×</button>
+    <h2 id="simpleTutorialTitle">How to use SafeMind</h2>
+    <ol>
+      <li>Copy the suspicious message, number, link, or email.</li>
+      <li>Paste it into the large box.</li>
+      <li>Press the green “CHECK NOW” button.</li>
+      <li>Read the result and follow the safety steps.</li>
+      <li>Use “REPORT THIS” if you want an administrator to review it.</li>
+    </ol>
+    <a href="/?changeAge=1">Change age range or page style</a>
+  </dialog>
+
+  <dialog class="simple-dialog emergency" id="simpleEmergency" aria-labelledby="simpleEmergencyTitle">
+    <button type="button" class="dialog-close" data-close-emergency aria-label="Close emergency help">×</button>
+    <p class="stop">STOP</p>
+    <h2 id="simpleEmergencyTitle">Do not send money yet.</h2>
+    <ul><li>Do not share an OTP or password.</li><li>Call the company using its official phone number.</li><li>Ask a trusted family member for help.</li></ul>
+    <button type="button" data-emergency-check>Check the message now</button>
+  </dialog>
+
+  <footer><a href="/eduai">Learn about scams</a><a href="/?changeAge=1">Change page style</a><a href="/login">Login</a></footer>
+  <script type="module" src="/src/js/simple-page.js"></script>
+  <script type="module" src="/src/js/pwa.js"></script>
+</body>
+</html>
+

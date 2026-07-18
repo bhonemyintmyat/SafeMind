@@ -15,7 +15,8 @@ const pageRoutes = new Map([
 	["/settings", "/src/pages/profile.html"],
 	["/welcome", "/src/pages/onboarding.html"],
 	["/intro", "/src/pages/splash.html"],
-	["/sitemap", "/src/pages/sitemap.html"]
+	["/sitemap", "/src/pages/sitemap.html"],
+	["/simple", "/src/pages/simple.html"]
 ]);
 
 const legacyPageRoutes = new Map([
@@ -90,6 +91,7 @@ export default defineConfig({
 				education: resolve(__dirname, "src/pages/education.html"),
 				educationArticle: resolve(__dirname, "src/pages/education-article.html"),
 				sitemap: resolve(__dirname, "src/pages/sitemap.html"),
+				simple: resolve(__dirname, "src/pages/simple.html"),
 				profile: resolve(__dirname, "src/pages/profile.html"),
 				onboarding: resolve(__dirname, "src/pages/onboarding.html")
 			}
