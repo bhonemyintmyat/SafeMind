@@ -21,6 +21,7 @@ const say = (en, my) => locale() === "my" ? my : en;
 
 function detectType(value) {
   const text = value.trim();
+  if (/^(?:from|subject|to):/im.test(text) && /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,63}/i.test(text)) return "email";
   if (/^(?:https?:\/\/|www\.)\S+/i.test(text)) return "link";
   if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/i.test(text)) return "email";
   if (/^\+?[\d\s().-]{7,22}$/.test(text)) return "phone";

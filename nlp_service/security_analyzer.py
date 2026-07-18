@@ -18,6 +18,7 @@ URL_BAIT_TERMS = {"account", "auth", "bank", "confirm", "login", "password", "pa
 BRAND_TERMS = {"amazon", "apple", "facebook", "google", "instagram", "microsoft", "netflix", "paypal", "telegram", "whatsapp"}
 FREE_MAIL_DOMAINS = {"gmail.com", "hotmail.com", "icloud.com", "outlook.com", "proton.me", "yahoo.com"}
 EMAIL_PATTERN = re.compile(r"^[A-Z0-9.!#$%&'*+/=?^_`{|}~-]+@([A-Z0-9-]+\.)+[A-Z]{2,63}$", re.IGNORECASE)
+EMAIL_SEARCH_PATTERN = re.compile(r"[A-Z0-9.!#$%&'*+/=?^_`{|}~-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,63}", re.IGNORECASE)
 
 
 def _agent_guidance(scan_type, risk, category):
@@ -96,11 +97,53 @@ class SecurityAnalyzer:
             raise ValueError("Content must not be empty.")
 
         value = content.strip()
-        limits = {"message": 10_000, "link": 2_048, "email": 254, "phone": 32}
+        limits = {"message": 10_000, "link": 2_048, "email": 10_000, "phone": 32}
         if len(value) > limits[scan_type]:
             raise ValueError(f"{scan_type.title()} must be {limits[scan_type]} characters or fewer.")
 
-        return getattr(self, f"_analyze_{scan_type}")(value)
+        primary = getattr(self, f"_analyze_{scan_type}")(value)
+        if scan_type == "message":
+            return primary
+        if not self._contains_prose(scan_type, value):
+            primary["pipeline"] = ["type-specific analysis", "shared spam-language analysis skipped because no prose was present"]
+            return primary
+        try:
+            language = self._analyze_message(value)
+        except ValueError:
+            return primary
+        return self._combine_with_spam_language(scan_type, primary, language)
+
+    @staticmethod
+    def _contains_prose(scan_type, value):
+        if scan_type == "email":
+            if re.search(r"(?:^|\n)(?:subject|from|to):", value, re.IGNORECASE):
+                return True
+            remainder = EMAIL_SEARCH_PATTERN.sub("", value).strip()
+            return len(remainder) >= 12
+        remainder = re.sub(r"https?://\S+|\+?[\d\s().-]{7,22}", "", value, flags=re.IGNORECASE).strip()
+        return bool(re.search(r"\s", value)) and len(remainder) >= 12
+
+    @staticmethod
+    def _combine_with_spam_language(scan_type, primary, language):
+        primary_score = int(primary.get("risk_score", 0) or 0)
+        language_score = int(language.get("risk_score", 0) or 0)
+        language_dominates = language_score > primary_score
+        combined = _result(
+            scan_type,
+            max(primary_score, language_score),
+            language["category"] if language_dominates else primary["category"],
+            language["reason"] if language_dominates else primary["reason"],
+            [*primary.get("indicators", []), *language.get("indicators", [])],
+            f"{primary['model']}+safemind-intent-nlp-v3",
+        )
+        is_spam = combined["risk"] in {"HIGH", "MEDIUM"}
+        combined.update({
+            "is_spam": is_spam,
+            "label": "spam" if is_spam else "not_spam",
+            "spam_probability": max(float(primary.get("spam_probability", 0) or 0), float(language.get("spam_probability", 0) or 0)),
+            "pipeline": ["type-specific analysis", "shared spam-language analysis"],
+        })
+        return combined
 
     def _analyze_message(self, value):
         prediction = self.message_classifier.predict(value)
@@ -179,7 +222,9 @@ class SecurityAnalyzer:
         return _result("link", score, category, reason, indicators or ["No known structural warning signs"], "url-threat-features-v2")
 
     def _analyze_email(self, value):
-        lowered = value.lower()
+        from_match = re.search(r"^from:\s*.*?(" + EMAIL_SEARCH_PATTERN.pattern + r")", value, re.IGNORECASE | re.MULTILINE)
+        address_match = from_match or EMAIL_SEARCH_PATTERN.search(value)
+        lowered = address_match.group(1 if from_match else 0).lower() if address_match else ""
         if not EMAIL_PATTERN.fullmatch(lowered):
             return _result("email", 92, "Invalid or deceptive email address", "The sender address is malformed or cannot be reliably verified.", ["Invalid email format"], "email-threat-features-v2")
 

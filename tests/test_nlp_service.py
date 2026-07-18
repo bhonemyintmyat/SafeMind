@@ -137,6 +137,24 @@ class SecurityAnalyzerTests(unittest.TestCase):
         result = self.analyzer.analyze("email", "microsoft-security@gmail.com")
         self.assertIn(result["risk"], {"MEDIUM", "HIGH"})
 
+    def test_full_email_uses_sender_and_spam_language_layers(self):
+        result = self.analyzer.analyze(
+            "email",
+            "From: billing@example.org\nSubject: Urgent verification\n\nSend your OTP and password immediately.",
+        )
+        self.assertEqual(result["scan_type"], "email")
+        self.assertTrue(result["is_spam"])
+        self.assertIn(result["risk"], {"MEDIUM", "HIGH"})
+        self.assertEqual(result["pipeline"], ["type-specific analysis", "shared spam-language analysis"])
+
+    def test_clean_email_body_remains_not_spam(self):
+        result = self.analyzer.analyze(
+            "email",
+            "From: team@example.org\nSubject: Lunch\n\nCan we have lunch tomorrow at noon?",
+        )
+        self.assertFalse(result["is_spam"])
+        self.assertEqual(result["label"], "not_spam")
+
     def test_detects_premium_phone_pattern(self):
         result = self.analyzer.analyze("phone", "+1 900 555 0100")
         self.assertIn(result["risk"], {"MEDIUM", "HIGH"})

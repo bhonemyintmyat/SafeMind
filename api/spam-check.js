@@ -400,7 +400,10 @@ function analyzeLink(value) {
 }
 
 function analyzeEmail(value) {
-  const lowered = String(value || "").trim().toLowerCase();
+  const raw = String(value || "").trim();
+  const fromAddress = raw.match(/^from:\s*.*?([A-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9.-]+\.[A-Z]{2,63})/im)?.[1];
+  const extractedAddress = fromAddress || raw.match(/[A-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9.-]+\.[A-Z]{2,63}/i)?.[0] || "";
+  const lowered = extractedAddress.toLowerCase();
   if (!EMAIL_PATTERN.test(lowered)) {
     return result("email", 92, "Invalid or deceptive email address", "The sender address is malformed or cannot be reliably verified.", ["Invalid email format"], "email-threat-features-v2");
   }
@@ -453,6 +456,43 @@ function analyzeEmail(value) {
     : "The address format has no obvious impersonation indicators; confirm the domain independently.";
 
   return result("email", score, category, reason, indicators.length ? indicators : ["Valid email structure"], "email-threat-features-v2");
+}
+
+function combineWithSpamLanguage(scanType, primary, content) {
+  const containsProse = scanType === "email"
+    ? /(?:^|\n)(?:subject|from|to):/im.test(content) || content.replace(/[A-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9.-]+\.[A-Z]{2,63}/ig, "").trim().length >= 12
+    : /\s/.test(content) && content.replace(/https?:\/\/\S+|\+?[\d\s().-]{7,22}/gi, "").trim().length >= 12;
+  if (!containsProse) {
+    return {
+      ...primary,
+      pipeline: ["type-specific analysis", "shared spam-language analysis skipped because no prose was present"]
+    };
+  }
+  let language;
+  try {
+    language = analyzeMessage(content);
+  } catch {
+    return primary;
+  }
+  const primaryScore = Number(primary.risk_score) || 0;
+  const languageScore = Number(language.risk_score) || 0;
+  const languageDominates = languageScore > primaryScore;
+  const combined = result(
+    scanType,
+    Math.max(primaryScore, languageScore),
+    languageDominates ? language.category : primary.category,
+    languageDominates ? language.reason : primary.reason,
+    [...(primary.indicators || []), ...(language.indicators || [])],
+    `${primary.model}+safemind-intent-nlp-v3`
+  );
+  const isSpam = combined.risk === "HIGH" || combined.risk === "MEDIUM";
+  return {
+    ...combined,
+    is_spam: isSpam,
+    label: isSpam ? "spam" : "not_spam",
+    spam_probability: Math.max(Number(primary.spam_probability) || 0, Number(language.spam_probability) || 0),
+    pipeline: ["type-specific analysis", "shared spam-language analysis"]
+  };
 }
 
 function analyzePhone(value) {
@@ -508,18 +548,19 @@ function analyzePayload(scanType, content) {
   }
 
   const value = content.trim();
-  const limits = { message: 10_000, link: 2_048, email: 254, phone: 32 };
+  const limits = { message: 10_000, link: 2_048, email: 10_000, phone: 32 };
   if (value.length > limits[scanType]) {
     throw new Error(`${scanType[0].toUpperCase()}${scanType.slice(1)} must be ${limits[scanType]} characters or fewer.`);
   }
 
-  return scanType === "message"
+  const primary = scanType === "message"
     ? analyzeMessage(value)
     : scanType === "link"
       ? analyzeLink(value)
       : scanType === "email"
         ? analyzeEmail(value)
         : analyzePhone(value);
+  return scanType === "message" ? primary : combineWithSpamLanguage(scanType, primary, value);
 }
 
 function buildInvestigation(scanType, content, analysis, investigationTimeMs) {
