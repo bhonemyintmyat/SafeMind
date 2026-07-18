@@ -1356,22 +1356,39 @@ body.auth-page[data-auth-page="login"] .auth-card > h1 {
   text-align: center !important;
 }
 
-html[data-theme="light"] body.auth-page .auth-form input {
+body.auth-page .auth-form input {
   color: #1F2937 !important;
+  -webkit-text-fill-color: #1F2937 !important;
+  caret-color: #1F2937 !important;
+  color-scheme: light;
   background: #F9FAFB !important;
+  background-color: #F9FAFB !important;
   border-color: #9CA3AF !important;
   box-shadow: inset 0 1px 2px rgba(31, 41, 55, .04) !important;
   opacity: 1 !important;
 }
 
-html[data-theme="light"] body.auth-page .auth-form input::placeholder {
+body.auth-page .auth-form input::placeholder {
   color: #4B5563 !important;
+  -webkit-text-fill-color: #4B5563 !important;
   opacity: 1 !important;
+}
+
+body.auth-page .auth-form input:-webkit-autofill,
+body.auth-page .auth-form input:-webkit-autofill:hover,
+body.auth-page .auth-form input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #1F2937 !important;
+  -webkit-box-shadow: 0 0 0 1000px #F9FAFB inset !important;
+  caret-color: #1F2937 !important;
 }
 
 html[data-theme="dark"] body.auth-page .auth-form input {
   color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  caret-color: #FFFFFF !important;
+  color-scheme: dark;
   background: #3B3D54 !important;
+  background-color: #3B3D54 !important;
   border-color: #7A7E94 !important;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, .18) !important;
   opacity: 1 !important;
@@ -1379,7 +1396,16 @@ html[data-theme="dark"] body.auth-page .auth-form input {
 
 html[data-theme="dark"] body.auth-page .auth-form input::placeholder {
   color: #D7DAE8 !important;
+  -webkit-text-fill-color: #D7DAE8 !important;
   opacity: 1 !important;
+}
+
+html[data-theme="dark"] body.auth-page .auth-form input:-webkit-autofill,
+html[data-theme="dark"] body.auth-page .auth-form input:-webkit-autofill:hover,
+html[data-theme="dark"] body.auth-page .auth-form input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #FFFFFF !important;
+  -webkit-box-shadow: 0 0 0 1000px #3B3D54 inset !important;
+  caret-color: #FFFFFF !important;
 }
 
 body.auth-page .auth-form input:focus {
