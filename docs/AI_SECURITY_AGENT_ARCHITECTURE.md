@@ -9,12 +9,12 @@ SafeMind is an investigation workbench, not a chatbot. A user submits evidence a
 1. **Coordinator** creates a case and executes agents in a controlled order.
 2. **Input Agent** detects the selected input type, language, Unicode encoding, normalization, and document metadata.
 3. **Threat Intelligence Agent** runs configured local reputation checks and reports whether live WHOIS or campaign providers are available.
-4. **ML Agent** calls the model interface and exposes class, calibrated confidence, probability shape, features, and model identity.
+4. **OpenRouter Scan Agent** calls the configured model with Structured Outputs and exposes a normalized verdict, calibrated score, evidence indicators, and model identity.
 5. **Evidence Agent** extracts URLs, email addresses, phone numbers, crypto wallets, credential requests, OTP requests, money requests, urgency, authority claims, and hidden Unicode.
 6. **Reasoning Agent** converts observed evidence into additive score contributions. Contributions always sum to the final risk score.
 7. **Decision Agent** maps the score to Safe, Suspicious, Likely Scam, High Risk, or Critical and supplies safe next actions.
 
-The framework-neutral implementation is in `nlp_service/investigation`. `nlp_service/app.py` preserves the lightweight local HTTP adapter. `nlp_service/fastapi_app.py` provides typed HTTP and WebSocket adapters. `api/spam-check.js` provides the compatible serverless implementation.
+`api/openrouter-scan.js` is the primary server-side model adapter. `api/spam-check.js` validates and normalizes its structured assessment for the frontend. The framework-neutral Python implementation in `nlp_service/investigation` is retained for offline tests and as a safety fallback, not as the normal browser scan route.
 
 ## Stable API contract
 
@@ -40,6 +40,10 @@ The response retains `risk`, `risk_score`, `confidence`, `category`, `reason`, `
 The `agent_run` object contains privacy-safe operational telemetry. Submitted content and content hashes are not persisted in observability tables.
 
 ## Model interface
+
+The primary adapter sends evidence through OpenRouter using the model selected by `OPENROUTER_MODEL` and a strict JSON Schema requiring `risk_score`, `category`, `reason`, and `indicators`. The API key is server-side only. SafeMind derives `risk`, `verdict`, `label`, `is_spam`, and `spam_probability` from the returned score so UI fields cannot contradict one another.
+
+Website scans do not cache verdicts and do not fall back by default. If OpenRouter is unavailable, the API returns an error instead of inventing a fixed result. An operator may explicitly set `OPENROUTER_SCAN_FALLBACK=enabled` for an emergency; such responses are marked `analysis_source: local_safety_fallback` and `fallback_used: true`.
 
 `ModelAdapter.predict(text, input_type)` is the only contract used by the ML Agent. An adapter must return:
 

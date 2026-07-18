@@ -28,4 +28,27 @@ const safeHotelReview = runAgent("message", "I rated the hotel after our vacatio
 assert.equal(safeHotelReview.risk, "LOW", "A normal hotel review must not be classified as a task scam.");
 assert.equal(isScamResult(safeHotelReview), false);
 
-console.log("Simple Mode scam regression passed: reference and unseen task scams → SCAM; normal Burmese and hotel messages → SAFE.");
+const authorityImpersonation = runAgent(
+  "message",
+  "This is President Joan T. A. Gabel, the president of the University of Minnesota. I am sending this message with my private number and it is needed to be treated with urgency. Kindly leave a message once you see this message."
+);
+assert.equal(authorityImpersonation.risk, "HIGH", "Authority + private channel + urgency must be high risk.");
+assert.equal(authorityImpersonation.category, "Authority impersonation scam");
+assert.equal(isScamResult(authorityImpersonation), true, "Simple Mode must render authority impersonation as SCAM.");
+
+const burmeseAuthorityImpersonation = runAgent(
+  "message",
+  "ကျွန်တော် ကုမ္ပဏီ ဥက္ကဋ္ဌပါ။ ကိုယ်ပိုင်ဖုန်းနံပါတ်အသစ်ကနေ စာပို့တာပါ။ အရေးကြီးလို့ တွေ့တာနဲ့ စာပြန်ပါ။"
+);
+assert.equal(burmeseAuthorityImpersonation.risk, "HIGH", "Burmese authority impersonation must be high risk.");
+assert.equal(burmeseAuthorityImpersonation.category, "Authority impersonation scam");
+assert.equal(isScamResult(burmeseAuthorityImpersonation), true);
+
+const safeAuthorityReference = runAgent(
+  "message",
+  "The university president's office posted the meeting schedule on the official website."
+);
+assert.equal(safeAuthorityReference.risk, "LOW", "A normal third-person authority reference must remain low risk.");
+assert.equal(isScamResult(safeAuthorityReference), false);
+
+console.log("Simple Mode scam regression passed: task and authority impersonation scams → SCAM; ordinary messages → SAFE.");

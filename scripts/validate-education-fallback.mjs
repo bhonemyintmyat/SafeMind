@@ -44,21 +44,15 @@ const basePayload = {
 const jsonResponse = response();
 await educationChatHandler(request({ ...basePayload, stream: false }, "fallback-json"), jsonResponse);
 const jsonBody = JSON.parse(await jsonResponse.completed);
-assert.equal(jsonResponse.statusCode, 200);
-assert.equal(jsonBody.model, "safemind-hybrid-nlp");
-assert.match(jsonBody.answer, /အန္တရာယ်အဆင့်/u);
-assert.match(jsonBody.answer, /အကြောင်းရင်း/u);
-assert.match(jsonBody.answer, /သင်လုပ်သင့်သည်/u);
-assert.doesNotMatch(jsonBody.answer, /temporarily unavailable/i);
+assert.equal(jsonResponse.statusCode, 503);
+assert.match(jsonBody.error, /ယာယီအသုံးမပြုနိုင်/u);
+assert.equal(jsonBody.assessment, undefined);
 
 const streamResponse = response();
 await educationChatHandler(request({ ...basePayload, stream: true }, "fallback-stream"), streamResponse);
-const events = (await streamResponse.completed).trim().split("\n").map((line) => JSON.parse(line));
-const done = events.find((event) => event.type === "done");
-assert.equal(streamResponse.statusCode, 200);
-assert(done?.response_complete);
-assert.equal(done.model, "safemind-hybrid-nlp");
-assert.match(done.answer, /အကြောင်းရင်း/u);
-assert.doesNotMatch(done.answer, /temporarily unavailable/i);
+const streamBody = JSON.parse(await streamResponse.completed);
+assert.equal(streamResponse.statusCode, 503);
+assert.match(streamBody.error, /ယာယီအသုံးမပြုနိုင်/u);
+assert.equal(streamBody.assessment, undefined);
 
-console.log("Burmese Scam Coach local fallback passed for JSON and streaming responses.");
+console.log("Scam Coach no-key regression passed: unavailable response, no fabricated local assessment.");

@@ -1,4 +1,4 @@
-import { runAgent } from "./spam-check.js";
+import { runSecurityScan } from "./spam-check.js";
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 const DEFAULT_OPENROUTER_MODEL = "openai/gpt-5.6-luna-pro";
@@ -19,7 +19,7 @@ Reply in Burmese when the user writes Burmese or requests Burmese; otherwise rep
 
 Your role:
 - Explain whether submitted content or screenshots show scam indicators.
-- Use the supplied SafeMind NLP assessment and verified directory match as primary evidence.
+- Use the supplied live SafeMind OpenRouter assessment and verified directory match as primary evidence.
 - When the user asks a follow-up, answer the new question directly with added explanation. Do not repeat the previous verdict or action list word-for-word.
 - Clearly distinguish confirmed facts, warning signals, and uncertainty.
 - Give short, practical next steps: pause, verify independently, block, preserve evidence, contact the financial provider, and report when appropriate.
@@ -607,7 +607,7 @@ export default async function handler(req, res) {
     const scanType = requestedType === "auto" ? detectScanType(evidenceText || question) : requestedType;
     let assessment = null;
     if (evidenceText) {
-      try { assessment = runAgent(scanType, evidenceText); } catch { assessment = null; }
+      try { assessment = await runSecurityScan(scanType, evidenceText); } catch { assessment = null; }
     }
     const directory = safeDirectoryContext(payload.directory_context);
     const previousAssessment = payload.memory?.last_assessment && typeof payload.memory.last_assessment === "object"

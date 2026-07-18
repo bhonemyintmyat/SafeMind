@@ -68,6 +68,9 @@ TRAINING_MESSAGES = [
     ("Your streaming membership will renew for a large charge. Use this link to cancel", "spam"),
     ("A refund is waiting. Submit bank information through the claim page", "spam"),
     ("Your electricity will be disconnected unless the overdue balance is paid through this link", "spam"),
+    ("This is the company president. I am using a private number, so reply urgently when you see this", "spam"),
+    ("I am the university chancellor messaging from a new line. Respond as soon as possible", "spam"),
+    ("This is your director. Contact me on this personal number right away", "spam"),
     # Normal messages
     ("Can we meet for lunch tomorrow at noon", "ham"),
     ("I am on my way home, see you soon", "ham"),
@@ -98,6 +101,8 @@ TRAINING_MESSAGES = [
     ("The hiring manager scheduled a video interview for the remote engineering role", "ham"),
     ("Your package was delivered to the front desk this afternoon", "ham"),
     ("The bank confirmed in its official app that no action is required", "ham"),
+    ("This is Maya, president of the student club. The meeting starts at six", "ham"),
+    ("The president's office published the announcement through the official university website", "ham"),
 ]
 
 
@@ -197,6 +202,29 @@ BENIGN_SIGNALS = {
     "monthly statement": 0.08,
     "will never ask": 0.16,
 }
+
+# These deliberately describe behavior rather than named people. Public-office
+# holders change, while the authority + channel-switch + pressure pattern remains.
+AUTHORITY_CLAIM_PATTERN = re.compile(
+    r"(?:\b(?:this is|i am|i'm)\b.{0,90}\b(?:president|chancellor|vice[ -]?chancellor|ceo|chief executive|director|dean|professor|minister|governor|mayor|police officer|officer|manager|boss|bank manager)\b|"
+    r"(?:ကျွန်တော်|ကျွန်မ|ငါ|ဒီမှာ).{0,45}(?:သမ္မတ|ဥက္ကဋ္ဌ|အမှုဆောင်အရာရှိ|ဒါရိုက်တာ|ဌာနမှူး|ပါမောက္ခ|ဝန်ကြီး|အုပ်ချုပ်ရေးမှူး|ရဲအရာရှိ|မန်နေဂျာ|ဘဏ်မန်နေဂျာ)(?:ပါ|ဖြစ်ပါတယ်)?)",
+    re.I,
+)
+PRIVATE_CHANNEL_PATTERN = re.compile(
+    r"(?:\b(?:my|a|this)\s+(?:private|personal|new|temporary|other|alternate)\s+(?:phone\s+)?(?:number|line|account)\b|"
+    r"\b(?:private|personal|new|temporary|other|alternate)\s+(?:phone\s+)?(?:number|line|account)\b|"
+    r"\b(?:texting|messaging|contacting|writing)\s+(?:you\s+)?from\s+(?:my|a|this)\s+(?:private|personal|new|temporary|other|alternate)\b|"
+    r"(?:ကိုယ်ပိုင်|သီးသန့်|ပုဂ္ဂိုလ်ရေး|အသစ်|ယာယီ|အခြား)(?:ဖုန်း)?(?:နံပါတ်|လိုင်း|အကောင့်))",
+    re.I,
+)
+URGENCY_PATTERN = re.compile(
+    r"(?:\b(?:urgent|urgency|urgently|immediate|immediately|as soon as possible|asap|time[ -]?sensitive|right away)\b|(?:အရေးကြီး|အရေးပေါ်|အမြန်|ချက်ချင်း|အခုပဲ))",
+    re.I,
+)
+REPLY_REQUEST_PATTERN = re.compile(
+    r"(?:\b(?:reply|respond|get back to me|leave (?:me )?a message|message me|text me|acknowledge (?:this|receipt)|let me know once you (?:see|receive|read))\b|(?:စာပြန်|အကြောင်းပြန်|ပြန်လည်ဆက်သွယ်|ပြန်ဆက်သွယ်|မက်ဆေ့ချ်ပို့|မက်ဆေ့ချ်ထား))",
+    re.I,
+)
 
 
 def normalize_text(text):
@@ -388,15 +416,34 @@ class SpamClassifier:
         phrases = [self.phrase_by_match_id[match_id] for match_id, _, _ in self.phrase_matcher(doc)]
         phrase_boost = sum(PHRASE_SIGNALS[phrase] for phrase in phrases)
         contextual = [(boost, label) for pattern, boost, label in CONTEXT_SIGNALS if pattern.search(cleaned)]
+        authority_claim = bool(AUTHORITY_CLAIM_PATTERN.search(cleaned))
+        private_channel = bool(PRIVATE_CHANNEL_PATTERN.search(cleaned))
+        urgency = bool(URGENCY_PATTERN.search(cleaned))
+        reply_request = bool(REPLY_REQUEST_PATTERN.search(cleaned))
+        authority_channel_impersonation = authority_claim and private_channel and (urgency or reply_request)
+        authority_pressure_impersonation = authority_claim and urgency and reply_request
         context_boost = sum(boost for boost, _ in contextual)
         benign_discount = min(0.24, sum(weight for phrase, weight in BENIGN_SIGNALS.items() if phrase in cleaned.lower()))
         combination_boost = 0.10 if len(contextual) >= 2 else 0.0
         if any(boost >= 0.22 for boost, _ in contextual):
             benign_discount = min(benign_discount, 0.04)
         probability = max(0.01, min(0.99, probability + phrase_boost + min(0.45, context_boost) + combination_boost - benign_discount))
+        if authority_channel_impersonation:
+            probability = max(probability, 0.82)
+        elif authority_pressure_impersonation:
+            probability = max(probability, 0.74)
 
         is_spam = probability >= 0.50
-        indicators = list(dict.fromkeys(phrases + [label for _, label in contextual] + self._spam_terms(tokens)))[:6]
+        behavioral_indicators = []
+        if authority_claim:
+            behavioral_indicators.append("Claims a senior or trusted identity")
+        if private_channel:
+            behavioral_indicators.append("Uses a private or changed contact channel")
+        if reply_request:
+            behavioral_indicators.append("Requests a reply before identity verification")
+        if authority_channel_impersonation or authority_pressure_impersonation:
+            behavioral_indicators.insert(0, "Possible authority impersonation through an unverifiable channel")
+        indicators = list(dict.fromkeys(behavioral_indicators + phrases + [label for _, label in contextual] + self._spam_terms(tokens)))[:6]
         confidence = probability if is_spam else 1.0 - probability
 
         if probability >= 0.70:
@@ -414,7 +461,9 @@ class SpamClassifier:
             reason = "The NLP model found no strong spam pattern in this message."
 
         indicator_labels = set(indicators)
-        if "Requests an authentication secret" in indicator_labels:
+        if "Possible authority impersonation through an unverifiable channel" in indicator_labels:
+            category = "Authority impersonation scam"
+        elif "Requests an authentication secret" in indicator_labels:
             category = "Credential phishing"
         elif "Requests a wallet recovery secret" in indicator_labels:
             category = "Crypto wallet theft"
