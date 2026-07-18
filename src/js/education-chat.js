@@ -346,6 +346,26 @@ if (form && chatLog) {
       : assessment.category || "Security analysis complete.";
   }
 
+  function localAssessmentAnswer(assessment) {
+    const risk = String(assessment?.risk || "").toUpperCase();
+    const confidence = Math.max(0, Math.min(99, Number(assessment?.confidence) || 0));
+    if (locale() === "my") {
+      const label = ({ HIGH: "အန္တရာယ်မြင့်", MEDIUM: "သံသယရှိ", LOW: "အန္တရာယ်နည်း" })[risk] || "မသေချာသေး";
+      const reason = risk === "HIGH"
+        ? "SafeMind ၏ စိစစ်မှုတွင် ပြင်းထန်သော လိမ်လည်မှုလက္ခဏာများ တွေ့ရှိထားပါသည်။ လုံခြုံကြောင်း သီးခြားအတည်မပြုမချင်း မလုပ်ဆောင်ပါနှင့်။"
+        : risk === "MEDIUM"
+          ? "SafeMind ၏ စိစစ်မှုတွင် သံသယဖြစ်ဖွယ် လက္ခဏာများ တွေ့ရှိထားပါသည်။ တရားဝင်လမ်းကြောင်းမှ အရင်စစ်ဆေးပါ။"
+          : "SafeMind ၏ စိစစ်မှုတွင် ပြင်းထန်သော အန္တရာယ်လက္ခဏာ မတွေ့ရသေးပါ။ သို့သော် လုံခြုံကြောင်း အာမခံခြင်း မဟုတ်ပါ။";
+      return `အန္တရာယ်အဆင့်\n${label} · ${confidence}%\n\nအကြောင်းရင်း\n${reason}\n\nသင်လုပ်သင့်သည်\n• မမျှော်လင့်သော လင့်ခ်ကို မနှိပ်ပါနှင့်။\n• OTP၊ စကားဝှက်နှင့် ဘဏ်အချက်အလက်ကို မမျှဝေပါနှင့်။\n• ပို့သူကို တရားဝင်အက်ပ်၊ ဝဘ်ဆိုက် သို့မဟုတ် ကိုယ်တိုင်ရှာထားသော ဖုန်းနံပါတ်မှ အတည်ပြုပါ။`;
+    }
+    const reason = risk === "HIGH"
+      ? "SafeMind found strong scam indicators. Treat the content as unsafe until it is independently verified."
+      : risk === "MEDIUM"
+        ? "SafeMind found suspicious indicators that require verification through an official channel."
+        : "SafeMind found no strong automated warning signs, but this does not guarantee the content is safe.";
+    return `Risk Level\n${risk || "UNKNOWN"} · ${confidence}%\n\nReason\n${reason}\n\nWhat You Should Do\n• Do not open unexpected links or share security codes.\n• Verify the sender through an official app, website, or independently found phone number.\n• Block and report the sender if the request remains suspicious.`;
+  }
+
   function addRecentAnalysis(question, assessment) {
     if (!recentAnalyses) return;
     if (recentAnalyses.querySelector(":scope > span")) recentAnalyses.replaceChildren();
@@ -666,9 +686,23 @@ if (form && chatLog) {
           : copy("Analysis complete.", "စိစစ်မှု ပြီးပါပြီ။"), doneEvent?.response_complete === false ? "pending" : "success");
       } catch (error) {
         if (retrying || cancelled) return;
+        if (lastAssessment?.risk) {
+          const fallbackAnswer = localAssessmentAnswer(lastAssessment);
+          loading.finish(fallbackAnswer, lastAssessment);
+          history.push({ role: "assistant", content: fallbackAnswer });
+          persistChatHistory();
+          addRecentAnalysis(userQuestion, lastAssessment);
+          setStatus(chatStatus, copy(
+            "Live coaching is temporarily unavailable. Showing the completed SafeMind assessment.",
+            "တိုက်ရိုက်အကြံပေးစနစ်ကို ယာယီအသုံးမပြုနိုင်ပါ။ ပြီးစီးထားသော SafeMind စိစစ်ချက်ကို ပြသထားပါသည်။"
+          ), "warning");
+          return;
+        }
         const message = error.name === "AbortError"
           ? copy("The request took too long. Retry when you are ready.", "တောင်းဆိုမှု အချိန်ကြာလွန်းပါသည်။ အဆင်ပြေသည့်အခါ ထပ်မံကြိုးစားပါ။")
-          : error.message || copy("I'm sorry, I couldn't generate an answer. Please try again.", "စိတ်မကောင်းပါ။ အဖြေမထုတ်ပေးနိုင်ပါ။ ထပ်မံကြိုးစားပါ။");
+          : locale() === "my" && /temporarily unavailable|busy right now|not configured/i.test(String(error.message || ""))
+            ? "Scam Coach ကို ယာယီအသုံးမပြုနိုင်ပါ။ သက်သေအထောက်အထားကို ဆက်လက်သိမ်းထားပြီး မကြာမီ ထပ်မံကြိုးစားပါ။"
+            : error.message || copy("I'm sorry, I couldn't generate an answer. Please try again.", "စိတ်မကောင်းပါ။ အဖြေမထုတ်ပေးနိုင်ပါ။ ထပ်မံကြိုးစားပါ။");
         loading.finish(message, lastAssessment);
         setStatus(chatStatus, message, "error");
       } finally {

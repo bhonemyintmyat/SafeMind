@@ -473,8 +473,10 @@ async function streamCompletion({ res, config, messages, assessment, directory, 
     analysis: structuredAnalysis(assessment, directory),
     directory_match: directory?.matched || false
   });
-  if (assessment && language !== "my" && !conversational) {
-    const answer = buildEnglishAssessment(assessment, directory);
+  if (assessment && !conversational) {
+    const answer = language === "my"
+      ? buildBurmeseAssessment(assessment, directory)
+      : buildEnglishAssessment(assessment, directory);
     for (const section of answer.split(/(\n\n)/u)) {
       if (section) {
         writeStreamEvent(res, { type: "token", token: section });
@@ -591,7 +593,6 @@ export default async function handler(req, res) {
   }
 
   const baseConfig = openRouterConfig();
-  if (!baseConfig) return json(res, 503, { error: "The education AI is not configured correctly." });
 
   try {
     const payload = JSON.parse(await readBody(req) || "{}");
@@ -600,7 +601,7 @@ export default async function handler(req, res) {
     const image = safeImage(payload.image);
     if (!question && !evidenceText && !image) return json(res, 400, { error: "Enter a question or add scam evidence." });
     const language = requestedLanguage(payload, question, evidenceText);
-    const config = configForLanguage(baseConfig, language);
+    const config = baseConfig ? configForLanguage(baseConfig, language) : null;
 
     const requestedType = SUPPORTED_TYPES.has(payload.scan_type) ? payload.scan_type : "auto";
     const scanType = requestedType === "auto" ? detectScanType(evidenceText || question) : requestedType;
@@ -633,6 +634,26 @@ export default async function handler(req, res) {
       ...history,
       { role: "user", content: userContent }
     ];
+    if (assessment && !conversational && payload.stream !== true) {
+      const answer = language === "my"
+        ? buildBurmeseAssessment(assessment, directory)
+        : buildEnglishAssessment(assessment, directory);
+      return json(res, 200, {
+        answer,
+        model: "safemind-hybrid-nlp",
+        assessment: publicAssessment(assessment),
+        analysis: structuredAnalysis(assessment, directory),
+        directory_match: directory?.matched || false,
+        response_complete: true
+      });
+    }
+    if (!config && !(assessment && !conversational)) {
+      return json(res, 503, {
+        error: language === "my"
+          ? "Scam Coach ကို ယာယီအသုံးမပြုနိုင်ပါ။ မကြာမီ ထပ်မံကြိုးစားပါ။"
+          : "The Scam Coach is temporarily unavailable. Please try again shortly."
+      });
+    }
     if (payload.stream === true) {
       return await streamCompletion({
         res,

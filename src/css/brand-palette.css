@@ -1290,3 +1290,81 @@ html[lang="my"] body :where(h1,h2,h3,h4,h5,h6,strong,b,button,label,legend,.bran
   border-radius:50%;
   object-fit:cover;
 }
+
+/* Dark mode uses one consistent SafeMind green treatment for every button. */
+html[data-theme="dark"] body:not(.splash) :where(
+  button,
+  [role="button"],
+  .primary-btn,
+  .secondary-btn,
+  .primary-button,
+  .primary-action,
+  .secondary-action,
+  .danger-action,
+  .nav-btn,
+  .primary-link,
+  .secondary-link
+) {
+  color:#20300F !important;
+  background:#A9D35E !important;
+  border-color:#8DB547 !important;
+  box-shadow:0 6px 16px rgba(104,141,43,.18) !important;
+}
+
+html[data-theme="dark"] body:not(.splash) :where(
+  button,
+  [role="button"],
+  .primary-btn,
+  .secondary-btn,
+  .primary-button,
+  .primary-action,
+  .secondary-action,
+  .danger-action,
+  .nav-btn,
+  .primary-link,
+  .secondary-link
+):hover:not(:disabled),
+html[data-theme="dark"] body:not(.splash) :where(
+  button,
+  [role="button"],
+  .primary-btn,
+  .secondary-btn,
+  .primary-button,
+  .primary-action,
+  .secondary-action,
+  .danger-action,
+  .nav-btn,
+  .primary-link,
+  .secondary-link
+):focus-visible:not(:disabled) {
+  color:#17220B !important;
+  background:#B8DF72 !important;
+  border-color:#789D39 !important;
+  box-shadow:0 8px 22px rgba(104,141,43,.28) !important;
+}
+
+html[data-theme="dark"] body:not(.splash) :where(button,[role="button"]):disabled {
+  color:#405126 !important;
+  background:#D6E8B6 !important;
+  border-color:#B8CD91 !important;
+}
+
+html[data-theme="dark"] body:not(.splash) :where(button,[role="button"])[aria-pressed="true"],
+html[data-theme="dark"] body:not(.splash) :where(button,[role="button"]).is-active {
+  color:#17220B !important;
+  background:#B8DF72 !important;
+  border-color:#789D39 !important;
+  box-shadow:0 0 0 3px rgba(169,211,94,.28) !important;
+}
+
+html[data-theme="dark"] .mobile-menu-button span { background:#20300F !important; }
+
+html[data-theme="dark"] .dashboard-shortcuts button > :where(span,strong,small) {
+  color:#20300F !important;
+}
+
+html[data-theme="dark"] input::file-selector-button {
+  color:#20300F !important;
+  background:#A9D35E !important;
+  border-color:#8DB547 !important;
+}

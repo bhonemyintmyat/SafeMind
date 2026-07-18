@@ -10,6 +10,7 @@
 		"test:nlp": "python3 -m unittest discover -s tests -v",
 		"test:extension": "node scripts/validate-extension.mjs",
 		"test:routes": "node scripts/validate-local-routes.mjs",
+		"test:coach-fallback": "node scripts/validate-education-fallback.mjs",
 		"audit:translations": "node scripts/audit-translations.mjs",
 		"build": "vite build",
 		"build:all": "npm run build -- --emptyOutDir && npm run test:extension",
