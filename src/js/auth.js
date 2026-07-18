@@ -1,11 +1,13 @@
 import { supabase, isSupabaseConfigured } from "./backend-client.js";
 import { redirectIfAuthenticated } from "./router.js";
 import { initLanguage } from "./language.js";
+import { createActionReadiness } from "./action-readiness.js";
 
 const authPage = document.body?.dataset.authPage;
 const form = document.querySelector("[data-auth-form]");
 const message = document.querySelector("[data-auth-message]");
 const submitButton = form?.querySelector('button[type="submit"]');
+let authReadiness;
 
 function safeReturnTarget() {
     if (sessionStorage.getItem("safemindPendingReport")) return "/reports";
@@ -30,7 +32,7 @@ function showMessage(text, isError = true) {
 }
 
 function setBusy(busy) {
-    if (submitButton) submitButton.disabled = busy;
+    authReadiness?.setBusy(busy);
     document.querySelectorAll("[data-provider]").forEach((button) => {
         button.disabled = busy;
     });
@@ -44,6 +46,17 @@ function strongPassword(value) {
     return value.length >= 12 && value.length <= 128 && /[a-z]/.test(value)
         && /[A-Z]/.test(value) && /\d/.test(value) && /[^A-Za-z0-9]/.test(value);
 }
+
+authReadiness = createActionReadiness({
+    button: submitButton,
+    controls: form?.querySelectorAll("input") || [],
+    isReady: () => {
+        const isSignup = authPage === "signup";
+        const email = document.getElementById(isSignup ? "newEmail" : "email")?.value.trim() || "";
+        const password = document.getElementById(isSignup ? "newPassword" : "password")?.value || "";
+        return isSupabaseConfigured && validEmail(email) && (isSignup ? strongPassword(password) : password.length >= 8);
+    }
+});
 
 function clearFieldError(field) {
     if (!field) return;

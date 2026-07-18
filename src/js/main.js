@@ -1,5 +1,6 @@
 import { supabase } from "./backend-client.js";
 import { initLanguage } from "./language.js";
+import { createActionReadiness } from "./action-readiness.js";
 import "./theme-toggle.js";
 
 const demoTabs = [...document.querySelectorAll("[data-demo-mode]")];
@@ -19,6 +20,7 @@ const mainNavigation = document.getElementById("mainNavigation");
 const typingTarget = document.getElementById("typingHeading");
 let activeDemoMode = "phone";
 let latestDemoResult = null;
+let demoReadiness;
 const securityApiUrl = import.meta.env.VITE_NLP_API_URL || "/api/spam-check";
 
 mobileMenuButton?.addEventListener("click", () => {
@@ -84,7 +86,14 @@ function setMode(mode) {
     demoInput.placeholder = copy[mode][2];
     demoInput.value = "";
     demoReport.hidden = true;
+    demoReadiness?.sync();
 }
+
+demoReadiness = createActionReadiness({
+    button: demoAnalyze,
+    controls: [demoInput],
+    isReady: () => demoInput.value.trim().length > 0
+});
 
 async function checkDirectory(mode, value) {
     if (!supabase) return null;
@@ -225,15 +234,19 @@ document.querySelectorAll("[data-hero-feature]").forEach((button) => button.addE
 }));
 document.querySelectorAll("[data-demo-example]").forEach((button) => button.addEventListener("click", () => {
     demoInput.value = examples[activeDemoMode][button.dataset.demoExample];
+    demoReadiness.sync();
 }));
 demoAnalyze?.addEventListener("click", async () => {
-    demoAnalyze.disabled = true;
+    demoReadiness.setBusy(true);
     demoAnalyze.textContent = "Checking…";
     document.querySelector("[data-demo-loading]")?.classList.add("is-loading");
-    renderResult(await analyzeDemo());
-    document.querySelector("[data-demo-loading]")?.classList.remove("is-loading");
-    demoAnalyze.disabled = false;
-    demoAnalyze.textContent = "Analyze Demo";
+    try {
+        renderResult(await analyzeDemo());
+    } finally {
+        document.querySelector("[data-demo-loading]")?.classList.remove("is-loading");
+        demoReadiness.setBusy(false);
+        demoAnalyze.textContent = "Analyze Demo";
+    }
 });
 demoReport?.addEventListener("click", () => {
     sessionStorage.setItem("safemindPendingReport", JSON.stringify({ type: activeDemoMode, content: demoInput.value, result: latestDemoResult }));

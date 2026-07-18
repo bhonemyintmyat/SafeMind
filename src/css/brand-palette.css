@@ -1368,3 +1368,149 @@ html[data-theme="dark"] input::file-selector-button {
   background:#A9D35E !important;
   border-color:#8DB547 !important;
 }
+
+/* Input-driven actions clearly communicate waiting, ready, and busy states. */
+body:not(.splash) button[data-input-action] {
+  transition: background-color .2s ease, border-color .2s ease, color .2s ease,
+    box-shadow .2s ease, opacity .2s ease, transform .2s ease !important;
+}
+
+html[data-theme="light"] body:not(.splash) button[data-input-action][data-action-state="waiting"],
+html[data-theme="light"] body:not(.splash) button[data-input-action][data-action-state="busy"],
+html[data-theme="light"] body:not(.splash) button[data-input-action]:disabled:not([data-action-state="ready"]) {
+  color: #F9FAFB !important;
+  background: #9CA0AA !important;
+  border-color: #9CA0AA !important;
+  box-shadow: none !important;
+  opacity: .58 !important;
+  transform: none !important;
+}
+
+html[data-theme="dark"] body:not(.splash) button[data-input-action][data-action-state="waiting"],
+html[data-theme="dark"] body:not(.splash) button[data-input-action][data-action-state="busy"],
+html[data-theme="dark"] body:not(.splash) button[data-input-action]:disabled:not([data-action-state="ready"]) {
+  color: #E5E7EB !important;
+  background: #555869 !important;
+  border-color: #686B7C !important;
+  box-shadow: none !important;
+  opacity: .52 !important;
+  transform: none !important;
+}
+
+body:not(.splash) button[data-input-action][data-action-state="ready"] {
+  color: #303247 !important;
+  background: #A9D35E !important;
+  border-color: #BCE477 !important;
+  box-shadow: 0 0 0 4px rgba(169, 211, 94, .18), 0 10px 28px rgba(126, 166, 54, .34) !important;
+  opacity: 1 !important;
+}
+
+body:not(.splash) button[data-input-action][data-action-state="ready"]:hover,
+body:not(.splash) button[data-input-action][data-action-state="ready"]:focus-visible {
+  color: #242535 !important;
+  background: #BCE477 !important;
+  border-color: #D0F292 !important;
+  box-shadow: 0 0 0 5px rgba(169, 211, 94, .24), 0 14px 34px rgba(126, 166, 54, .42) !important;
+  transform: translateY(-2px) !important;
+}
+
+body:not(.splash) button.danger-action[data-input-action][data-action-state="ready"] {
+  color: #FFFFFF !important;
+  background: #E35A5A !important;
+  border-color: #F17878 !important;
+  box-shadow: 0 0 0 4px rgba(227, 90, 90, .18), 0 10px 28px rgba(198, 64, 64, .32) !important;
+}
+
+body:not(.splash) button.danger-action[data-input-action][data-action-state="ready"]:hover,
+body:not(.splash) button.danger-action[data-input-action][data-action-state="ready"]:focus-visible {
+  background: #F06B6B !important;
+  border-color: #FF8A8A !important;
+  box-shadow: 0 0 0 5px rgba(227, 90, 90, .24), 0 14px 34px rgba(198, 64, 64, .4) !important;
+}
+
+/* Keep the login title balanced and empty authentication fields easy to see. */
+body.auth-page[data-auth-page="login"] .auth-card > h1 {
+  width: 100%;
+  text-align: center !important;
+}
+
+body.auth-page .auth-form input {
+  color: #1F2937 !important;
+  -webkit-text-fill-color: #1F2937 !important;
+  caret-color: #1F2937 !important;
+  color-scheme: light;
+  background: #F9FAFB !important;
+  background-color: #F9FAFB !important;
+  border-color: #9CA3AF !important;
+  box-shadow: inset 0 1px 2px rgba(31, 41, 55, .04) !important;
+  opacity: 1 !important;
+}
+
+body.auth-page .auth-form input::placeholder {
+  color: #4B5563 !important;
+  -webkit-text-fill-color: #4B5563 !important;
+  opacity: 1 !important;
+}
+
+body.auth-page .auth-form input:-webkit-autofill,
+body.auth-page .auth-form input:-webkit-autofill:hover,
+body.auth-page .auth-form input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #1F2937 !important;
+  -webkit-box-shadow: 0 0 0 1000px #F9FAFB inset !important;
+  caret-color: #1F2937 !important;
+}
+
+html[data-theme="dark"] body.auth-page .auth-form input {
+  color: #FFFFFF !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  caret-color: #FFFFFF !important;
+  color-scheme: dark;
+  background: #3B3D54 !important;
+  background-color: #3B3D54 !important;
+  border-color: #7A7E94 !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .18) !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] body.auth-page .auth-form input::placeholder {
+  color: #D7DAE8 !important;
+  -webkit-text-fill-color: #D7DAE8 !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] body.auth-page .auth-form input:-webkit-autofill,
+html[data-theme="dark"] body.auth-page .auth-form input:-webkit-autofill:hover,
+html[data-theme="dark"] body.auth-page .auth-form input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #FFFFFF !important;
+  -webkit-box-shadow: 0 0 0 1000px #3B3D54 inset !important;
+  caret-color: #FFFFFF !important;
+}
+
+body.auth-page .auth-form input:focus {
+  border-color: #A9D35E !important;
+  box-shadow: 0 0 0 4px rgba(169, 211, 94, .2) !important;
+}
+
+/* Keep every dark-mode action green while preserving visible readiness states. */
+html[data-theme="dark"] body:not(.splash) button[data-input-action][data-action-state="waiting"],
+html[data-theme="dark"] body:not(.splash) button[data-input-action][data-action-state="busy"],
+html[data-theme="dark"] body:not(.splash) button[data-input-action]:disabled:not([data-action-state="ready"]) {
+  color:#405126 !important;
+  background:#D6E8B6 !important;
+  border-color:#B8CD91 !important;
+}
+
+html[data-theme="dark"] body:not(.splash) button.danger-action[data-input-action][data-action-state="ready"] {
+  color:#20300F !important;
+  background:#A9D35E !important;
+  border-color:#8DB547 !important;
+  box-shadow:0 6px 16px rgba(104,141,43,.18) !important;
+}
+
+html[data-theme="dark"] body:not(.splash) button.danger-action[data-input-action][data-action-state="ready"]:hover,
+html[data-theme="dark"] body:not(.splash) button.danger-action[data-input-action][data-action-state="ready"]:focus-visible {
+  color:#17220B !important;
+  background:#B8DF72 !important;
+  border-color:#789D39 !important;
+  box-shadow:0 8px 22px rgba(104,141,43,.28) !important;
+}

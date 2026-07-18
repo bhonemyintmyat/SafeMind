@@ -40,7 +40,7 @@
                     <form class="dashboard-form" id="profileForm">
                         <label for="profileName">Display name</label><input id="profileName" type="text" maxlength="80" autocomplete="name" required>
                         <label for="profileEmail">Email address</label><input id="profileEmail" type="email" readonly>
-                        <button class="primary-button" type="submit" id="profileSubmit">Save profile</button><p class="form-status" id="profileStatus" role="status" aria-live="polite"></p>
+                        <button class="primary-button" type="submit" id="profileSubmit" data-input-action disabled>Save profile</button><p class="form-status" id="profileStatus" role="status" aria-live="polite"></p>
                     </form>
                 </section>
                 <section class="content-card" id="settings">
@@ -50,7 +50,7 @@
                         <label for="profilePassword">New password</label><input id="profilePassword" type="password" minlength="12" maxlength="128" autocomplete="new-password" aria-describedby="passwordGuidance" required>
                         <small class="form-guidance" id="passwordGuidance">Use at least 12 characters with upper and lowercase letters, a number, and a symbol.</small>
                         <label for="profilePasswordConfirm">Confirm new password</label><input id="profilePasswordConfirm" type="password" minlength="12" maxlength="128" autocomplete="new-password" required>
-                        <button class="primary-button" type="submit" id="passwordSubmit">Update password</button><p class="form-status" id="passwordStatus" role="status" aria-live="polite"></p>
+                        <button class="primary-button" type="submit" id="passwordSubmit" data-input-action disabled>Update password</button><p class="form-status" id="passwordStatus" role="status" aria-live="polite"></p>
                     </form>
                 </section>
             </main>
