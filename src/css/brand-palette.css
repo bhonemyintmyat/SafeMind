@@ -1550,3 +1550,47 @@ html[data-theme="dark"] body:not(.splash) button.danger-action[data-input-action
   border-color:#789D39 !important;
   box-shadow:0 8px 22px rgba(104,141,43,.28) !important;
 }
+
+/* Keep landing-page emphasis on the selected theme, language, and primary CTA. */
+html[data-theme="dark"] body.landing-page .navbar .theme-switcher {
+  background: rgba(255, 255, 255, .035) !important;
+  border-color: rgba(255, 255, 255, .16) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] body.landing-page .navbar .theme-switcher button:not([aria-pressed="true"]) {
+  color: #D7DAE8 !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] body.landing-page .navbar .theme-switcher button[aria-pressed="true"],
+html[data-theme="dark"] body.landing-page .navbar .language-toggle,
+html[data-theme="dark"] body.landing-page .hero-buttons .primary-btn {
+  color: #20300F !important;
+  background: #A9D35E !important;
+  border-color: #8DB547 !important;
+  box-shadow: 0 0 0 3px rgba(169, 211, 94, .2), 0 8px 20px rgba(104, 141, 43, .22) !important;
+}
+
+html[data-theme="dark"] body.landing-page .navbar :where(.nav-actions, .mobile-nav-actions) > a[href="/login"],
+html[data-theme="dark"] body.landing-page .hero-buttons .secondary-btn,
+html[data-theme="dark"] body.landing-page .hero-features li button {
+  color: #E5E7EB !important;
+  background: transparent !important;
+  border-color: rgba(229, 231, 235, .2) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] body.landing-page .navbar :where(.nav-actions, .mobile-nav-actions) > a[href="/login"]:hover,
+html[data-theme="dark"] body.landing-page .navbar :where(.nav-actions, .mobile-nav-actions) > a[href="/login"]:focus-visible,
+html[data-theme="dark"] body.landing-page .hero-buttons .secondary-btn:hover,
+html[data-theme="dark"] body.landing-page .hero-buttons .secondary-btn:focus-visible,
+html[data-theme="dark"] body.landing-page .hero-features li button:hover,
+html[data-theme="dark"] body.landing-page .hero-features li button:focus-visible {
+  color: #FFFFFF !important;
+  background: rgba(255, 255, 255, .07) !important;
+  border-color: rgba(229, 231, 235, .38) !important;
+  box-shadow: none !important;
+}
